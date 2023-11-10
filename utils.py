@@ -67,8 +67,6 @@ def MC_sampling(num_of_histories, timesteps, hsmm, num2plot=False):
 
     means_ar = hsmm.mean
 
-    # if num2plot:
-    #     plot_multiple_observ(obs_ar, states_ar, means_ar, num2plot)
 
     return obs_ar, states_ar, means_ar
 
