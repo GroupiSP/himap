@@ -2,6 +2,7 @@ import numpy as np
 from inits import *
 from utils import *
 from base import GaussianHSMM
+from plot import plot_multiple_observ
 
 mc_sampling = True
 
@@ -20,9 +21,11 @@ if mc_sampling:
                                      hsmm=hsmm_init
                                      )
 
+    plot_multiple_observ(obs, states, means, num2plot=5)
+
     hsmm_estim = GaussianHSMM(n_states=6,
                               n_durations=140,
-                              n_iter=10,
+                              n_iter=0,
                               tol=0.5,
                               f_value=60,
                               obs_state_len=10,
