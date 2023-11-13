@@ -4,6 +4,11 @@ from utils import *
 from base import GaussianHSMM
 from plot import plot_multiple_observ
 
+import matplotlib
+
+matplotlib.use('TkAgg')
+import matplotlib.pyplot as plt
+
 mc_sampling = True
 
 if mc_sampling:
