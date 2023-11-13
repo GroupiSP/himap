@@ -35,8 +35,11 @@ if mc_sampling:
                               f_value=60,
                               obs_state_len=10,
                               left_to_right=True
-                              )
-    _, _, score = hsmm_estim.fit(obs)
+                             )
+
+    #_, _, score = hsmm_estim.fit(obs) this line of code doesnt run like this
+    _, _, score = hsmm_estim.fit(obs, return_all_scores=True)
+    
 
     # fit with bic command
     # hsmm_estim, models, bic = hsmm_estim.fit_bic(obs, states=[2, 3, 4, 5, 6, 7, 8], return_models=True)
