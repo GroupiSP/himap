@@ -21,12 +21,11 @@ if mc_sampling:
     init4durval_observ_state_1(hsmm_init)
 
     # MC sampling command
-    obs, states, means = MC_sampling(num_of_histories=10,
-                                     timesteps=600,
-                                     hsmm=hsmm_init
-                                     )
+    num_of_histories = 20
+    max_timesteps = 600
+    obs, states, means = MC_sampling(num_of_histories, max_timesteps, hsmm_init)
 
-    plot_multiple_observ(obs, states, means, num2plot=5)
+    plot_multiple_observ(obs, states, num2plot=5)
 
     hsmm_estim = GaussianHSMM(n_states=6,
                               n_durations=140,
