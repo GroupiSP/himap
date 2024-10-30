@@ -1,6 +1,3 @@
-import copy
-
-import numpy as np
 from scipy.stats import multivariate_normal
 from scipy.special import logsumexp
 from sklearn import cluster
@@ -8,8 +5,12 @@ from sklearn.linear_model import LinearRegression
 from tqdm import tqdm
 from itertools import zip_longest
 import matplotlib.pyplot as plt
+from math import ceil
+import copy
 
 from ab import _forward, _backward, _u_only
+import sys
+
 import smoothed as core
 from utils import *
 
@@ -19,6 +20,7 @@ np.seterr(invalid='ignore')
 class HSMM:
     def __init__(self, n_states=2, n_durations=5, n_iter=20, tol=1e-2, left_to_right=False, obs_state_len=None,
                  f_value=None, random_state=None, name=""):
+
         if not n_states >= 2:
             raise ValueError("number of states (n_states) must be at least 2")
         if not n_durations >= 1:
@@ -33,6 +35,7 @@ class HSMM:
         else:
             self.last_observed = False
 
+        self.max_len = None
         self.n_states = n_states
         self.n_durations = n_durations
         self.n_iter = n_iter
@@ -44,10 +47,15 @@ class HSMM:
         self.name = name
         self._print_name = ""
         self.oscillation = None
+        self.score_per_iter = None
+        self.score_per_sample = None
+        self.bic_score = None
+        self.left_censor = 0
+        self.right_censor = 0
 
     # _init: initializes model parameters if there are none yet
     # if left_to_right is True then the first state has start probability=1 and the tmat has transition probability=1
-    # only for i+1 state. Last state is observed so all transition probabilities==0
+    # only for i+1 state. Last state is observed
     def _init(self, X=None):
         if self.name != "" and self._print_name == "":
             self._print_name = f" ({self.name})"
@@ -165,8 +173,8 @@ class HSMM:
         """
         pass  # implemented in subclass
 
-    # sample: generate random observation series, used for MC sampling
-    def sample(self, n_samples=5, left_censor=0, right_censor=1, random_state=None):
+    # sample: generate random observation series
+    def sample(self, n_samples=5, random_state=None):
         self._init(None)  # see "note for programmers" in init() in GaussianHSMM
         # self._check()
         # setup random state
@@ -180,9 +188,7 @@ class HSMM:
         # for first state
         currstate = (pi_cdf > rnd_checked.random()).argmax()  # argmax() returns only the first occurrence
         currdur = (dur_cdf[currstate] > rnd_checked.random()).argmax() + 1
-        if left_censor != 0:
-            currdur -= rnd_checked.integers(low=0, high=currdur)  # if with left censor, remove some of X
-        if right_censor == 0 and currdur > n_samples:
+        if currdur > n_samples:
             print(f"SAMPLE{self._print_name}: n_samples is too small to contain the first state duration.")
             return None
         state_sequence = [currstate] * currdur
@@ -194,16 +200,13 @@ class HSMM:
             currdur = (dur_cdf[currstate] > rnd_checked.random()).argmax() + 1
             # test if now in the end of generating samples
             if ctr_sample + currdur > n_samples:
-                if right_censor != 0:
-                    currdur = n_samples - ctr_sample  # if with right censor, cap the samples to n_samples
-                else:
-                    break  # else, do not include exceeding state duration
+                break  # else, do not include exceeding state duration
             state_sequence += [currstate] * currdur
             X += [self._state_sample(currstate, rnd_checked) for i in range(currdur)]  # generate observation
             ctr_sample += currdur
         return ctr_sample, np.atleast_2d(X), np.array(state_sequence, dtype=int)
 
-    # u estimation
+    # _core_u_only: Python implementation
     def _core_u_only(self, logframe):
         n_samples = logframe.shape[0]
         u = np.empty((n_samples, self.n_states, self.n_durations))
@@ -211,52 +214,49 @@ class HSMM:
                 logframe, u)
         return u
 
-    # forward estimation
-    def _core_forward(self, u, logdur, left_censor, right_censor):
+    # _core_forward: Python implementation
+    def _core_forward(self, u, logdur):
         n_samples = u.shape[0]
-        if right_censor != 0:
-            eta_samples = n_samples + self.n_durations - 1
-        else:
-            eta_samples = n_samples
+        eta_samples = n_samples
         eta = np.empty((eta_samples + 1, self.n_states, self.n_durations))  # +1
         xi = np.empty((n_samples + 1, self.n_states, self.n_states))  # +1
         alpha = _forward(n_samples, self.n_states, self.n_durations,
                          log_mask_zero(self.pi),
                          log_mask_zero(self.tmat),
-                         logdur, left_censor, right_censor, eta, u, xi)
+                         logdur, self.left_censor, self.right_censor, eta, u, xi)
         return eta, xi, alpha
 
-    # backward estimation
-    def _core_backward(self, u, logdur, right_censor):
+    # _core_backward: Python implementation
+    def _core_backward(self, u, logdur):
         n_samples = u.shape[0]
         beta = np.empty((n_samples, self.n_states))
         betastar = np.empty((n_samples, self.n_states))
         _backward(n_samples, self.n_states, self.n_durations,
                   log_mask_zero(self.pi),
                   log_mask_zero(self.tmat),
-                  logdur, right_censor, beta, u, betastar)
+                  logdur, self.right_censor, beta, u, betastar)
         return beta, betastar
 
-    # gamma calculation: The SLOWEST fnc if implemented in python
-    # implemented in Cython
-    def _core_smoothed(self, beta, betastar, right_censor, eta, xi):
+    # _core_smoothed: The SLOWEST fnc if implemented in python
+    # still in Cython
+    def _core_smoothed(self, beta, betastar, eta, xi):
         n_samples = beta.shape[0]
         gamma = np.empty((n_samples, self.n_states))
         core._smoothed(n_samples, self.n_states, self.n_durations,
-                       beta, betastar, right_censor, eta, xi, gamma)
+                       beta, betastar, self.right_censor, eta, xi, gamma)
         return gamma
 
-    # viterbi estimation
-    def _core_viterbi(self, u, logdur, left_censor, right_censor):
+    # _core_viterbi: container for core._viterbi (for multiple observation sequences)
+    def _core_viterbi(self, u, logdur):
         n_samples = u.shape[0]
         state_sequence, state_logl = core._viterbi(n_samples, self.n_states, self.n_durations,
                                                    log_mask_zero(self.pi),
                                                    log_mask_zero(self.tmat),
-                                                   logdur, left_censor, right_censor, u)
+                                                   logdur, self.left_censor, self.right_censor, u)
         return state_sequence, state_logl
 
     # score: log-likelihood computation from observation series
-    def score(self, X, left_censor=1, right_censor=0):
+    def score(self, X):
         self._init(X)
         # self._check()
         logdur = log_mask_zero(self._dur_probmat())  # build logdur
@@ -265,20 +265,13 @@ class HSMM:
 
         logframe = self._emission_logl(X)  # build logframe
         u = self._core_u_only(logframe)
-        if left_censor != 0:
-            eta, xi = self._core_forward(u, logdur, left_censor, right_censor)
-            beta, betastar = self._core_backward(u, logdur, right_censor)
-            gamma = self._core_smoothed(beta, betastar, right_censor, eta, xi)
-            score += logsumexp(gamma[0, :])
-        else:  # if without left censor, computation can be simplified
-            _, betastar = self._core_backward(u, logdur, right_censor)
-            gammazero = log_mask_zero(self.pi) + betastar[0]
-            score += logsumexp(gammazero)
+        _, betastar = self._core_backward(u, logdur)
+        gammazero = log_mask_zero(self.pi) + betastar[0]
+        score += logsumexp(gammazero)
         return score
 
     # predict: hidden state & duration estimation from observation series
-    # viterbi implementation
-    def predict(self, X, left_censor=1, right_censor=0):
+    def predict(self, X):
         self._init(X)
         # self._check()
         logdur = log_mask_zero(self._dur_probmat())  # build logdur
@@ -287,21 +280,27 @@ class HSMM:
         state_sequence = np.empty(X.shape[0], dtype=int)  # total n_samples = X.shape[0]
         logframe = self._emission_logl(X)  # build logframe
         u = self._core_u_only(logframe)
-        iter_state_sequence, iter_state_logl = self._core_viterbi(u, logdur, left_censor, right_censor)
+        iter_state_sequence, iter_state_logl = self._core_viterbi(u, logdur)
         state_logl += iter_state_logl
         state_sequence = iter_state_sequence
         return state_sequence, state_logl
 
     # fit: parameter estimation from observation series
-    def fit(self, X, left_censor=1, right_censor=0, return_all_scores=False, save_iters=False):
-
+    def fit(self, X, save_iters=False):
         score_per_iter = []
         score_per_sample = []
 
-        last_history = X[0, :].reshape((X.shape[1], 1))
-        last_history = last_history[~np.all(last_history == 0, axis=1)]
+        keys = list(X.keys())
+        lens = []
+        for traj in keys:
+            lens.append(len(X[traj]))
 
-        self._init(last_history)  # initialization with the first history
+        self.max_len = max(lens)
+        init_history = X[keys[lens.index(max(lens))]]
+
+        init_history = np.array(init_history).reshape((len(init_history), 1))
+
+        self._init(init_history)  # initialization with the longest history
         self._check()
 
         # main computations
@@ -312,25 +311,25 @@ class HSMM:
             tmat_num = dur_num = gamma_num = -np.inf
 
             for i in tqdm(range(len(X)), desc=f"Iters {itera + 1}/{self.n_iter}"):
-                history = X[i, :].reshape((X.shape[1], 1))
-                history = history[~np.all(history == 0, axis=1)]
+                history = X[keys[i]]
+                history = np.array(history).reshape((len(history), 1))
                 emission_var = np.empty((history.shape[0], self.n_states))  # cumulative concatenation of gammas
-                logdur = log_mask_zero(self._dur_probmat())  # build logdur(log duration probability matrix
+                logdur = log_mask_zero(self._dur_probmat())  # build logdur
                 j = len(history)
 
-                logframe = self._emission_logl(history)  # build logframe (log emission probability matrix for history)
+                logframe = self._emission_logl(history)  # build logframe
                 logframe[logframe > 0] = 0  # necessary condition for histories with discrete observations; as the model
                 # converges and calculates close-to-zero covariances, the probabilities of
                 # observing the means get close to 1. So to avoid positive logframe values
                 # we set them to 0 (exp(0)=1)
 
                 u = self._core_u_only(logframe)
-                eta, xi, alpha = self._core_forward(u, logdur, left_censor, right_censor)
-                beta, betastar = self._core_backward(u, logdur, right_censor)
-                gamma = self._core_smoothed(beta, betastar, right_censor, eta, xi)
+                eta, xi, alpha = self._core_forward(u, logdur)
+                beta, betastar = self._core_backward(u, logdur)
+                gamma = self._core_smoothed(beta, betastar, eta, xi)
                 sample_score = logsumexp(gamma[0, :])
-                score_per_sample.append(sample_score)  # saves the scores of every history for every iter
-                score += sample_score  # total likelihood for all histories for current iter
+                score_per_sample.append(sample_score)  # this saves the scores of every history for every iter
+                score += sample_score  # this is the total likelihood for all histories for current iter
 
                 # preparation for reestimation / M-step
                 if eta.shape[0] != j + 1:
@@ -385,12 +384,11 @@ class HSMM:
             elif itera > 0 and (np.isnan(score) or np.isinf(score)):
                 print("\nThere is no possible solution. Try different parameters.")
                 break
+            # elif itera > 0 and score<old_score:
+            #     self.oscillation = True
             else:
                 score_per_iter.append(score)
                 old_score = score
-
-                if itera > 0 and score < old_score:
-                    self.oscillation = True
 
             # save the previous version of the model prior to updating
             if save_iters:
@@ -415,16 +413,15 @@ class HSMM:
             self.mean = mean.reshape((mean.shape[0], 1))
             self.covmat = covmat.reshape((covmat.shape[0], 1, 1))
 
-            if self.last_observed:
-                self.tmat[-1, :] = np.zeros(self.n_states)
+            # new
+            self.tmat[-1, :] = np.zeros(self.n_states)
+            #
 
             print(f"\nFIT{self._print_name}: re-estimation complete for loop {itera + 1} with score: {score}.")
 
-        score_per_sample = np.array(score_per_sample).reshape((-1, X.shape[0])).T
+        score_per_sample = np.array(score_per_sample).reshape((-1, len(X))).T
         score_per_iter = np.array(score_per_iter).reshape(len(score_per_iter), 1)
-
-        self.shorted_states = sorted(range(len(self.mean.tolist())), key=self.mean.tolist().__getitem__)
-        print(self.shorted_states)
+        print(sorted(range(len(self.mean.tolist())), key=self.mean.tolist().__getitem__))
         if self.last_observed:
             self.dur[-1, self.obs_state_len] = 0
             self.dur[-1, self.obs_state_len - 1] = 1
@@ -432,10 +429,37 @@ class HSMM:
         if self.oscillation:
             print("\nOscillation in the convergence detected. Different parameters may give better results.")
         # return fitted model for joblib
+        self.score_per_iter = score_per_iter
+        self.score_per_sample = score_per_sample
+        self.bic(X)
 
-        if return_all_scores:
-            return self, score_per_iter, score_per_sample
         return self
+
+    def bic(self, train):
+        if self.max_len is None:
+            keys = list(train.keys())
+            lens = []
+            for traj in keys:
+                lens.append(len(train[traj]))
+
+            self.max_len = max(lens)
+
+        if self.left_to_right and self.last_observed:
+            n_params = (self.n_states - 1) * (self.n_durations - 1) + (self.n_states - 1) * 2
+
+        elif self.left_to_right and not self.last_observed:
+            n_params = (self.n_states) * (self.n_durations - 1) + (self.n_states) * 2
+
+        elif not self.left_to_right:
+            n_params = self.n_states + self.n_states ** 2 + (self.n_states) * (self.n_durations - 1) + (
+                self.n_states) * 2
+
+        best_ll = np.max(self.score_per_iter)
+        n = self.max_len
+        score = best_ll - 0.5 * n_params * np.log(n)
+        self.bic_score = score
+
+        return score
 
     def fit_bic(self, X, states, return_models=False):
         '''
@@ -459,7 +483,7 @@ class HSMM:
                                 left_to_right=self.left_to_right
                                 )
 
-            _, score_iters, score_samples = hsmm.fit(X, return_all_scores=True)
+            hsmm.fit(X)
 
             n = 0
 
@@ -467,22 +491,27 @@ class HSMM:
                 history = get_single_history(X, k)
                 n += len(history)
 
-            loglik = score_iters[-1]
+            loglik = hsmm.score_per_iter[-1]
             hi_emission = 2 * hsmm.n_states
             hi_dur = (hsmm.n_states - 1) * hsmm.n_durations
             hi = hi_emission + hi_dur
             bic.append(loglik - (hi / 2) * np.log(n))
 
-            models[f"model_{i}"] = copy.deepcopy(hsmm)
+            models[f"model_{i}"] = hsmm.__dict__
 
         best_model = models[f"model_{np.argmax(np.asarray(bic))}"]
+        print(f"Best model was the model with {best_model['n_states']} states.")
+        self.__dict__.update(best_model)
         if return_models:
-            return best_model, models, bic
+            return self, models, bic
 
-        return best_model, bic
+        return self, bic
 
-    def RUL(self, viterbi_states, max_samples, equation=1, plot_rul=False):
+    def RUL(self, viterbi_states, max_samples, path, equation=1, plot_rul=False, index=None):
         """
+        :param path:
+        :param index:
+        :param plot_rul:
         :param viterbi_states: Single history
         :param max_samples: maximum length of RUL (default: 3000)
         :param equation: 1=best (with reduction with sojourn time to both terms)
@@ -491,8 +520,8 @@ class HSMM:
         Works for a single state history.
         """
 
-        RUL = np.zeros((len(viterbi_states - self.obs_state_len + 1), max_samples))
-        mean_RUL, LB_RUL, UB_RUL = (np.zeros(len(viterbi_states - self.obs_state_len + 1)) for _ in range(3))
+        RUL = np.zeros((len(viterbi_states), max_samples))
+        mean_RUL, LB_RUL, UB_RUL = (np.zeros(len(viterbi_states)) for _ in range(3))
         dur = self.dur
         prev_state, stime = 0, 0
         n_states = self.n_states
@@ -576,123 +605,136 @@ class HSMM:
                 LB_RUL = np.hstack((np.delete(LB_RUL, LB_RUL == 0), np.array((0))))
                 break
 
-            if plot_rul:
-                true_RUL_v = len(viterbi_states) - 1
-                fig, ax = plt.subplots()
-                ax.plot([0, true_RUL_v], [true_RUL_v, 0], label='True RUL', color='black', linewidth=2)
-                ax.plot(mean_RUL, '--', label='Mean Predicted RUL', color='tab:red', linewidth=2)
-                ax.plot(UB_RUL, '-.', label='Lower Bound (90% CI)', color='tab:blue', linewidth=1)
-                ax.plot(LB_RUL, '-.', label='Upper Bound (90% CI)', color='tab:blue', linewidth=1)
-                ax.fill_between(np.arange(0, len(UB_RUL)), UB_RUL, LB_RUL, alpha=0.1, color='tab:blue')
-                fig.suptitle('RUL')
-                ax.legend(loc='best')
+        true_RUL_v = len(viterbi_states) - 1
+        if plot_rul:
+            fig, ax = plt.subplots(figsize=(19, 10))
+            ax.plot([0, true_RUL_v], [true_RUL_v, 0], label='True RUL', color='black', linewidth=2)
+            ax.plot(mean_RUL, '--', label='Mean Predicted RUL', color='tab:red', linewidth=2)
+            ax.plot(UB_RUL, '-.', label='Lower Bound (90% CI)', color='tab:blue', linewidth=1)
+            ax.plot(LB_RUL, '-.', label='Upper Bound (90% CI)', color='tab:blue', linewidth=1)
+            ax.fill_between(np.arange(0, len(UB_RUL)), UB_RUL, LB_RUL, alpha=0.1, color='tab:blue')
+            fig.suptitle('RUL')
+            ax.legend(loc='best')
+            plt.savefig(path + f'figures/RUL_plot_Signal_{index + 1}.png', dpi=300)
+            plt.close()
 
-        return RUL, mean_RUL, UB_RUL, LB_RUL
+        return RUL, mean_RUL, UB_RUL, LB_RUL, true_RUL_v
 
-    def prognostics(self, data, max_timesteps, max_samples=3000, plot_rul=False):
+    def prognostics(self, data, technique, max_samples=None, plot_rul=False, equation=1):
         """
-
-        :param HSMM: Trained HSMM model
         :param data: degradation histories
-        :param max_timesteps: maximum timesteps of degradation histories
         :param max_samples: maximum length of RUL (default: 3000)
+        :param technique: 'cmapss' or 'mimic' for file name
         :param plot_rul: Display RUL plot for each sample
         :return: None, json files are saved for pdf_rul and mean_rul
         """
+        if self.max_len is None:
+            keys = list(data.keys())
+            lens = []
+            for traj in keys:
+                lens.append(len(data[traj]))
 
+            self.max_len = max(lens)
+        path = f"edhsmm/results/{technique}/"
         data_list = []
-        for i in range(data.shape[0]):
-            history = data[i, 0:max_timesteps].reshape((max_timesteps, 1))
-            data_list.append(history[~np.all(history == 0, axis=1)])
+        max_timesteps = self.max_len
+        max_samples = ceil(max_timesteps * 10) if max_samples is None else max_samples
+        keys = list(data.keys())
+        for i in range(len(data)):
+            data_list.append(data[keys[i]])
 
-        viterbi_states_all = get_viterbi(
-            self, data
-        )  # this has the full length of the observed state
+        viterbi_states_all = get_viterbi(self, data)  # this has the full length of the observed state
 
         viterbi_list = []
-        for i in range(viterbi_states_all.shape[0]):
+        for i in range(len(viterbi_states_all)):
             # this has a single timestep for the observed state - Ready for RUL
-            viterbi_single_state = get_single_history_states(
-                viterbi_states_all, i, obs_state_len=self.obs_state_len
-            )
+            viterbi_single_state = get_single_history_states(viterbi_states_all,
+                                                             i,
+                                                             last_state=self.n_states - 1)
             viterbi_list.append(viterbi_single_state)
 
         pdf_ruls_all = {
             f"traj_{j}": {
-                f"timestep_{i}": np.zeros((max_samples,))
-                for i in range(len(viterbi_list[j]))
+                f"timestep_{i}": np.zeros((max_samples,)) for i in range(len(viterbi_list[j]))
             }
             for j in range(len(viterbi_list))
         }
 
         mean_rul_per_step = {
-            f"traj_{i}": np.zeros(
-                (
-                    len(
-                        viterbi_list[i],
-                    )
-                )
-            )
-            for i in range(len(viterbi_list))
-        }
-        upper_rul_per_step = {
-            f"traj_{i}": np.zeros(
-                (
-                    len(
-                        viterbi_list[i],
-                    )
-                )
-            )
-            for i in range(len(viterbi_list))
-        }
-        lower_rul_per_step = {
-            f"traj_{i}": np.zeros(
-                (
-                    len(
-                        viterbi_list[i],
-                    )
-                )
-            )
-            for i in range(len(viterbi_list))
+            f"traj_{i}": np.zeros((len(viterbi_list[i], ))) for i in range(len(viterbi_list))
         }
 
-        for i in range(viterbi_states_all.shape[0]):
-            viterbi_single_state = get_single_history_states(
-                viterbi_states_all, i, obs_state_len=self.obs_state_len
-            )
-            RUL_pred, mean_RUL, UB_RUL, LB_RUL = self.RUL(
-                viterbi_single_state, max_samples=max_samples, equation=1
-            )
+        upper_rul_per_step = {
+            f"traj_{i}": np.zeros((len(viterbi_list[i], ))) for i in range(len(viterbi_list))
+        }
+
+        lower_rul_per_step = {
+            f"traj_{i}": np.zeros((len(viterbi_list[i], ))) for i in range(len(viterbi_list))
+        }
+
+        true_rul_v = {
+            f"traj_{i}": ""
+        }
+
+        for i in range(len(viterbi_states_all)):
+            viterbi_single_state = get_single_history_states(viterbi_states_all,
+                                                             i,
+                                                             last_state=self.n_states - 1
+                                                             )
+            # viterbi_single_state=np.array(viterbi_single_state).reshape((len(viterbi_single_state),1))
+            RUL_pred, mean_RUL, UB_RUL, LB_RUL, true_rul = self.RUL(viterbi_single_state,
+                                                                    max_samples=max_samples,
+                                                                    equation=equation,
+                                                                    plot_rul=plot_rul,
+                                                                    index=i,
+                                                                    path=path,
+                                                                    )
 
             for j in range(RUL_pred.shape[0]):
                 pdf_ruls_all[f"traj_{i}"][f"timestep_{j}"] = RUL_pred[j, :].copy()
                 mean_rul_per_step[f"traj_{i}"] = mean_RUL.copy()
                 upper_rul_per_step[f"traj_{i}"] = UB_RUL.copy()
                 lower_rul_per_step[f"traj_{i}"] = LB_RUL.copy()
+                true_rul_v[f"traj_{i}"] = true_rul
 
-        print(f"Prognostics complete.")
+        path_mean_rul = path + f"prognostics/mean_rul_per_step_{technique}.json"
+        path_pdf_rul = path + f"prognostics/pdf_ruls_{technique}.json"
+        path_upper_rul = path + f"prognostics/upper_ruls_{technique}.json"
+        path_lower_rul = path + f"prognostics/lower_ruls_{technique}.json"
+        path_true_rul = path + f"prognostics/true_ruls_{technique}.json"
 
-        return mean_rul_per_step, lower_rul_per_step, upper_rul_per_step
+        with open(path_mean_rul, "w") as fp:
+            json.dump(mean_rul_per_step, fp, cls=NumpyArrayEncoder)
+
+        with open(path_pdf_rul, "w") as fp:
+            json.dump(pdf_ruls_all, fp, cls=NumpyArrayEncoder)
+
+        with open(path_upper_rul, "w") as fp:
+            json.dump(upper_rul_per_step, fp, cls=NumpyArrayEncoder)
+
+        with open(path_lower_rul, "w") as fp:
+            json.dump(lower_rul_per_step, fp, cls=NumpyArrayEncoder)
+
+        with open(path_true_rul, "w") as fp:
+            json.dump(true_rul_v, fp, cls=NumpyArrayEncoder)
+
+        print(f"Prognostics complete. Results saved to: {path}")
+
+    def save_model(self, path):
+        with open(path, 'wb') as f:
+            pickle.dump(self.__dict__, f)
+
+    def load_model(self, path):
+        with open(path, 'rb') as f:
+            obj = pickle.load(f)
+            self.__dict__.update(obj)
 
 
 # Sample Subclass: Explicit Duration HSMM with Gaussian Emissions
 class GaussianHSMM(HSMM):
-
-    def __init__(self, n_states=2, n_durations=5, n_iter=20, tol=5e-1, left_to_right=False, obs_state_len=None,
+    def __init__(self, n_states=2, n_durations=5, n_iter=20, tol=1e-2, left_to_right=False, obs_state_len=None,
                  f_value=None, random_state=None, name="",
                  kmeans_init='k-means++', kmeans_n_init='auto'):
-        '''
-        :param n_states: number of hidden states (if left_to right the last state is observed
-        :param n_durations: size of duration probability matrix
-        :param n_iter: number of iterations for model fit
-        :param tol: convergence tolerance for early stopping
-        :param left_to_right: left to right assumption for Markov Model
-        :param obs_state_len: length of observed state (10 timesteps for best results)
-        :param f_value: value of the observed state (5 units more than the largest observation value)
-        :param random_state: random state seed for kmeans
-        :param name: model name
-        '''
-
         super().__init__(n_states, n_durations, n_iter, tol, left_to_right, obs_state_len,
                          f_value, random_state, name)
         self.kmeans_init = kmeans_init
@@ -703,7 +745,7 @@ class GaussianHSMM(HSMM):
         # note for programmers: for every attribute that needs X in score()/predict()/fit(),
         # there must be a condition "if X is None" because sample() doesn't need an X, but
         # default attribute values must be initiated for sample() to proceed.
-        if not hasattr(self, "mean") and not self.left_to_right:  # also set self.n_dim here
+        if not hasattr(self, "mean") and not self.left_to_right and not self.last_observed:  # also set self.n_dim here
             if X is None:  # default for sample()
                 self.n_dim = 1
                 self.mean = np.arange(0., self.n_states)[:, None]  # = [[0.], [1.], [2.], ...]
@@ -713,6 +755,18 @@ class GaussianHSMM(HSMM):
                                         init=self.kmeans_init, n_init=self.kmeans_n_init)
                 kmeans.fit(X)
                 self.mean = kmeans.cluster_centers_
+
+        if not hasattr(self, "mean") and not self.left_to_right and self.last_observed:  # also set self.n_dim here
+            if X is None:  # default for sample()
+                self.n_dim = 1
+                self.mean = np.arange(0., self.n_states)[:, None]  # = [[0.], [1.], [2.], ...]
+            else:
+                self.n_dim = X.shape[1]
+                kmeans = cluster.KMeans(n_clusters=self.n_states - 1, random_state=self.random_state,
+                                        init=self.kmeans_init, n_init=self.kmeans_n_init)
+                kmeans.fit(X)
+                clusters = kmeans.cluster_centers_
+                self.mean = np.vstack((clusters, [self.f_value]))
 
         elif not hasattr(self, "mean") and self.left_to_right:  # also set self.n_dim here
             if X is None:  # default for sample()
@@ -748,10 +802,10 @@ class GaussianHSMM(HSMM):
 
     def _dur_init(self):
         # non-parametric duration
-        if not hasattr(self, "dur") and not self.left_to_right:
+        if not hasattr(self, "dur") and not self.last_observed:
             self.dur = np.full((self.n_states, self.n_durations), 1.0 / self.n_durations)
 
-        elif not hasattr(self, "dur") and self.left_to_right:
+        elif not hasattr(self, "dur") and self.last_observed:
             self.dur = np.zeros((self.n_states, self.n_durations))
             self.dur[:-1, 1:].fill(1.0 / (self.n_durations - 1))
             self.dur[-1, self.obs_state_len] = 1

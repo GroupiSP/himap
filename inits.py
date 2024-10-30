@@ -434,7 +434,7 @@ def init4durval_observ_state_1(hsmm_class):
         for k in range(len(x)):
             hsmm_class.dur[i, k] = scipy.stats.norm(mean, std).pdf(x[k,])
             hsmm_class.dur[i, ((x.shape[0] // 2) - 1)] += 1 - hsmm_class.dur[i].sum()
-        mean -= 30
+        mean -= 20
         std -= 5
 
     hsmm_class.dur[-1, 9] = 1
@@ -468,7 +468,7 @@ def init4durval_observ_state_1(hsmm_class):
                 hsmm_class.tmat[i, j + 1] = 1
 
     hsmm_class.tmat[-1, -2] = 1
-    hsmm_class.mean = np.array([5, 15, 25, 35, 45, 60])  # shape should be (n_states, n_dim)
+    hsmm_class.mean = np.array([10, 20, 30, 40, 50, 65])  # shape should be (n_states, n_dim)
     hsmm_class.mean = np.reshape(hsmm_class.mean, (-1, 1))
     hsmm_class.covmat = np.array([  # shape should be (n_states, n_dim, n_dim) -> array of square matrices
         [[6.]],
@@ -476,7 +476,7 @@ def init4durval_observ_state_1(hsmm_class):
         [[6.]],
         [[6.]],
         [[6.]],
-        [[1]],
+        [[0.1]],
 
     ])
 
