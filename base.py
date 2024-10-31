@@ -7,7 +7,11 @@ from itertools import zip_longest
 import matplotlib.pyplot as plt
 from math import ceil
 import copy
-
+from scipy.stats import geom
+from scipy.signal import convolve
+import scipy.stats as stats
+from scipy.stats import norm
+from numba import jit
 from ab import _forward, _backward, _u_only
 import sys
 
@@ -862,3 +866,406 @@ class GaussianHSMM(HSMM):
     def _state_sample(self, state, random_state=None):
         rnd_checked = np.random.default_rng(random_state)
         return rnd_checked.multivariate_normal(self.mean[state], self.covmat[state])
+
+
+######HMM
+
+def calculate_expected_value(pmf_values):
+    expected_value = sum(x * p for x, p in enumerate(pmf_values))
+    return expected_value
+
+
+def calculate_cdf(pmf, confidence_level):
+    # Calculate the CDF
+    cdf = np.cumsum(pmf)
+    # Calculate the lower and upper percentiles
+    lower_percentile = (1 - confidence_level) / 2
+    upper_percentile = 1 - lower_percentile
+    lower_value = np.argmax(cdf >= lower_percentile)
+    upper_value = np.argmax(cdf >= upper_percentile)
+
+    return lower_value, upper_value
+
+
+#@jit(nopython=True)
+def baumwelch_method(n_states, n_obs_symbols, logPseq, fs, bs, scale, score, history, tr, emi, calc_tr, calc_emi):
+    score += logPseq
+    logf = np.log(fs)
+    logb = np.log(bs)
+    logGE = np.log(calc_emi)
+    logGTR = np.log(calc_tr)
+
+    for i in range(n_states):
+        for j in range(n_states):
+            for h in range(len(history) - 1):
+                tr[i, j] += np.exp(logf[i, h] + logGTR[i, j] + logGE[j, history[h + 1] - 1] + logb[j, h + 1]) / scale[
+                    0, h + 1]
+
+    for i in range(n_states):
+        for j in range(n_obs_symbols):
+            pos = np.where(history == j + 1)[0]
+            emi[i, j] += np.sum(np.exp(logf[i, pos] + logb[i, pos]))
+
+    return tr, emi
+
+
+#@jit(nopython=True)
+def fs_calculation(n_states, end_traj, fs, s, history, calc_emi, calc_tr):
+    for count in range(1, end_traj):
+        for state in range(n_states):
+            fs[state, count] = calc_emi[state, history[count] - 1] * np.sum(fs[:, count - 1] * calc_tr[:, state])
+        # scale factor normalizes sum(fs,count) to be 1.
+        s[0, count] = np.sum(fs[:, count])
+        fs[:, count] = fs[:, count] / s[0, count]
+    return fs, s
+
+
+#@jit(nopython=True)
+def bs_calculation(n_states, end_traj, bs, s, history, calc_emi, calc_tr):
+    for count in range(end_traj - 2, -1, -1):
+        for state in range(n_states):
+            bs[state, count] = (1 / s[0, count + 1]) * np.sum(
+                calc_tr[state, :].T * bs[:, count + 1] * calc_emi[:, history[count + 1] - 1])
+    return bs
+
+
+class HMM:
+    def __init__(self, n_states, n_obs_symbols, n_iter=20, tol=1e-2, left_to_right=False, name=""):
+        if not n_states >= 2:
+            raise ValueError("number of states (n_states) must be at least 2")
+        self.n_states = n_states
+        self.n_iter = n_iter
+        self.tol = tol
+        self.left_to_right = left_to_right
+        self.n_obs_symbols = n_obs_symbols
+        self.oscillation = None
+        self.name = name
+        self._print_name = ""
+
+    def _init(self, X=None):
+        if self.name != "" and self._print_name == "":
+            self._print_name = f" ({self.name})"
+        if not hasattr(self, "ini_tr") and not self.left_to_right:
+            self.ini_tr = np.full((self.n_states, self.n_states), 1.0 / (self.n_states))
+
+        elif not hasattr(self, "ini_tr") and self.left_to_right:
+            self.ini_tr = np.zeros((self.n_states, self.n_states))
+            for i in range(self.n_states):
+                if i == self.n_states - 1:
+                    self.ini_tr[i, i - 1:i + 1] = 0.5
+                else:
+                    self.ini_tr[i, i:i + 2] = 0.5
+
+        if not hasattr(self, "ini_emi") and not self.left_to_right:
+            self.ini_emi = np.full((self.n_states, self.n_obs_symbols), 1.0 / (self.n_obs_symbols))
+
+        elif not hasattr(self, "ini_emi") and self.left_to_right:
+            self.ini_emi = np.zeros((self.n_states, self.n_obs_symbols))
+            prob = 1 / (self.n_obs_symbols - 1)
+            for row in range(self.ini_emi.shape[0] - 1):
+                for column in range(self.ini_emi.shape[1] - 1):
+                    self.ini_emi[row, column] = prob
+            self.ini_emi[self.n_states - 1, self.n_obs_symbols - 1] = 1
+
+    def fit(self, X, return_all_scores=False, save_iters=False):
+        self._init(X)
+        tr = np.zeros(self.ini_tr.shape)
+        emi = np.zeros(self.ini_emi.shape)
+        score_per_iter = []
+        score = 1
+        calc_emi = self.ini_emi.copy()
+        calc_tr = self.ini_tr.copy()
+        converged = False
+        for itera in range(self.n_iter):
+            old_score = score
+            score = 0
+            old_emi = calc_emi.copy()
+            old_tr = calc_tr.copy()
+            for i in tqdm(range(len(X)), desc=f"Iters {itera + 1}/{self.n_iter}"):
+                history = X[f'traj_{i}']
+                _, logPseq, fs, bs, scale = self.decode(history, calc_emi, calc_tr)
+                score += logPseq
+                history = np.concatenate([np.array([0]), history])
+                tr, emi = baumwelch_method(self.n_states, self.n_obs_symbols, logPseq, fs, bs, scale, score, history, tr, emi,
+                                           calc_tr, calc_emi)
+            total_emissions = np.sum(emi, axis=1)
+            total_transitions = np.sum(tr, axis=1)
+
+            calc_emi = emi / total_emissions[:, np.newaxis]
+            calc_tr = tr / total_transitions[:, np.newaxis]
+
+            calc_tr[np.isnan(calc_tr)] = 0
+            calc_emi[np.isnan(calc_emi)] = 0
+
+            score_per_iter.append(score)
+            if (abs(score - old_score) / (1 + abs(old_score))) < self.tol and \
+                    np.linalg.norm(calc_tr - old_tr, ord=np.inf) / self.n_states < self.tol and \
+                    np.linalg.norm(calc_emi - old_emi, ord=np.inf) / self.n_obs_symbols < self.tol:
+                print(f"\nFIT{self._print_name}: converged at loop {itera + 1} with score: {score}.")
+                converged = True
+                self.tr = calc_tr
+                self.emi = calc_emi
+                break
+
+            if save_iters:
+                with open('model_iter' + str(itera + 1) + '.txt', 'wb') as f:
+                    pickle.dump(self, f)
+
+        if not converged:
+            print("\nThere is no possible solution. Try different parameters.")
+
+        if return_all_scores:
+            return self, score_per_iter
+        return self
+
+    def fit_bic(self, X, states, return_models=False):
+        '''
+        fit HSMM with the BIC criterion
+        :param X: degradation histories
+        :param states: list with number of states
+        :param return_models: return all models in a dictionary
+        '''
+
+        bic = []
+        models = {
+            f"model_{i}": None for i in range(len(states))
+        }
+
+        n=0
+        for key in X.keys():
+            history = X[key]
+            n += len(history)
+
+        for i, n_states in enumerate(states):
+            hmm_model = HMM(n_states=n_states,
+                                n_obs_symbols=self.n_obs_symbols,
+                                n_iter=self.n_iter,
+                                tol=self.tol,
+                                left_to_right=self.left_to_right
+                                )
+
+            _, score_iters = hmm_model.fit(X, return_all_scores=True)
+            loglik = score_iters[-1]
+            num_params_emi = np.count_nonzero(hmm_model.emi) - 1
+            num_params_tr = np.count_nonzero(hmm_model.tr) - 1
+            bic.append(loglik - ((num_params_tr + num_params_emi) / 2) * np.log(n))
+            models[f"model_{i}"] = hmm_model
+
+        best_model = models[f"model_{np.argmax(np.asarray(bic))}"]
+        if return_models:
+            return best_model, models, bic
+
+        return best_model, bic
+
+    def decode(self, history, calc_emi, calc_tr):
+        history = np.concatenate([np.array([self.n_obs_symbols + 1]), history])
+        end_traj = len(history)
+        fs = np.zeros((self.n_states, end_traj))
+        fs[0, 0] = 1  # assume that we start in state 1.
+        s = np.zeros((1, end_traj))
+        s[0, 0] = 1
+
+        fs, s = fs_calculation(self.n_states, end_traj, fs, s, history, calc_emi, calc_tr)
+
+        bs = np.ones((self.n_states, end_traj))
+        bs = bs_calculation(self.n_states, end_traj, bs, s, history, calc_emi, calc_tr)
+        pSeq = np.sum(np.log(s[0, 1:]))
+        pStates = fs * bs
+
+        # get rid of the column that we stuck in to deal with the f0 and b0
+        pStates = np.delete(pStates, 0, axis=1)
+
+        return pStates, pSeq, fs, bs, s
+
+    def sample(self):
+
+        history = []
+        states = []
+        trc = np.cumsum(self.tr, axis=1)
+        ec = np.cumsum(self.emi, axis=1)
+        trc = trc / np.tile(trc[:, -1:], (1, self.n_states))
+        ec = ec / np.tile(ec[:, -1:], (1, self.n_obs_symbols))
+        currentstate = 1
+        while currentstate < self.n_states:
+            stateVal = np.random.rand()
+            state = 1
+            for innerState in range(self.n_states - 2, -1, -1):
+                if stateVal > trc[currentstate - 1, innerState]:
+                    state = innerState + 2
+                    break
+            val = np.random.rand()
+            emit = 1
+            for inner in range(self.n_obs_symbols - 2, -1, -1):
+                if val > ec[state - 1, inner]:
+                    emit = inner + 2
+                    break
+            history.append(emit)
+            states.append(state)
+            currentstate = state
+        for i in range(5):
+            history.append(self.n_obs_symbols)
+            states.append(self.n_states)
+        return history, states
+
+    def sample_dataset(self, n_samples):
+        obs = {}
+        states_all = {}
+        for i in range(n_samples):
+            sample = self.sample()
+            history, states = sample
+            obs[f'traj_{i}'] = history
+            states_all[f'traj_{i}'] = states
+        return obs, states_all
+
+    def predict(self, history, return_score=False):
+        end_traj = len(history)
+        currentState = np.zeros(end_traj, dtype=int)
+        if end_traj == 0:
+            return currentState, float('-inf')
+
+        logTR = np.log(self.tr)
+        logE = np.log(self.emi)
+
+        pTR = np.zeros((self.n_states, end_traj), dtype=int)
+        v = -np.inf * np.ones(self.n_states)
+        v[0] = 0
+        vOld = np.copy(v)
+
+        for count in range(end_traj):
+            for state in range(self.n_states):
+                bestVal = -np.inf
+                bestPTR = 0
+                for inner in range(self.n_states):
+                    val = vOld[inner] + logTR[inner, state]
+                    if val > bestVal:
+                        bestVal = val
+                        bestPTR = inner
+                pTR[state, count] = bestPTR
+                v[state] = logE[state, history[count] - 1] + bestVal
+            vOld[:] = v
+        logP, finalState = np.max(v), np.argmax(v)
+        currentState[end_traj - 1] = finalState
+        for count in range(end_traj - 2, -1, -1):
+            currentState[count] = pTR[currentState[count + 1], count + 1]
+            if currentState[count] == -1:
+                raise ValueError(f"ZeroTransitionProbability: {currentState[count + 1]}")
+        if return_score:
+            return currentState + 1, logP
+        return currentState + 1
+
+    # method that given a history and a path of estimatedStates calculates the most likely transition and emission matrices
+    def estimate(self, history, estimatedStates, return_matrices=False):
+        tr = []
+        emi = []
+        end_traj = len(history)
+
+        tr = np.zeros((self.n_states, self.n_states))
+        emi = np.zeros((self.n_states, self.n_obs_symbols))
+
+        for count in range(end_traj - 1):
+            tr[estimatedStates[count] - 1, estimatedStates[count + 1] - 1] += 1
+
+        for count in range(end_traj):
+            emi[estimatedStates[count] - 1, history[count] - 1] += 1
+
+        tr_sum = np.sum(tr, axis=1)
+        emi_sum = np.sum(emi, axis=1)
+
+        tr_sum[tr_sum == 0] = -np.inf
+        emi_sum[emi_sum == 0] = -np.inf
+
+        tr = tr / tr_sum[:, None]
+        emi = emi / emi_sum[:, None]
+
+        if return_matrices:
+            return tr, emi
+        else:
+            self.tr = tr
+            self.emi = emi
+            return self
+
+    def RUL(self, estimatedStates, time_sample, confidence=0.95):
+        N = max(estimatedStates) - 1
+        rul_matrix = np.zeros((len(estimatedStates), time_sample))
+        prev_state = 0  # aux variable
+        tau = 0
+        for i in range(len(estimatedStates)):
+            current_state = estimatedStates[i] - 1
+            if current_state == N:
+                rul_matrix[i, :] = np.zeros(time_sample)
+            else:
+                if prev_state == current_state:
+                    tau += 1
+                else:
+                    prev_state = current_state
+                    tau = 1
+                a_ii = self.tr[current_state, current_state]
+                a_next = self.tr[current_state + 1, current_state + 1]
+                x_d_i = np.arange(0, time_sample)
+                param_tau = geom.cdf(tau, 1 - a_ii)
+                d_i = geom.pmf(x_d_i, 1 - a_ii)
+                mod_d_i = np.zeros(len(d_i))
+                mod_d_i[0:(len(d_i) - tau)] = d_i[tau:]
+                added_prob = 0
+                for timestep in range(tau + 1):
+                    added_prob += d_i[timestep]
+                mod_d_i[0] = added_prob
+                normal_gaussian = norm.pdf(x_d_i, loc=1, scale=0.56999999)
+                for j in range(current_state + 1, N):
+                    d_j = geom.pmf(x_d_i, 1 - self.tr[j, j])
+                    mod_d_i = convolve(mod_d_i, d_j, mode='full')
+                mod_d_i = convolve(mod_d_i, normal_gaussian, mode='full')[:time_sample]
+                sum_conv = geom.pmf(x_d_i, 1 - a_next)
+                for j in range(current_state + 2, N):
+                    d_j = geom.pmf(x_d_i, 1 - self.tr[j, j])
+                    sum_conv = convolve(sum_conv, d_j, mode='full')
+                sum_conv = convolve(sum_conv, normal_gaussian, mode='full')[:time_sample]
+                if current_state == N - 1:
+                    rul_matrix[i, :] = (1 - param_tau) * mod_d_i[:time_sample] + param_tau * normal_gaussian
+                else:
+                    first_term = (1 - param_tau) * mod_d_i[:time_sample]
+                    second_term = param_tau * sum_conv[:time_sample]
+                    rul_current = first_term + second_term
+                    rul_matrix[i, :] = rul_current
+        rul_mean = []
+        rul_upper_bound = []
+        rul_lower_bound = []
+        for i in range(rul_matrix.shape[0]):
+            rul_pdf_current = rul_matrix[i, :]
+            rul_value = calculate_expected_value(rul_pdf_current)
+            if np.isnan(rul_value) or rul_value == 0:
+                rul_mean.append(0)
+                rul_upper_bound.append(0)
+                rul_lower_bound.append(0)
+                break
+            else:
+                rul_mean.append(int(rul_value))
+                lower_bound, upper_bound = calculate_cdf(rul_pdf_current, confidence)
+                rul_upper_bound.append(upper_bound)
+                rul_lower_bound.append(lower_bound)
+        return rul_mean, rul_upper_bound, rul_lower_bound
+
+    def prognostics(self, data, time_sample=2000, plot_rul=False):
+        rul_mean_all = {}
+        rul_upper_bound_all = {}
+        rul_lower_bound_all = {}
+        for k in data.keys():
+            viterbi = self.predict(data[k])
+            rul_mean, rul_upper, rul_lower = self.RUL(viterbi, time_sample)
+            rul_mean_all[k] = rul_mean
+            rul_upper_bound_all[k] = rul_upper
+            rul_lower_bound_all[k] = rul_lower
+            if plot_rul:
+                plt.figure(figsize=(10, 6))
+                plt.plot(rul_mean, linewidth=3, color='blue', label='Predicted')
+                plt.plot(range(len(data[k]), 0, -1), color='black', linewidth=2.5, linestyle='dashed', label='Real')
+                plt.fill_between(range(len(rul_mean)), rul_lower, rul_upper, color='blue', alpha=0.2)
+                plt.xlim(0, max(range(len(rul_mean))))
+                plt.ylim(0, max(rul_upper))
+                plt.xlabel('Time [s]')
+                plt.ylabel('RUL')
+                plt.tick_params(axis='both', which='both')
+                plt.legend()
+                plt.show(block=True)
+        return rul_mean_all, rul_upper_bound_all, rul_lower_bound_all
+
