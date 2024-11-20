@@ -11,9 +11,10 @@ from scipy.stats import geom
 from scipy.signal import convolve
 import scipy.stats as stats
 from scipy.stats import norm
-from numba import jit
 from ab import _forward, _backward, _u_only
 import sys
+
+from utils import baumwelch_method, fs_calculation,bs_calculation
 
 import smoothed as core
 from utils import *
@@ -887,53 +888,7 @@ def calculate_cdf(pmf, confidence_level):
     return lower_value, upper_value
 
 
-@jit(nopython=True)
-def baumwelch_method(n_states, n_obs_symbols, logPseq, fs, bs, scale, score, history, tr, emi, calc_tr, calc_emi):
-    score += logPseq
-    logf = np.log(fs)
-    logb = np.log(bs)
-    logGE = np.log(calc_emi)
-    logGTR = np.log(calc_tr)
 
-    for i in range(n_states):
-        for j in range(n_states):
-            for h in range(len(history) - 1):
-                scale_h1 = scale[0, h + 1]  # Pre-fetching to avoid complex indexing
-                tr[i, j] += np.exp(logf[i, h] + logGTR[i, j] + logGE[j, history[h + 1] - 1] + logb[j, h + 1]) / scale_h1
-
-    for i in range(n_states):
-        for j in range(n_obs_symbols):
-            # Create an empty list for indices where history == j + 1
-            pos_indices = []
-            for idx in range(len(history)):
-                if history[idx] == j + 1:
-                    pos_indices.append(idx)
-            
-            # Manually sum up values at the positions in pos_indices
-            for pos in pos_indices:
-                emi[i, j] += np.exp(logf[i, pos] + logb[i, pos])
-
-    return tr, emi
-
-
-@jit(nopython=True)
-def fs_calculation(n_states, end_traj, fs, s, history, calc_emi, calc_tr):
-    for count in range(1, end_traj):
-        for state in range(n_states):
-            fs[state, count] = calc_emi[state, history[count] - 1] * np.sum(fs[:, count - 1] * calc_tr[:, state])
-        # scale factor normalizes sum(fs,count) to be 1.
-        s[0, count] = np.sum(fs[:, count])
-        fs[:, count] = fs[:, count] / s[0, count]
-    return fs, s
-
-
-@jit(nopython=True)
-def bs_calculation(n_states, end_traj, bs, s, history, calc_emi, calc_tr):
-    for count in range(end_traj - 2, -1, -1):
-        for state in range(n_states):
-            bs[state, count] = (1 / s[0, count + 1]) * np.sum(
-                calc_tr[state, :].T * bs[:, count + 1] * calc_emi[:, history[count + 1] - 1])
-    return bs        
 
 
 class HMM:

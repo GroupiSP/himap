@@ -2,6 +2,8 @@ import numpy as np
 import pickle
 import json
 import pandas as pd
+from numba import jit
+
 
 class NumpyArrayEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -98,3 +100,52 @@ def fix_input_data(traj, f_value, obs_state_len, is_zero_indexed=True):
     for key in keys:
         traj[key].extend([f_value for _ in range(obs_state_len)])
     return traj
+
+
+@jit(nopython=True)
+def baumwelch_method(n_states, n_obs_symbols, logPseq, fs, bs, scale, score, history, tr, emi, calc_tr, calc_emi):
+    score += logPseq
+    logf = np.log(fs)
+    logb = np.log(bs)
+    logGE = np.log(calc_emi)
+    logGTR = np.log(calc_tr)
+
+    for i in range(n_states):
+        for j in range(n_states):
+            for h in range(len(history) - 1):
+                scale_h1 = scale[0, h + 1]  # Pre-fetching to avoid complex indexing
+                tr[i, j] += np.exp(logf[i, h] + logGTR[i, j] + logGE[j, history[h + 1] - 1] + logb[j, h + 1]) / scale_h1
+
+    for i in range(n_states):
+        for j in range(n_obs_symbols):
+            # Create an empty list for indices where history == j + 1
+            pos_indices = []
+            for idx in range(len(history)):
+                if history[idx] == j + 1:
+                    pos_indices.append(idx)
+
+            # Manually sum up values at the positions in pos_indices
+            for pos in pos_indices:
+                emi[i, j] += np.exp(logf[i, pos] + logb[i, pos])
+
+    return tr, emi
+
+
+@jit(nopython=True)
+def fs_calculation(n_states, end_traj, fs, s, history, calc_emi, calc_tr):
+    for count in range(1, end_traj):
+        for state in range(n_states):
+            fs[state, count] = calc_emi[state, history[count] - 1] * np.sum(fs[:, count - 1] * calc_tr[:, state])
+        # scale factor normalizes sum(fs,count) to be 1.
+        s[0, count] = np.sum(fs[:, count])
+        fs[:, count] = fs[:, count] / s[0, count]
+    return fs, s
+
+
+@jit(nopython=True)
+def bs_calculation(n_states, end_traj, bs, s, history, calc_emi, calc_tr):
+    for count in range(end_traj - 2, -1, -1):
+        for state in range(n_states):
+            bs[state, count] = (1 / s[0, count + 1]) * np.sum(
+                calc_tr[state, :].T * bs[:, count + 1] * calc_emi[:, history[count + 1] - 1])
+    return bs
