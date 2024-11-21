@@ -1,3 +1,5 @@
+import os
+
 from scipy.stats import multivariate_normal
 from scipy.special import logsumexp
 from sklearn import cluster
@@ -12,14 +14,13 @@ from scipy.signal import convolve
 import scipy.stats as stats
 from scipy.stats import norm
 from ab import _forward, _backward, _u_only
-import sys
-
-from utils import baumwelch_method, fs_calculation,bs_calculation
 
 import smoothed as core
-from utils import *
 
-np.seterr(invalid='ignore')
+from utils import *
+from plot import *
+
+np.seterr(invalid='ignore', divide='ignore')
 
 
 class HSMM:
@@ -30,6 +31,9 @@ class HSMM:
             raise ValueError("number of states (n_states) must be at least 2")
         if not n_durations >= 1:
             raise ValueError("number of durations (n_durations) must be at least 1")
+        if len(name) == 0:
+            name = f"hsmm"
+            print(f"Model name not provided. Default name: {name}")
 
         if obs_state_len is not None and f_value is not None:
             self.last_observed = True
@@ -39,6 +43,9 @@ class HSMM:
             raise ValueError("provide the observed state's length")
         else:
             self.last_observed = False
+
+        # create the folders
+        create_folders()
 
         self.max_len = None
         self.n_states = n_states
@@ -50,20 +57,14 @@ class HSMM:
         self.f_value = f_value
         self.random_state = random_state
         self.name = name
-        self._print_name = ""
-        self.oscillation = None
         self.score_per_iter = None
         self.score_per_sample = None
         self.bic_score = None
-        self.left_censor = 0
-        self.right_censor = 0
 
     # _init: initializes model parameters if there are none yet
     # if left_to_right is True then the first state has start probability=1 and the tmat has transition probability=1
     # only for i+1 state. Last state is observed
     def _init(self, X=None):
-        if self.name != "" and self._print_name == "":
-            self._print_name = f" ({self.name})"
         if not hasattr(self, "pi") and not self.left_to_right:
             self.pi = np.full(self.n_states, 1.0 / self.n_states)
         elif not hasattr(self, "pi") and self.left_to_right:
@@ -109,7 +110,7 @@ class HSMM:
         self._dur_check()
 
     # _dur_init: initializes duration parameters if there are none yet
-    def _dur_init(self):
+    def _dur_init(self, *args):
         """
         arguments: (self)
         return: None
@@ -118,7 +119,7 @@ class HSMM:
         pass  # implemented in subclass
 
     # _dur_check: checks if properties of duration parameters are satisfied
-    def _dur_check(self):
+    def _dur_check(self, *args):
         """
         arguments: (self)
         return: None
@@ -127,7 +128,7 @@ class HSMM:
         pass  # implemented in subclass
 
     # _dur_probmat: compute the probability per state of each duration
-    def _dur_probmat(self):
+    def _dur_probmat(self, *args):
         """
         arguments: (self)
         return: duration probability matrix
@@ -135,7 +136,7 @@ class HSMM:
         pass  # implemented in subclass
 
     # _dur_mstep: perform m-step for duration parameters
-    def _dur_mstep(self):
+    def _dur_mstep(self, *args):
         """
         arguments: (self, new_dur)
         return: None
@@ -144,7 +145,7 @@ class HSMM:
         pass  # implemented in subclass
 
     # _emission_logl: compute the log-likelihood per state of each observation
-    def _emission_logl(self):
+    def _emission_logl(self, *args):
         """
         arguments: (self, X)
         return: logframe
@@ -152,7 +153,7 @@ class HSMM:
         pass  # implemented in subclass
 
     # _emission_pre_mstep: prepare m-step for emission parameters
-    def _emission_pre_mstep(self):
+    def _emission_pre_mstep(self, *args):
         """
         arguments: (self, gamma, emission_var)
         return: None
@@ -161,7 +162,7 @@ class HSMM:
         pass  # implemented in subclass
 
     # _emission_mstep: perform m-step for emission parameters
-    def _emission_mstep(self):
+    def _emission_mstep(self, *args):
         """
         arguments: (self, X, emission_var)
         return: None
@@ -170,7 +171,7 @@ class HSMM:
         pass  # implemented in subclass
 
     # _state_sample: generate observation for given state
-    def _state_sample(self):
+    def _state_sample(self, *args):
         """
         arguments: (self, state, random_state=None)
         return: np.ndarray of length equal to dimension of observation
@@ -194,7 +195,7 @@ class HSMM:
         currstate = (pi_cdf > rnd_checked.random()).argmax()  # argmax() returns only the first occurrence
         currdur = (dur_cdf[currstate] > rnd_checked.random()).argmax() + 1
         if currdur > n_samples:
-            print(f"SAMPLE{self._print_name}: n_samples is too small to contain the first state duration.")
+            print(f"SAMPLE{self.name}: n_samples is too small to contain the first state duration.")
             return None
         state_sequence = [currstate] * currdur
         X = [self._state_sample(currstate, rnd_checked) for i in range(currdur)]  # generate observation
@@ -228,7 +229,7 @@ class HSMM:
         alpha = _forward(n_samples, self.n_states, self.n_durations,
                          log_mask_zero(self.pi),
                          log_mask_zero(self.tmat),
-                         logdur, self.left_censor, self.right_censor, eta, u, xi)
+                         logdur, 0, 0, eta, u, xi)
         return eta, xi, alpha
 
     # _core_backward: Python implementation
@@ -239,7 +240,7 @@ class HSMM:
         _backward(n_samples, self.n_states, self.n_durations,
                   log_mask_zero(self.pi),
                   log_mask_zero(self.tmat),
-                  logdur, self.right_censor, beta, u, betastar)
+                  logdur, 0, beta, u, betastar)
         return beta, betastar
 
     # _core_smoothed: The SLOWEST fnc if implemented in python
@@ -248,7 +249,7 @@ class HSMM:
         n_samples = beta.shape[0]
         gamma = np.empty((n_samples, self.n_states))
         core._smoothed(n_samples, self.n_states, self.n_durations,
-                       beta, betastar, self.right_censor, eta, xi, gamma)
+                       beta, betastar, 0, eta, xi, gamma)
         return gamma
 
     # _core_viterbi: container for core._viterbi (for multiple observation sequences)
@@ -257,7 +258,7 @@ class HSMM:
         state_sequence, state_logl = core._viterbi(n_samples, self.n_states, self.n_durations,
                                                    log_mask_zero(self.pi),
                                                    log_mask_zero(self.tmat),
-                                                   logdur, self.left_censor, self.right_censor, u)
+                                                   logdur, 0, 0, u)
         return state_sequence, state_logl
 
     # score: log-likelihood computation from observation series
@@ -384,21 +385,22 @@ class HSMM:
             ############################################################################################################
             # check for loop break
             if itera > 0 and abs(abs(score) - abs(old_score)) < self.tol:
-                print(f"\nFIT{self._print_name}: converged at loop {itera + 1} with score: {score}.")
+                print(f"\nFIT{self.name}: converged at loop {itera + 1} with score: {score}.")
                 break
             elif itera > 0 and (np.isnan(score) or np.isinf(score)):
                 print("\nThere is no possible solution. Try different parameters.")
                 break
-            # elif itera > 0 and score<old_score:
-            #     self.oscillation = True
+
             else:
                 score_per_iter.append(score)
                 old_score = score
 
             # save the previous version of the model prior to updating
             if save_iters:
-                with open('model_iter' + str(itera + 1) + '.txt', 'wb') as f:
+                path = os.path.join(os.getcwd(), 'results', 'models', f'{self.name}_iter_{str(itera + 1)}.txt')
+                with open(path, 'wb') as f:
                     pickle.dump(self, f)
+                    print(f"\nModel saved at {path}")
 
             # emission parameters re-estimation
             weight = mean_numerator - denominator
@@ -422,7 +424,7 @@ class HSMM:
             self.tmat[-1, :] = np.zeros(self.n_states)
             #
 
-            print(f"\nFIT{self._print_name}: re-estimation complete for loop {itera + 1} with score: {score}.")
+            print(f"\nFIT{self.name}: re-estimation complete for loop {itera + 1} with score: {score}.")
 
         score_per_sample = np.array(score_per_sample).reshape((-1, len(X))).T
         score_per_iter = np.array(score_per_iter).reshape(len(score_per_iter), 1)
@@ -430,9 +432,6 @@ class HSMM:
         if self.last_observed:
             self.dur[-1, self.obs_state_len] = 0
             self.dur[-1, self.obs_state_len - 1] = 1
-
-        if self.oscillation:
-            print("\nOscillation in the convergence detected. Different parameters may give better results.")
         # return fitted model for joblib
         self.score_per_iter = score_per_iter
         self.score_per_sample = score_per_sample
@@ -512,9 +511,9 @@ class HSMM:
 
         return self, bic
 
-    def RUL(self, viterbi_states, max_samples, path, equation=1, plot_rul=False, index=None):
+    def RUL(self, viterbi_states, max_samples, equation=1):
         """
-        :param path:
+        :param path: path for the results folder
         :param index:
         :param plot_rul:
         :param viterbi_states: Single history
@@ -610,26 +609,12 @@ class HSMM:
                 LB_RUL = np.hstack((np.delete(LB_RUL, LB_RUL == 0), np.array((0))))
                 break
 
-        true_RUL_v = len(viterbi_states) - 1
-        if plot_rul:
-            fig, ax = plt.subplots(figsize=(19, 10))
-            ax.plot([0, true_RUL_v], [true_RUL_v, 0], label='True RUL', color='black', linewidth=2)
-            ax.plot(mean_RUL, '--', label='Mean Predicted RUL', color='tab:red', linewidth=2)
-            ax.plot(UB_RUL, '-.', label='Lower Bound (90% CI)', color='tab:blue', linewidth=1)
-            ax.plot(LB_RUL, '-.', label='Upper Bound (90% CI)', color='tab:blue', linewidth=1)
-            ax.fill_between(np.arange(0, len(UB_RUL)), UB_RUL, LB_RUL, alpha=0.1, color='tab:blue')
-            fig.suptitle('RUL')
-            ax.legend(loc='best')
-            plt.savefig(path + f'figures/RUL_plot_Signal_{index + 1}.png', dpi=300)
-            plt.close()
+        return RUL, mean_RUL, UB_RUL, LB_RUL
 
-        return RUL, mean_RUL, UB_RUL, LB_RUL, true_RUL_v
-
-    def prognostics(self, data, technique, max_samples=None, plot_rul=False, equation=1):
+    def prognostics(self, data, max_samples=None, plot_rul=True, equation=1):
         """
         :param data: degradation histories
         :param max_samples: maximum length of RUL (default: 3000)
-        :param technique: 'cmapss' or 'mimic' for file name
         :param plot_rul: Display RUL plot for each sample
         :return: None, json files are saved for pdf_rul and mean_rul
         """
@@ -640,7 +625,7 @@ class HSMM:
                 lens.append(len(data[traj]))
 
             self.max_len = max(lens)
-        path = f"edhsmm/results/{technique}/"
+        path = os.path.join(os.getcwd(), 'results')
         data_list = []
         max_timesteps = self.max_len
         max_samples = ceil(max_timesteps * 10) if max_samples is None else max_samples
@@ -658,28 +643,8 @@ class HSMM:
                                                              last_state=self.n_states - 1)
             viterbi_list.append(viterbi_single_state)
 
-        pdf_ruls_all = {
-            f"traj_{j}": {
-                f"timestep_{i}": np.zeros((max_samples,)) for i in range(len(viterbi_list[j]))
-            }
-            for j in range(len(viterbi_list))
-        }
-
-        mean_rul_per_step = {
-            f"traj_{i}": np.zeros((len(viterbi_list[i], ))) for i in range(len(viterbi_list))
-        }
-
-        upper_rul_per_step = {
-            f"traj_{i}": np.zeros((len(viterbi_list[i], ))) for i in range(len(viterbi_list))
-        }
-
-        lower_rul_per_step = {
-            f"traj_{i}": np.zeros((len(viterbi_list[i], ))) for i in range(len(viterbi_list))
-        }
-
-        true_rul_v = {
-            f"traj_{i}": ""
-        }
+        pdf_ruls_all = {f"traj_{j}": {} for j in range(len(viterbi_list))}
+        mean_rul_per_step, upper_rul_per_step, lower_rul_per_step = {}, {}, {}
 
         for i in range(len(viterbi_states_all)):
             viterbi_single_state = get_single_history_states(viterbi_states_all,
@@ -687,26 +652,24 @@ class HSMM:
                                                              last_state=self.n_states - 1
                                                              )
             # viterbi_single_state=np.array(viterbi_single_state).reshape((len(viterbi_single_state),1))
-            RUL_pred, mean_RUL, UB_RUL, LB_RUL, true_rul = self.RUL(viterbi_single_state,
-                                                                    max_samples=max_samples,
-                                                                    equation=equation,
-                                                                    plot_rul=plot_rul,
-                                                                    index=i,
-                                                                    path=path,
-                                                                    )
+            RUL_pred, mean_RUL, UB_RUL, LB_RUL = self.RUL(viterbi_single_state,
+                                                          max_samples=max_samples,
+                                                          equation=equation,
+                                                          )
 
             for j in range(RUL_pred.shape[0]):
                 pdf_ruls_all[f"traj_{i}"][f"timestep_{j}"] = RUL_pred[j, :].copy()
                 mean_rul_per_step[f"traj_{i}"] = mean_RUL.copy()
                 upper_rul_per_step[f"traj_{i}"] = UB_RUL.copy()
                 lower_rul_per_step[f"traj_{i}"] = LB_RUL.copy()
-                true_rul_v[f"traj_{i}"] = true_rul
+            if plot_rul:
+                fig_path = os.path.join(path, 'figures', f'{self.name}_RUL_plot_traj_{i + 1}.png')
+                plot_ruls(mean_RUL, UB_RUL, LB_RUL, fig_path)
 
-        path_mean_rul = path + f"prognostics/mean_rul_per_step_{technique}.json"
-        path_pdf_rul = path + f"prognostics/pdf_ruls_{technique}.json"
-        path_upper_rul = path + f"prognostics/upper_ruls_{technique}.json"
-        path_lower_rul = path + f"prognostics/lower_ruls_{technique}.json"
-        path_true_rul = path + f"prognostics/true_ruls_{technique}.json"
+        path_mean_rul = os.path.join(path, 'dictionaries', f"mean_rul_per_step_{self.name}.json")
+        path_pdf_rul = os.path.join(path, 'dictionaries', f"pdf_ruls_{self.name}.json")
+        path_upper_rul = os.path.join(path, 'dictionaries', f"upper_ruls_{self.name}.json")
+        path_lower_rul = os.path.join(path, 'dictionaries', f"lower_ruls_{self.name}.json")
 
         with open(path_mean_rul, "w") as fp:
             json.dump(mean_rul_per_step, fp, cls=NumpyArrayEncoder)
@@ -720,16 +683,18 @@ class HSMM:
         with open(path_lower_rul, "w") as fp:
             json.dump(lower_rul_per_step, fp, cls=NumpyArrayEncoder)
 
-        with open(path_true_rul, "w") as fp:
-            json.dump(true_rul_v, fp, cls=NumpyArrayEncoder)
+        print(f"\nPrognostics complete. Results saved to: {path}")
+        if plot_rul:
+            print(f"\nRUL plots saved to: {os.path.join(path, 'dictionaries', 'figures')}")
 
-        print(f"Prognostics complete. Results saved to: {path}")
-
-    def save_model(self, path):
+    def save_model(self):
+        path = os.path.join(os.getcwd(), 'results', 'models', f'{self.name}.txt')
         with open(path, 'wb') as f:
             pickle.dump(self.__dict__, f)
+            print(f"Model saved to {path}.")
 
-    def load_model(self, path):
+    def load_model(self, model_name):
+        path = os.path.join(os.getcwd(), 'results', 'models', f'{model_name}.txt')
         with open(path, 'rb') as f:
             obj = pickle.load(f)
             self.__dict__.update(obj)
@@ -870,43 +835,26 @@ class GaussianHSMM(HSMM):
 
 
 ######HMM
-
-def calculate_expected_value(pmf_values):
-    expected_value = sum(x * p for x, p in enumerate(pmf_values))
-    return expected_value
-
-
-def calculate_cdf(pmf, confidence_level):
-    # Calculate the CDF
-    cdf = np.cumsum(pmf)
-    # Calculate the lower and upper percentiles
-    lower_percentile = (1 - confidence_level) / 2
-    upper_percentile = 1 - lower_percentile
-    lower_value = np.argmax(cdf >= lower_percentile)
-    upper_value = np.argmax(cdf >= upper_percentile)
-
-    return lower_value, upper_value
-
-
-
-
-
 class HMM:
     def __init__(self, n_states, n_obs_symbols, n_iter=20, tol=1e-2, left_to_right=False, name=""):
+        # create the folders
+        create_folders()
+
         if not n_states >= 2:
             raise ValueError("number of states (n_states) must be at least 2")
+        if len(name) == 0:
+            name = f"hmm"
+            print(f"Model name not provided. Default name: {name}")
+
+        self.max_len = None
         self.n_states = n_states
         self.n_iter = n_iter
         self.tol = tol
         self.left_to_right = left_to_right
         self.n_obs_symbols = n_obs_symbols
-        self.oscillation = None
         self.name = name
-        self._print_name = ""
 
     def _init(self, X=None):
-        if self.name != "" and self._print_name == "":
-            self._print_name = f" ({self.name})"
         if not hasattr(self, "ini_tr") and not self.left_to_right:
             self.ini_tr = np.full((self.n_states, self.n_states), 1.0 / (self.n_states))
 
@@ -929,6 +877,14 @@ class HMM:
                     self.ini_emi[row, column] = prob
             self.ini_emi[self.n_states - 1, self.n_obs_symbols - 1] = 1
 
+        if X is not None and self.max_len is None:
+            keys = list(X.keys())
+            lens = []
+            for traj in keys:
+                lens.append(len(X[traj]))
+
+            self.max_len = max(lens)
+
     def fit(self, X, return_all_scores=False, save_iters=False):
         self._init(X)
         tr = np.zeros(self.ini_tr.shape)
@@ -948,7 +904,8 @@ class HMM:
                 _, logPseq, fs, bs, scale = self.decode(history, calc_emi, calc_tr)
                 score += logPseq
                 history = np.concatenate([np.array([0]), history])
-                tr, emi = baumwelch_method(self.n_states, self.n_obs_symbols, logPseq, fs, bs, scale, score, history, tr, emi,
+                tr, emi = baumwelch_method(self.n_states, self.n_obs_symbols, logPseq, fs, bs, scale, score, history,
+                                           tr, emi,
                                            calc_tr, calc_emi)
             total_emissions = np.sum(emi, axis=1)
             total_transitions = np.sum(tr, axis=1)
@@ -963,15 +920,17 @@ class HMM:
             if (abs(score - old_score) / (1 + abs(old_score))) < self.tol and \
                     np.linalg.norm(calc_tr - old_tr, ord=np.inf) / self.n_states < self.tol and \
                     np.linalg.norm(calc_emi - old_emi, ord=np.inf) / self.n_obs_symbols < self.tol:
-                print(f"\nFIT{self._print_name}: converged at loop {itera + 1} with score: {score}.")
+                print(f"\nFIT{self.name}: converged at loop {itera + 1} with score: {score}.")
                 converged = True
                 self.tr = calc_tr
                 self.emi = calc_emi
                 break
 
             if save_iters:
-                with open('model_iter' + str(itera + 1) + '.txt', 'wb') as f:
+                path = os.path.join(os.getcwd(), 'results', 'models', f'{self.name}_iter_{str(itera + 1)}.txt')
+                with open(path, 'wb') as f:
                     pickle.dump(self, f)
+                    print(f"\nModel saved at {path}")
 
         if not converged:
             print("\nThere is no possible solution. Try different parameters.")
@@ -993,18 +952,18 @@ class HMM:
             f"model_{i}": None for i in range(len(states))
         }
 
-        n=0
+        n = 0
         for key in X.keys():
             history = X[key]
             n += len(history)
 
         for i, n_states in enumerate(states):
             hmm_model = HMM(n_states=n_states,
-                                n_obs_symbols=self.n_obs_symbols,
-                                n_iter=self.n_iter,
-                                tol=self.tol,
-                                left_to_right=self.left_to_right
-                                )
+                            n_obs_symbols=self.n_obs_symbols,
+                            n_iter=self.n_iter,
+                            tol=self.tol,
+                            left_to_right=self.left_to_right
+                            )
 
             _, score_iters = hmm_model.fit(X, return_all_scores=True)
             loglik = score_iters[-1]
@@ -1040,7 +999,6 @@ class HMM:
         return pStates, pSeq, fs, bs, s
 
     def sample(self):
-
         history = []
         states = []
         trc = np.cumsum(self.tr, axis=1)
@@ -1146,15 +1104,15 @@ class HMM:
             self.emi = emi
             return self
 
-    def RUL(self, estimatedStates, time_sample, confidence=0.95):
+    def RUL(self, estimatedStates, max_samples, confidence=0.95):
         N = max(estimatedStates) - 1
-        rul_matrix = np.zeros((len(estimatedStates), time_sample))
+        rul_matrix = np.zeros((len(estimatedStates), max_samples))
         prev_state = 0  # aux variable
         tau = 0
         for i in range(len(estimatedStates)):
             current_state = estimatedStates[i] - 1
             if current_state == N:
-                rul_matrix[i, :] = np.zeros(time_sample)
+                rul_matrix[i, :] = np.zeros(max_samples)
             else:
                 if prev_state == current_state:
                     tau += 1
@@ -1163,7 +1121,7 @@ class HMM:
                     tau = 1
                 a_ii = self.tr[current_state, current_state]
                 a_next = self.tr[current_state + 1, current_state + 1]
-                x_d_i = np.arange(0, time_sample)
+                x_d_i = np.arange(0, max_samples)
                 param_tau = geom.cdf(tau, 1 - a_ii)
                 d_i = geom.pmf(x_d_i, 1 - a_ii)
                 mod_d_i = np.zeros(len(d_i))
@@ -1176,22 +1134,21 @@ class HMM:
                 for j in range(current_state + 1, N):
                     d_j = geom.pmf(x_d_i, 1 - self.tr[j, j])
                     mod_d_i = convolve(mod_d_i, d_j, mode='full')
-                mod_d_i = convolve(mod_d_i, normal_gaussian, mode='full')[:time_sample]
+                mod_d_i = convolve(mod_d_i, normal_gaussian, mode='full')[:max_samples]
                 sum_conv = geom.pmf(x_d_i, 1 - a_next)
                 for j in range(current_state + 2, N):
                     d_j = geom.pmf(x_d_i, 1 - self.tr[j, j])
                     sum_conv = convolve(sum_conv, d_j, mode='full')
-                sum_conv = convolve(sum_conv, normal_gaussian, mode='full')[:time_sample]
+                sum_conv = convolve(sum_conv, normal_gaussian, mode='full')[:max_samples]
                 if current_state == N - 1:
-                    rul_matrix[i, :] = (1 - param_tau) * mod_d_i[:time_sample] + param_tau * normal_gaussian
+                    rul_matrix[i, :] = (1 - param_tau) * mod_d_i[:max_samples] + param_tau * normal_gaussian
                 else:
-                    first_term = (1 - param_tau) * mod_d_i[:time_sample]
-                    second_term = param_tau * sum_conv[:time_sample]
+                    first_term = (1 - param_tau) * mod_d_i[:max_samples]
+                    second_term = param_tau * sum_conv[:max_samples]
                     rul_current = first_term + second_term
                     rul_matrix[i, :] = rul_current
-        rul_mean = []
-        rul_upper_bound = []
-        rul_lower_bound = []
+        rul_mean, rul_upper_bound, rul_lower_bound = [], [], []
+
         for i in range(rul_matrix.shape[0]):
             rul_pdf_current = rul_matrix[i, :]
             rul_value = calculate_expected_value(rul_pdf_current)
@@ -1205,29 +1162,56 @@ class HMM:
                 lower_bound, upper_bound = calculate_cdf(rul_pdf_current, confidence)
                 rul_upper_bound.append(upper_bound)
                 rul_lower_bound.append(lower_bound)
-        return rul_mean, rul_upper_bound, rul_lower_bound
+        return rul_mean, rul_upper_bound, rul_lower_bound, rul_matrix
 
-    def prognostics(self, data, time_sample=2000, plot_rul=False):
-        rul_mean_all = {}
-        rul_upper_bound_all = {}
-        rul_lower_bound_all = {}
-        for k in data.keys():
+    def prognostics(self, data, max_samples=None, plot_rul=False):
+        path = os.path.join(os.getcwd(), 'results')
+        max_samples = ceil(self.max_len * 10) if max_samples is None else max_samples
+        rul_mean_all, rul_upper_bound_all, rul_lower_bound_all = {}, {}, {}
+        pdf_ruls_all = {f"traj_{i}": {} for i in range(
+            len(data))}  # different initialization due to the structure of the dictionary cointaining the timesteps
+        for index, k in enumerate(data.keys()):
             viterbi = self.predict(data[k])
-            rul_mean, rul_upper, rul_lower = self.RUL(viterbi, time_sample)
+            rul_mean, rul_upper, rul_lower, rul_pdf = self.RUL(viterbi, max_samples)
             rul_mean_all[k] = rul_mean
             rul_upper_bound_all[k] = rul_upper
             rul_lower_bound_all[k] = rul_lower
-            if plot_rul:
-                plt.figure(figsize=(10, 6))
-                plt.plot(rul_mean, linewidth=3, color='blue', label='Predicted')
-                plt.plot(range(len(data[k]), 0, -1), color='black', linewidth=2.5, linestyle='dashed', label='Real')
-                plt.fill_between(range(len(rul_mean)), rul_lower, rul_upper, color='blue', alpha=0.2)
-                plt.xlim(0, max(range(len(rul_mean))))
-                plt.ylim(0, max(rul_upper))
-                plt.xlabel('Time [s]')
-                plt.ylabel('RUL')
-                plt.tick_params(axis='both', which='both')
-                plt.legend()
-                plt.show(block=True)
-        return rul_mean_all, rul_upper_bound_all, rul_lower_bound_all
+            for j in range(len(rul_mean)):
+                pdf_ruls_all[k][f'timestep_{j}'] = rul_pdf[j, :]
 
+            if plot_rul:
+                fig_path = os.path.join(path, 'figures', f'{self.name}_RUL_plot_traj_{index + 1}.png')
+                plot_ruls(rul_mean, rul_upper, rul_lower, fig_path)
+
+        path_mean_rul = os.path.join(path, 'dictionaries', f"mean_rul_per_step_{self.name}.json")
+        path_pdf_rul = os.path.join(path, 'dictionaries', f"pdf_ruls_{self.name}.json")
+        path_upper_rul = os.path.join(path, 'dictionaries', f"upper_ruls_{self.name}.json")
+        path_lower_rul = os.path.join(path, 'dictionaries', f"lower_ruls_{self.name}.json")
+
+        with open(path_mean_rul, "w") as fp:
+            json.dump(rul_mean_all, fp, cls=NumpyArrayEncoder)
+
+        with open(path_pdf_rul, "w") as fp:
+            json.dump(pdf_ruls_all, fp, cls=NumpyArrayEncoder)
+
+        with open(path_upper_rul, "w") as fp:
+            json.dump(rul_upper_bound_all, fp, cls=NumpyArrayEncoder)
+
+        with open(path_lower_rul, "w") as fp:
+            json.dump(rul_lower_bound_all, fp, cls=NumpyArrayEncoder)
+
+        print(f"\nPrognostics complete. Results saved to: {os.path.join(path, 'dictionaries')}")
+        if plot_rul:
+            print(f"\nRUL plots saved to: {os.path.join(path, 'dictionaries', 'figures')}")
+
+    def save_model(self):
+        path = os.path.join(os.getcwd(), 'results', 'models', f'{self.name}.txt')
+        with open(path, 'wb') as f:
+            pickle.dump(self.__dict__, f)
+            print(f"Model saved to {path}.")
+
+    def load_model(self, model_name):
+        path = os.path.join(os.getcwd(), 'results', 'models', f'{model_name}.txt')
+        with open(path, 'rb') as f:
+            obj = pickle.load(f)
+            self.__dict__.update(obj)

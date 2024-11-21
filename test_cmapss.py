@@ -27,5 +27,23 @@ for i, unit in enumerate(test_units):
     seqs_test[f'traj_{i}'] = seq_unit
 
 hmm_c = HMM(n_states=5, n_obs_symbols=21, left_to_right=True)
-hmm_c.fit(seqs_train)
-rul_mean_all, rul_upper_bound, rul_lower_bound = hmm_c.prognostics(seqs_test, plot_rul=True)
+hmm_c.fit(seqs_train,save_iters=False)
+hmm_c.save_model()
+hmm_c.prognostics(seqs_test, plot_rul=True)
+
+# path_mean_rul = os.path.join(os.getcwd(), 'results', 'dictionaries', f"mean_rul_per_step_hsmm.json")
+# path_pdf_rul = os.path.join(os.getcwd(), 'results', 'dictionaries', f"pdf_ruls_hsmm.json")
+# path_upper_rul = os.path.join(os.getcwd(), 'results', 'dictionaries', f"upper_ruls_hsmm.json")
+# path_lower_rul = os.path.join(os.getcwd(), 'results', 'dictionaries', f"lower_ruls_hsmm.json")
+#
+# with open(path_mean_rul, "r") as fp:
+#     rul_mean_all=json.load( fp)
+#
+# with open(path_pdf_rul, "r") as fp:
+#     pdf_ruls_all=json.load( fp)
+#
+# with open(path_upper_rul, "r") as fp:
+#     rul_upper_bound_all=json.load( fp)
+#
+# with open(path_lower_rul, "r") as fp:
+#     rul_lower_bound_all=json.load( fp)

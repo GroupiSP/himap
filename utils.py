@@ -3,6 +3,7 @@ import pickle
 import json
 import pandas as pd
 from numba import jit
+import os
 
 
 class NumpyArrayEncoder(json.JSONEncoder):
@@ -149,3 +150,44 @@ def bs_calculation(n_states, end_traj, bs, s, history, calc_emi, calc_tr):
             bs[state, count] = (1 / s[0, count + 1]) * np.sum(
                 calc_tr[state, :].T * bs[:, count + 1] * calc_emi[:, history[count + 1] - 1])
     return bs
+
+
+def calculate_expected_value(pmf_values):
+    expected_value = sum(x * p for x, p in enumerate(pmf_values))
+    return expected_value
+
+
+def calculate_cdf(pmf, confidence_level):
+    # Calculate the CDF
+    cdf = np.cumsum(pmf)
+    # Calculate the lower and upper percentiles
+    lower_percentile = (1 - confidence_level) / 2
+    upper_percentile = 1 - lower_percentile
+    lower_value = np.argmax(cdf >= lower_percentile)
+    upper_value = np.argmax(cdf >= upper_percentile)
+
+    return lower_value, upper_value
+
+
+def create_folders():
+    """
+    Create folders and subfolders for results
+    :return: None
+    """
+
+    def create_folder(path):
+        if not os.path.exists(path):
+            os.makedirs(path)
+            print(f"Created folder: {path}")
+        else:
+            print(f"Folder already exists: {path}")
+
+    # Create folders
+    folder_path = os.path.join(os.getcwd(), "results")
+    create_folder(folder_path)
+
+    subfolder_names = ["dictionaries", "figures", "models"]
+
+    for subfolder_name in subfolder_names:
+        subfolder_path = os.path.join(os.getcwd(), "results", subfolder_name)
+        create_folder(subfolder_path)

@@ -29,20 +29,19 @@ if mc_sampling:
 
     hsmm_estim = GaussianHSMM(n_states=6,
                               n_durations=140,
-                              n_iter=0,
+                              n_iter=2,
                               tol=0.5,
                               f_value=60,
                               obs_state_len=10,
                               left_to_right=True
                              )
 
-    #_, _, score = hsmm_estim.fit(obs) this line of code doesnt run like this
-    _, _, score = hsmm_estim.fit(obs, return_all_scores=True)
-    
+    hsmm_estim.fit(obs, save_iters=True)
+
+    hsmm_estim.save_model()
 
     # fit with bic command
     # hsmm_estim, models, bic = hsmm_estim.fit_bic(obs, states=[2, 3, 4, 5, 6, 7, 8], return_models=True)
 
-    mean_ruls, lower_ruls, upper_ruls = hsmm_estim.prognostics(obs,
-                                                               max_timesteps=600
-                                                               )
+    hsmm_estim.prognostics(obs, plot_rul=True)
+
