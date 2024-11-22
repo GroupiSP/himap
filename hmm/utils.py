@@ -103,6 +103,80 @@ def fix_input_data(traj, f_value, obs_state_len, is_zero_indexed=True):
         traj[key].extend([f_value for _ in range(obs_state_len)])
     return traj
 
+def get_rmse(mean_rul_dict, true_rul_dict):
+    df_results = pd.DataFrame(columns=['Name', 'rmse'])
+    for key in mean_rul_dict.keys():
+        predicted_values = mean_rul_dict[key]
+        true_rul = true_rul_dict[key]
+        true_values = list(range(true_rul, -1, -1))
+        # Pad with zeros to ensure both arrays are the same length
+        max_length = max(len(true_values), len(predicted_values))
+        true_values = np.pad(true_values, (0, max_length - len(true_values)), constant_values=0)
+        predicted_values = np.pad(predicted_values, (0, max_length - len(predicted_values)), constant_values=0)
+
+        # Calculate RMSE
+        rmse_pred = np.sqrt(np.mean((predicted_values - true_values)**2))
+        
+        # Append to dataframe
+        df_results = df_results.append({'Name': key, 'rmse': rmse_pred}, ignore_index=True)
+    
+    # Calculate and append the average coverage
+    average_rmse = df_results['rmse'].mean()
+    df_results = df_results.append({'Name': 'Average', 'rmse': average_rmse}, ignore_index=True)
+    return df_results
+
+def get_coverage(upper_bound_dict, lower_bound_dict, true_rul_dict):
+    df_results = pd.DataFrame(columns=['Name', 'coverage'])
+    for key in upper_bound_dict.keys():
+        upper_bounds = upper_bound_dict[key]
+        lower_bounds = lower_bound_dict[key]
+        true_values = list(range(true_rul_dict[key], -1, -1))
+        # Count the number of true values within the bounds
+        count_within_bounds = sum(
+            l <= t <= u for t, l, u in zip(true_values, lower_bounds, upper_bounds)
+        )
+        cov = count_within_bounds / len(true_values)
+        # Append a new row to the dataframe
+        df_results = df_results.append({'Name': key, 'coverage': cov}, ignore_index=True)
+    
+    # Calculate and append the average coverage
+    average_coverage = df_results['coverage'].mean()
+    df_results = df_results.append({'Name': 'Average', 'coverage': average_coverage}, ignore_index=True)
+    return df_results
+
+def calculate_area_weighted_by_time(x_values, y_values):
+    area = 0
+    for i in range(1, len(x_values)):
+        interval = x_values[i] - x_values[0]
+        area += interval * (y_values[i] + y_values[i-1]) / 2
+    return area
+
+def get_wsu(upper_bound_dict, lower_bound_dict):
+    df_results = pd.DataFrame(columns=['Name', 'wsu'])
+    for key in upper_bound_dict.keys():
+        upper_bounds = upper_bound_dict[key]
+        lower_bounds = lower_bound_dict[key]
+        area_upper =  calculate_area_weighted_by_time(range(len(upper_bounds)), upper_bounds)
+        area_lower = calculate_area_weighted_by_time(range(len(lower_bounds)), lower_bounds)
+        area_wsu = area_upper - area_lower
+        df_results = df_results.append({'Name': key, 'wsu': area_wsu}, ignore_index=True)
+    
+    # Calculate and append the average coverage
+    average_wsu = df_results['wsu'].mean()
+    df_results = df_results.append({'Name': 'Average', 'wsu': average_wsu}, ignore_index=True)
+    return df_results
+
+def evaluate_test_set(mean_rul_dict, upper_bound_dict, lower_bound_dict, true_rul_dict):
+    df_rmse = get_rmse(mean_rul_dict, true_rul_dict)
+    df_coverage = get_coverage(upper_bound_dict, lower_bound_dict, true_rul_dict)
+    df_wsu = get_wsu(upper_bound_dict, lower_bound_dict)
+    # Merge the dataframes on the 'name' column
+    combined_df = pd.merge(df_rmse, df_coverage, on='Name')
+    combined_df = pd.merge(combined_df, df_wsu, on='Name')
+    return combined_df   
+
+        
+
 
 @jit(nopython=True)
 def baumwelch_method(n_states, n_obs_symbols, logPseq, fs, bs, scale, score, history, tr, emi, calc_tr, calc_emi):

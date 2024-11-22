@@ -33,7 +33,7 @@ for i, unit in enumerate(test_units):
 hmm_c = HMM(n_states=5, n_obs_symbols=21, left_to_right=True)
 hmm_c.fit(seqs_train,save_iters=False)
 hmm_c.save_model()
-hmm_c.prognostics(seqs_test, plot_rul=True)
+hmm_c.prognostics(seqs_test, plot_rul=False, get_metrics=True)
 
 #these lines are for loading the saved results for debugging
 

@@ -613,7 +613,7 @@ class HSMM:
 
         return RUL, mean_RUL, UB_RUL, LB_RUL
 
-    def prognostics(self, data, max_samples=None, plot_rul=True, equation=1):
+    def prognostics(self, data, max_samples=None, plot_rul=True, get_metrics=True, equation=1):
         """
         :param data: degradation histories
         :param max_samples: maximum length of RUL (default: 3000)
@@ -667,6 +667,11 @@ class HSMM:
             if plot_rul:
                 fig_path = os.path.join(path, 'figures', f'{self.name}_RUL_plot_traj_{i + 1}.png')
                 plot_ruls(mean_RUL, UB_RUL, LB_RUL, fig_path)
+            if get_metrics:
+                true_rul_dict = {}
+                for key in mean_rul_per_step.keys():
+                    true_rul[key] = len(mean_rul_per_step[key])
+                df_results = evaluate_test_set(mean_rul_per_step, upper_rul_per_step, lower_rul_per_step, true_rul_dict)
 
         path_mean_rul = os.path.join(path, 'dictionaries', f"mean_rul_per_step_{self.name}.json")
         path_pdf_rul = os.path.join(path, 'dictionaries', f"pdf_ruls_{self.name}.json")
@@ -688,6 +693,11 @@ class HSMM:
         print(f"\nPrognostics complete. Results saved to: {path}")
         if plot_rul:
             print(f"\nRUL plots saved to: {os.path.join(path, 'dictionaries', 'figures')}")
+            
+        if get_metrics:
+            df_results.to_csv(f'{path}/df_results.csv', index=False)
+            print(f'\n Metrics saved to: {path}')
+            print(f'\n {df_results}')
 
     def save_model(self):
         path = os.path.join(os.getcwd(), 'results', 'models', f'{self.name}.txt')
@@ -1166,7 +1176,7 @@ class HMM:
                 rul_lower_bound.append(lower_bound)
         return rul_mean, rul_upper_bound, rul_lower_bound, rul_matrix
 
-    def prognostics(self, data, max_samples=None, plot_rul=False):
+    def prognostics(self, data, max_samples=None, plot_rul=True, get_metrics=True):
         path = os.path.join(os.getcwd(), 'results')
         max_samples = ceil(self.max_len * 10) if max_samples is None else max_samples
         rul_mean_all, rul_upper_bound_all, rul_lower_bound_all = {}, {}, {}
@@ -1184,6 +1194,11 @@ class HMM:
             if plot_rul:
                 fig_path = os.path.join(path, 'figures', f'{self.name}_RUL_plot_traj_{index + 1}.png')
                 plot_ruls(rul_mean, rul_upper, rul_lower, fig_path)
+        if get_metrics:
+            true_rul_dict = {}
+            for key in rul_mean_all.keys():
+                true_rul_dict[key] = len(rul_mean_all[key])
+            df_results = evaluate_test_set(rul_mean_all, rul_upper_bound_all, rul_lower_bound_all, true_rul_dict)
 
         path_mean_rul = os.path.join(path, 'dictionaries', f"mean_rul_per_step_{self.name}.json")
         path_pdf_rul = os.path.join(path, 'dictionaries', f"pdf_ruls_{self.name}.json")
@@ -1205,6 +1220,11 @@ class HMM:
         print(f"\nPrognostics complete. Results saved to: {os.path.join(path, 'dictionaries')}")
         if plot_rul:
             print(f"\nRUL plots saved to: {os.path.join(path, 'dictionaries', 'figures')}")
+            
+        if get_metrics:
+            df_results.to_csv(f'{path}/df_results.csv', index=False)
+            print(f'\n Metrics saved to: {path}')
+            print(f'\n {df_results}')
 
     def save_model(self):
         path = os.path.join(os.getcwd(), 'results', 'models', f'{self.name}.txt')
