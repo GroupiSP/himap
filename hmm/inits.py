@@ -1,6 +1,8 @@
 import numpy as np
 import scipy.stats
 
+#todo: documentation for all of the functions
+#todo: clean up and simplify the functions, erase redundant code
 
 def init4MC(hsmm_class):
     # initial probability

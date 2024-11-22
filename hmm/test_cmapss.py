@@ -4,6 +4,10 @@ Created on Thu Oct 31 15:25:54 2024
 
 @author: msalinascamus
 """
+#todo: add the mc sampling choice
+#todo:add the hsmm choice for both cmapss and mc sampling
+#todo: use the parser.args for the choice
+#todo: maybe transfer the first lines for the data processing to utils and call it from here
 
 import pandas as pd
 from base import *
@@ -30,6 +34,8 @@ hmm_c = HMM(n_states=5, n_obs_symbols=21, left_to_right=True)
 hmm_c.fit(seqs_train,save_iters=False)
 hmm_c.save_model()
 hmm_c.prognostics(seqs_test, plot_rul=True)
+
+#these lines are for loading the saved results for debugging
 
 # path_mean_rul = os.path.join(os.getcwd(), 'results', 'dictionaries', f"mean_rul_per_step_hsmm.json")
 # path_pdf_rul = os.path.join(os.getcwd(), 'results', 'dictionaries', f"pdf_ruls_hsmm.json")

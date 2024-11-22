@@ -5,6 +5,7 @@ import pandas as pd
 from numba import jit
 import os
 
+#todo: documentation for all of the functions
 
 class NumpyArrayEncoder(json.JSONEncoder):
     def default(self, obj):

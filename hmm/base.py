@@ -22,6 +22,8 @@ from plot import *
 
 np.seterr(invalid='ignore', divide='ignore')
 
+#todo: documentation for all of the functions
+#todo: add the option for calculating the metrics for the RUL (it would be nice if the funcs for calculating them are in utils
 
 class HSMM:
     def __init__(self, n_states=2, n_durations=5, n_iter=20, tol=1e-2, left_to_right=False, obs_state_len=None,

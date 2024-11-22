@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 
+#todo: documentation for all of the functions
 
 def plot_multiple_observ(obs, states, num2plot):
     '''
