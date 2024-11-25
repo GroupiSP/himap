@@ -116,13 +116,13 @@ def get_rmse(mean_rul_dict, true_rul_dict):
 
         # Calculate RMSE
         rmse_pred = np.sqrt(np.mean((predicted_values - true_values)**2))
-        
-        # Append to dataframe
-        df_results = df_results.append({'Name': key, 'rmse': rmse_pred}, ignore_index=True)
+        new_row = pd.DataFrame([{'Name':key, 'rmse':rmse_pred}])
+        df_results = pd.concat([df_results, new_row], ignore_index=True)
     
     # Calculate and append the average coverage
     average_rmse = df_results['rmse'].mean()
-    df_results = df_results.append({'Name': 'Average', 'rmse': average_rmse}, ignore_index=True)
+    new_row = pd.DataFrame([{'Name':'Average', 'rmse':average_rmse}])
+    df_results = pd.concat([df_results, new_row], ignore_index=True)
     return df_results
 
 def get_coverage(upper_bound_dict, lower_bound_dict, true_rul_dict):
@@ -136,12 +136,12 @@ def get_coverage(upper_bound_dict, lower_bound_dict, true_rul_dict):
             l <= t <= u for t, l, u in zip(true_values, lower_bounds, upper_bounds)
         )
         cov = count_within_bounds / len(true_values)
-        # Append a new row to the dataframe
-        df_results = df_results.append({'Name': key, 'coverage': cov}, ignore_index=True)
-    
+        new_row = pd.DataFrame([{'Name':key,'coverage':cov}])
+        df_results = pd.concat([df_results, new_row], ignore_index=True)
     # Calculate and append the average coverage
     average_coverage = df_results['coverage'].mean()
-    df_results = df_results.append({'Name': 'Average', 'coverage': average_coverage}, ignore_index=True)
+    new_row = pd.DataFrame([{'Name':'Average','coverage':average_coverage}])
+    df_results = pd.concat([df_results, new_row], ignore_index=True)
     return df_results
 
 def calculate_area_weighted_by_time(x_values, y_values):
@@ -159,11 +159,13 @@ def get_wsu(upper_bound_dict, lower_bound_dict):
         area_upper =  calculate_area_weighted_by_time(range(len(upper_bounds)), upper_bounds)
         area_lower = calculate_area_weighted_by_time(range(len(lower_bounds)), lower_bounds)
         area_wsu = area_upper - area_lower
-        df_results = df_results.append({'Name': key, 'wsu': area_wsu}, ignore_index=True)
+        new_row = pd.DataFrame([{'Name':key,'wsu':area_wsu}])
+        df_results = pd.concat([df_results, new_row], ignore_index=True)
     
     # Calculate and append the average coverage
     average_wsu = df_results['wsu'].mean()
-    df_results = df_results.append({'Name': 'Average', 'wsu': average_wsu}, ignore_index=True)
+    new_row = pd.DataFrame([{'Name':'Average','wsu':average_wsu}])
+    df_results = pd.concat([df_results, new_row], ignore_index=True)
     return df_results
 
 def evaluate_test_set(mean_rul_dict, upper_bound_dict, lower_bound_dict, true_rul_dict):

@@ -670,8 +670,8 @@ class HSMM:
             if get_metrics:
                 true_rul_dict = {}
                 for key in mean_rul_per_step.keys():
-                    true_rul[key] = len(mean_rul_per_step[key])
-                df_results = evaluate_test_set(mean_rul_per_step, upper_rul_per_step, lower_rul_per_step, true_rul_dict)
+                    true_rul_dict[key] = len(mean_rul_per_step[key])
+                df_results = evaluate_test_set(mean_rul_per_step, lower_rul_per_step, upper_rul_per_step, true_rul_dict)
 
         path_mean_rul = os.path.join(path, 'dictionaries', f"mean_rul_per_step_{self.name}.json")
         path_pdf_rul = os.path.join(path, 'dictionaries', f"pdf_ruls_{self.name}.json")
