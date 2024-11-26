@@ -5,9 +5,11 @@ import pandas as pd
 from numba import jit
 import os
 
-#todo: documentation for all of the functions
 
 class NumpyArrayEncoder(json.JSONEncoder):
+    '''
+    Custom JSON encoder to handle numpy.ndarray and numpy.integer objects for serialization.
+    '''
     def default(self, obj):
         if isinstance(obj, np.ndarray):
             return obj.tolist()
@@ -18,10 +20,17 @@ class NumpyArrayEncoder(json.JSONEncoder):
 
 def create_data_hsmm(files, obs_state_len, f_value):
     """
-    function to build degradation history array
-    :param files: list of csv files of histories
-    :param max_len: maximum length of histories
-    :return: obs matrix ready for hsmm model
+    Builds a degradation history matrix from a list of CSV files for the Hidden Semi-Markov Model (HSMM).
+    
+    Parameters
+    ----------
+    :files (List[str]): list of csv files of histories
+    :obs_state_len (int): The number of observations to append at the end of each trajectory.
+    :f_value (int): The value to append to the end of each trajectory for obs_state_len times.
+    
+    Returns
+    ------
+    :traj (dict[str, List[int]]): A dictionary where each key is a trajectory name (e.g., 'traj_0') and each value is a list of observed states.
     """
 
     traj = {f"traj_{i}": list(pd.read_csv(files[i], usecols=[0])['clusters']) for i in range(len(files))}
@@ -30,6 +39,22 @@ def create_data_hsmm(files, obs_state_len, f_value):
 
 
 def MC_sampling(num, timesteps, HSMM):
+    '''
+    Performs Monte Carlo sampling using the Hidden Semi-Markov Model (HSMM).
+
+    Parameters
+    ----------
+    :num (int): Number of samples to generate.
+    :timesteps (int): Number of timesteps for each sample.
+    :HSMM (HSMM): The HSMM model object used for sampling.
+
+    Returns
+    -------
+    :obs (dict[str, List[int]]): A dictionary with trajectory observations.
+    :states (dict[str, List[int]]): A dictionary with the corresponding states for each trajectory.
+    :means (List[float]): A list of mean values from the HSMM model.
+    '''
+    
     obs, states = {}, {}
 
     for i in range(num):
@@ -49,11 +74,36 @@ def MC_sampling(num, timesteps, HSMM):
 
 # masks error when applying log(0)
 def log_mask_zero(a):
+    '''
+    Applies a logarithm to the input a, masking zero values (avoiding errors when taking the log of zero).
+    
+    Parameters
+    ----------
+    a (np.ndarray or float): The input array or value.
+
+    Returns
+    -------
+    np.ndarray or float: The log of a, with zero values masked.
+    '''
+    
     with np.errstate(divide="ignore", invalid='ignore'):
         return np.log(a)
 
 
 def get_single_history(data, index):
+    '''
+    Retrieves a single history from a data matrix and reshapes it.
+
+    Parameters
+    ----------
+    :data (np.ndarray): A 2D array containing multiple histories (shape: [num_trajectories, history_length]).
+    :index (int): The index of the desired history.
+
+    Returns
+    -------
+    :history (np.ndarray): A reshaped 1D array of the selected history, excluding all-zero rows.
+    '''
+    
     history = data[index, :].reshape((data.shape[1], 1))
     history = history[~np.all(history == 0, axis=1)]
 
@@ -61,6 +111,20 @@ def get_single_history(data, index):
 
 
 def get_single_history_states(states, index, last_state):
+    '''
+    Retrieves the states corresponding to a specific trajectory up to the point where the state equals last_state.
+
+    Parameters
+    ----------
+    :states (List[List[int]]): A list of lists, where each inner list contains the states for a trajectory.
+    :index (int): The index of the desired trajectory.
+    :last_state (int): The last state to be included in the history.
+
+    Returns
+    -------
+    :history_states (List[int]): The list of states from the start to the point where last_state is found.
+    '''
+    
     history_states = states[index]
 
     for j in range(len(history_states)):
@@ -71,6 +135,19 @@ def get_single_history_states(states, index, last_state):
 
 
 def get_viterbi(HSMM, data):
+    '''
+    Applies the Viterbi algorithm to predict the most probable states for each trajectory in data using the HSMM.
+
+    Parameters
+    ----------
+    :HSMM (HSMM): The trained Hidden Semi-Markov Model used to predict states.
+    :data (dict[str, List[int]]): A dictionary of trajectories where each key is a trajectory name and each value is a list of observations.
+
+    Returns
+    -------
+    :results (List[List[int]]): A list of lists containing the predicted states for each trajectory.
+    '''
+    
     results = []
     keys = list(data.keys())
     for i in range(len(data)):
@@ -83,14 +160,19 @@ def get_viterbi(HSMM, data):
 
 def fix_input_data(traj, f_value, obs_state_len, is_zero_indexed=True):
     """
-    This function is used to fix the input data for the HSMM model. It appends the f_value to the end of each trajectory
-    for the number of obs_state_len times. It also adds 1 to each value in the trajectory if is_zero_indexed is True.
+    Prepares trajectory data for input into the HSMM model by appending f_value and adjusting indexing if needed.
 
-    :param traj:
-    :param f_value:
-    :param obs_state_len:
-    :param is_zero_indexed:
-    :return:
+    Parameters
+    ----------
+
+    :traj (dict[str, List[int]]): A dictionary containing the trajectories as lists of observed states.
+    :f_value (int): The value to append to each trajectory.
+    :obs_state_len (int): The number of times to append f_value to each trajectory.
+    :is_zero_indexed (bool): Flag indicating whether the data is zero-indexed. Default is True.
+    
+    Returns
+    -------
+    :traj (dict[str, List[int]]): The modified trajectory dictionary with f_value appended and indexing adjusted if necessary.
     """
     assert isinstance(traj, dict), "Input data must be a dictionary"
 
@@ -104,6 +186,19 @@ def fix_input_data(traj, f_value, obs_state_len, is_zero_indexed=True):
     return traj
 
 def get_rmse(mean_rul_dict, true_rul_dict):
+    '''
+    Computes the Root Mean Square Error (RMSE) between predicted Remaining Useful Life (RUL) and true RUL.
+
+    Parameters
+    ----------
+    :mean_rul_dict (dict[str, List[float]]): A dictionary where each key is a trajectory name and the value is the list of predicted RUL values.
+    :true_rul_dict (dict[str, int]): A dictionary where each key is a trajectory name and the value is the true RUL for that trajectory.
+
+    Returns
+    -------
+    :df_results (pd.DataFrame): A DataFrame containing RMSE values for each trajectory, including the average RMSE.
+    '''
+    
     df_results = pd.DataFrame(columns=['Name', 'rmse'])
     for key in mean_rul_dict.keys():
         predicted_values = mean_rul_dict[key]
@@ -126,6 +221,20 @@ def get_rmse(mean_rul_dict, true_rul_dict):
     return df_results
 
 def get_coverage(upper_bound_dict, lower_bound_dict, true_rul_dict):
+    '''
+    Calculates the coverage of true RUL values within the predicted upper and lower bounds.
+
+    Parameters
+    ----------
+    :upper_bound_dict (dict[str, List[float]]): A dictionary where each key is a trajectory name and the value is the list of upper bounds for predicted RUL.
+    :lower_bound_dict (dict[str, List[float]]): A dictionary where each key is a trajectory name and the value is the list of lower bounds for predicted RUL.
+    :true_rul_dict (dict[str, int]): A dictionary where each key is a trajectory name and the value is the true RUL for that trajectory.
+    
+    Returns
+    -------
+    :df_results (pd.DataFrame): A DataFrame containing coverage values for each trajectory, including the average coverage.
+    '''
+    
     df_results = pd.DataFrame(columns=['Name', 'coverage'])
     for key in upper_bound_dict.keys():
         upper_bounds = upper_bound_dict[key]
@@ -145,6 +254,19 @@ def get_coverage(upper_bound_dict, lower_bound_dict, true_rul_dict):
     return df_results
 
 def calculate_area_weighted_by_time(x_values, y_values):
+    '''
+    Calculates the area under the curve weighted by time for the given x and y values.
+
+    Parameters
+    ----------
+    :x_values (List[int]): A list of x values (e.g., time).
+    :y_values (List[float]): A list of y values (predicted values).
+
+    Returns
+    -------
+    :area (float): The area under the curve weighted by time.
+    '''
+    
     area = 0
     for i in range(1, len(x_values)):
         interval = x_values[i] - x_values[0]
@@ -152,6 +274,19 @@ def calculate_area_weighted_by_time(x_values, y_values):
     return area
 
 def get_wsu(upper_bound_dict, lower_bound_dict):
+    '''
+    Computes the Weighted Sum Uncertainty (WSU) between the upper and lower bounds.
+
+    Parameters
+    ----------
+    :upper_bound_dict (dict[str, List[float]]): A dictionary where each key is a trajectory name and the value is the list of upper bounds for predicted RUL.
+    :lower_bound_dict (dict[str, List[float]]): A dictionary where each key is a trajectory name and the value is the list of lower bounds for predicted RUL.
+
+    Returns
+    -------
+    :df_results (pd.DataFrame): A DataFrame containing WSU values for each trajectory, including the average WSU.
+    '''
+    
     df_results = pd.DataFrame(columns=['Name', 'wsu'])
     for key in upper_bound_dict.keys():
         upper_bounds = upper_bound_dict[key]
@@ -169,6 +304,21 @@ def get_wsu(upper_bound_dict, lower_bound_dict):
     return df_results
 
 def evaluate_test_set(mean_rul_dict, upper_bound_dict, lower_bound_dict, true_rul_dict):
+    '''
+    Evaluates the test set by calculating RMSE, coverage, and WSU.
+
+    Parameters
+    ----------
+    :mean_rul_dict (dict[str, List[float]]): A dictionary where each key is a trajectory name and the value is the list of predicted RUL values.
+    :upper_bound_dict (dict[str, List[float]]): A dictionary where each key is a trajectory name and the value is the list of upper bounds for predicted RUL.
+    :lower_bound_dict (dict[str, List[float]]): A dictionary where each key is a trajectory name and the value is the list of lower bounds for predicted RUL.
+    :true_rul_dict (dict[str, int]): A dictionary where each key is a trajectory name and the value is the true RUL for that trajectory.
+
+    Returns
+    -------
+    :combined_df (pd.DataFrame): A DataFrame combining RMSE, coverage, and WSU for each trajectory, including the average values.
+    '''
+    
     df_rmse = get_rmse(mean_rul_dict, true_rul_dict)
     df_coverage = get_coverage(upper_bound_dict, lower_bound_dict, true_rul_dict)
     df_wsu = get_wsu(upper_bound_dict, lower_bound_dict)
@@ -177,11 +327,33 @@ def evaluate_test_set(mean_rul_dict, upper_bound_dict, lower_bound_dict, true_ru
     combined_df = pd.merge(combined_df, df_wsu, on='Name')
     return combined_df   
 
-        
-
 
 @jit(nopython=True)
 def baumwelch_method(n_states, n_obs_symbols, logPseq, fs, bs, scale, score, history, tr, emi, calc_tr, calc_emi):
+    '''
+    Implements the Baum-Welch algorithm for parameter estimation in Hidden Markov Models (HMM).
+
+    Parameters
+    ----------
+    :n_states (int): The number of hidden states in the model.
+    :n_obs_symbols (int): The number of observation symbols.
+    :logPseq (float): The log-probability of the observed sequence.
+    :fs (np.ndarray): The forward probabilities matrix (shape: [n_states, sequence_length]).
+    :bs (np.ndarray): The backward probabilities matrix (shape: [n_states, sequence_length]).
+    :scale (np.ndarray): The scale factors for normalization (shape: [1, sequence_length]).
+    :score (float): The cumulative score (log probability) to be updated.
+    :history (List[int]): The sequence of observed symbols (integer indices).
+    :tr (np.ndarray): The transition matrix (shape: [n_states, n_states]).
+    :emi (np.ndarray): The emission matrix (shape: [n_states, n_obs_symbols]).
+    :calc_tr (np.ndarray): A precomputed matrix of transition probabilities (shape: [n_states, n_states]).
+    :calc_emi (np.ndarray): A precomputed matrix of emission probabilities (shape: [n_states, n_obs_symbols]).
+
+    Returns
+    -------
+    :tr (np.ndarray): Updated transition matrix after the algorithm has performed parameter estimation.
+    :emi (np.ndarray): Updated emission matrix after the algorithm has performed parameter estimation.
+    '''
+    
     score += logPseq
     logf = np.log(fs)
     logb = np.log(bs)
@@ -211,6 +383,25 @@ def baumwelch_method(n_states, n_obs_symbols, logPseq, fs, bs, scale, score, his
 
 @jit(nopython=True)
 def fs_calculation(n_states, end_traj, fs, s, history, calc_emi, calc_tr):
+    '''
+    Computes the forward probabilities (fs) for a given sequence using the emission and transition matrices.
+
+    Parameters
+    ----------
+    :n_states (int): The number of hidden states in the model.
+    :end_traj (int): The length of the observation sequence.
+    :fs (np.ndarray): The forward probabilities matrix (shape: [n_states, end_traj]).
+    :s (np.ndarray): Scaling factors to prevent underflow (shape: [1, end_traj]).
+    :history (List[int]): The sequence of observed symbols (integer indices).
+    :calc_emi (np.ndarray): A matrix of emission probabilities (shape: [n_states, n_obs_symbols]).
+    :calc_tr (np.ndarray): A matrix of transition probabilities (shape: [n_states, n_states]).
+
+    Returns
+    -------
+    :fs (np.ndarray): The updated forward probabilities matrix.
+    :s (np.ndarray): The updated scaling factors.
+    '''
+    
     for count in range(1, end_traj):
         for state in range(n_states):
             fs[state, count] = calc_emi[state, history[count] - 1] * np.sum(fs[:, count - 1] * calc_tr[:, state])
@@ -222,6 +413,24 @@ def fs_calculation(n_states, end_traj, fs, s, history, calc_emi, calc_tr):
 
 @jit(nopython=True)
 def bs_calculation(n_states, end_traj, bs, s, history, calc_emi, calc_tr):
+    '''
+    Computes the backward probabilities (bs) for a given sequence using the emission and transition matrices.
+
+    Parameters
+    ----------
+    :n_states (int): The number of hidden states in the model.
+    :end_traj (int): The length of the observation sequence.
+    :bs (np.ndarray): The backward probabilities matrix (shape: [n_states, end_traj]).
+    :s (np.ndarray): Scaling factors for normalization (shape: [1, end_traj]).
+    :history (List[int]): The sequence of observed symbols (integer indices).
+    :calc_emi (np.ndarray): A matrix of emission probabilities (shape: [n_states, n_obs_symbols]).
+    :calc_tr (np.ndarray): A matrix of transition probabilities (shape: [n_states, n_states]).
+
+    Returns
+    -------
+    :bs (np.ndarray): The updated backward probabilities matrix.
+    '''
+    
     for count in range(end_traj - 2, -1, -1):
         for state in range(n_states):
             bs[state, count] = (1 / s[0, count + 1]) * np.sum(
@@ -230,12 +439,36 @@ def bs_calculation(n_states, end_traj, bs, s, history, calc_emi, calc_tr):
 
 
 def calculate_expected_value(pmf_values):
+    '''
+    Calculates the expected value of a probability mass function (PMF).
+
+    Parameters
+    ----------
+    :pmf_values (List[float]): A list of probabilities for each possible value.
+
+    Returns
+    -------
+    :expected_value (float): The expected value calculated from the PMF.
+    '''
     expected_value = sum(x * p for x, p in enumerate(pmf_values))
     return expected_value
 
 
 def calculate_cdf(pmf, confidence_level):
-    # Calculate the CDF
+    '''
+    Calculates the cumulative distribution function (CDF) and percentile values for a given probability mass function (PMF).
+
+    Parameters
+    ----------
+    :pmf (List[float]): A list of probabilities for each possible value.
+    :confidence_level (float): The confidence level for calculating the percentiles (e.g., 0.95 for 95%).
+
+    Returns
+    -------
+    :lower_value (int): The index corresponding to the lower percentile.
+    :upper_value (int): The index corresponding to the upper percentile.
+    '''
+    
     cdf = np.cumsum(pmf)
     # Calculate the lower and upper percentiles
     lower_percentile = (1 - confidence_level) / 2
@@ -248,7 +481,7 @@ def calculate_cdf(pmf, confidence_level):
 
 def create_folders():
     """
-    Create folders and subfolders for results
+    Creates a set of directories and subdirectories for storing results.
     :return: None
     """
 
