@@ -22,12 +22,22 @@ from plot import *
 
 np.seterr(invalid='ignore', divide='ignore')
 
-#todo: documentation for all of the functions
-#todo: add the option for calculating the metrics for the RUL (it would be nice if the funcs for calculating them are in utils
 
 class HSMM:
     def __init__(self, n_states=2, n_durations=5, n_iter=20, tol=1e-2, left_to_right=False, obs_state_len=None,
                  f_value=None, random_state=None, name=""):
+        
+        '''
+        :n_states (int): Number of hidden states. Must be ≥ 2.
+        :n_durations (int): Number of duration categories per state. Must be ≥ 1.
+        :n_iter (int): Maximum number of iterations for training.
+        :tol (float): Convergence threshold for stopping the training.
+        :left_to_right (bool): Indicates whether the model follows a left-to-right topology.
+        :obs_state_len (int, optional): Length of the observed state (required if f_value is provided).
+        :f_value (int/float, optional): Final observed value of the state (required if obs_state_len is provided).
+        :random_state (int/None, optional): Seed for reproducibility.
+        :name (str, optional): Name of the model. Defaults to "hsmm" if not provided.
+        '''
 
         if not n_states >= 2:
             raise ValueError("number of states (n_states) must be at least 2")
@@ -63,10 +73,26 @@ class HSMM:
         self.score_per_sample = None
         self.bic_score = None
 
-    # _init: initializes model parameters if there are none yet
     # if left_to_right is True then the first state has start probability=1 and the tmat has transition probability=1
     # only for i+1 state. Last state is observed
     def _init(self, X=None):
+        '''
+        Initializes model parameters if they are not already set.
+        For left-to-right models:
+        Sets the initial state to 1 (pi[0] = 1) and enforces forward transitions.
+        For other topologies:
+        Distributes probabilities evenly among states.
+        Disallows self-transitions (tmat[i, i] = 0).
+        
+        Parameters
+        ----------
+        X : (dict): Observation dataset.
+
+        Returns
+        -------
+        None.
+
+        '''
         if not hasattr(self, "pi") and not self.left_to_right:
             self.pi = np.full(self.n_states, 1.0 / self.n_states)
         elif not hasattr(self, "pi") and self.left_to_right:
@@ -92,6 +118,18 @@ class HSMM:
 
     # _check: check if properties of model parameters are satisfied
     def _check(self):
+        '''
+        Validates the initialized parameters:
+
+        Ensures starting probabilities (pi) sum to 1.
+        Checks transition matrix (tmat) shape and sums across rows.
+        Verifies duration probabilities.
+
+        Returns
+        -------
+        None.
+
+        '''
         # starting probabilities
         self.pi = np.asarray(self.pi)
         if self.pi.shape != (self.n_states,):
@@ -183,6 +221,21 @@ class HSMM:
 
     # sample: generate random observation series
     def sample(self, n_samples=5, random_state=None):
+        '''
+        Generates a sequence of observations and corresponding state sequences.
+
+        Parameters
+        ----------
+        :n_samples (int): Number of observations to generate.
+        :random_state (int/None): Seed for reproducibility.
+
+        Returns
+        -------
+        :ctr_sample (int): Number of samples generated.
+        :X (ndarray): Generated observation sequence.
+        :state_sequence (ndarray): State sequence corresponding to the observations.
+        '''
+        
         self._init(None)  # see "note for programmers" in init() in GaussianHSMM
         # self._check()
         # setup random state
@@ -216,6 +269,20 @@ class HSMM:
 
     # _core_u_only: Python implementation
     def _core_u_only(self, logframe):
+        '''
+        Computes intermediate matrix u for duration probabilities.
+        
+        Parameters
+        ----------
+        
+        :logframe (numpy.ndarray): A 2D array of log-likelihood values for each observation under each state. Shape: (n_samples, n_states).
+        
+        Returns
+        -------
+        
+        :u (numpy.ndarray): A 3D array of intermediate values computed for each sample, state, and duration. Shape: (n_samples, n_states, n_durations).
+        
+        '''
         n_samples = logframe.shape[0]
         u = np.empty((n_samples, self.n_states, self.n_durations))
         _u_only(n_samples, self.n_states, self.n_durations,
@@ -224,6 +291,21 @@ class HSMM:
 
     # _core_forward: Python implementation
     def _core_forward(self, u, logdur):
+        '''
+        Performs the forward step of the HSMM algorithm using duration and transition probabilities.
+        
+        Parameters
+        ----------
+        :u (numpy.ndarray): Intermediate values computed from _core_u_only. Shape: (n_samples, n_states, n_durations).
+        :logdur (numpy.ndarray): Logarithm of the duration probabilities for each state. Shape: (n_states, n_durations).
+        
+        Returns
+        -------
+        :eta (numpy.ndarray): Smoothed probabilities for states and durations at each sample. Shape: (n_samples + 1, n_states, n_durations).
+        :xi (numpy.ndarray): Transition probabilities between states at each step. Shape: (n_samples + 1, n_states, n_states).
+        :alpha (numpy.ndarray): Forward probabilities for each state at each sample. Shape: (n_samples, n_states).
+        '''
+        
         n_samples = u.shape[0]
         eta_samples = n_samples
         eta = np.empty((eta_samples + 1, self.n_states, self.n_durations))  # +1
@@ -236,6 +318,21 @@ class HSMM:
 
     # _core_backward: Python implementation
     def _core_backward(self, u, logdur):
+        '''
+        Implements the backward algorithm for the HSMM.
+        Computes backward probabilities and intermediate variables for scaling.
+
+        Parameters
+        ----------
+        :u (numpy.ndarray): Scaled forward probabilities from _core_u_only.
+        :logdur (numpy.ndarray): Logarithmic duration probability matrix.
+
+        Returns
+        -------
+        :beta (numpy.ndarray): Backward probabilities for each state.
+        :betastar (numpy.ndarray): Scaled backward probabilities.
+        '''
+        
         n_samples = u.shape[0]
         beta = np.empty((n_samples, self.n_states))
         betastar = np.empty((n_samples, self.n_states))
@@ -248,6 +345,21 @@ class HSMM:
     # _core_smoothed: The SLOWEST fnc if implemented in python
     # still in Cython
     def _core_smoothed(self, beta, betastar, eta, xi):
+        '''
+        Combines forward and backward variables to compute the smoothed probabilities.
+
+        Parameters
+        ----------
+        :beta (numpy.ndarray): Backward probabilities for each state.
+        :betastar (numpy.ndarray): Scaled backward probabilities.
+        :eta (numpy.ndarray): Transition probabilities.
+        :xi (numpy.ndarray): Joint probabilities of transitions.
+
+        Returns
+        -------
+        :gamma (numpy.ndarray): Smoothed probabilities.
+        '''
+        
         n_samples = beta.shape[0]
         gamma = np.empty((n_samples, self.n_states))
         core._smoothed(n_samples, self.n_states, self.n_durations,
@@ -256,6 +368,20 @@ class HSMM:
 
     # _core_viterbi: container for core._viterbi (for multiple observation sequences)
     def _core_viterbi(self, u, logdur):
+        '''
+        Implements the Viterbi algorithm for finding the most probable state sequence given the observations.
+
+        Parameters
+        ----------
+        :u (numpy.ndarray): Scaled forward probabilities from _core_u_only.
+        :logdur (numpy.ndarray): Logarithmic duration probability matrix.
+
+        Returns
+        -------
+        :state_sequence (numpy.ndarray): The most probable sequence of states.
+        :state_logl (float): Log-likelihood of the state sequence.
+        '''
+        
         n_samples = u.shape[0]
         state_sequence, state_logl = core._viterbi(n_samples, self.n_states, self.n_durations,
                                                    log_mask_zero(self.pi),
@@ -265,6 +391,18 @@ class HSMM:
 
     # score: log-likelihood computation from observation series
     def score(self, X):
+        '''
+        Computes the log-likelihood of the observation sequences under the current model.
+
+        Parameters
+        ----------
+        :X (numpy.ndarray): Observation sequences.
+
+        Returns
+        -------
+        :score (float): Total log-likelihood of the observations.
+        '''
+        
         self._init(X)
         # self._check()
         logdur = log_mask_zero(self._dur_probmat())  # build logdur
@@ -278,8 +416,20 @@ class HSMM:
         score += logsumexp(gammazero)
         return score
 
-    # predict: hidden state & duration estimation from observation series
     def predict(self, X):
+        '''
+        Predicts the most likely hidden state sequence for a given observation sequence using the Viterbi algorithm.
+
+        Parameters
+        ----------
+        :X (numpy.ndarray): Observation sequences.
+
+        Returns
+        -------
+        :state_sequence (numpy.ndarray): Predicted state sequence.
+        :state_logl (float): Log-likelihood of the predicted state sequence.
+        '''
+        
         self._init(X)
         # self._check()
         logdur = log_mask_zero(self._dur_probmat())  # build logdur
@@ -293,8 +443,20 @@ class HSMM:
         state_sequence = iter_state_sequence
         return state_sequence, state_logl
 
-    # fit: parameter estimation from observation series
     def fit(self, X, save_iters=False):
+        '''
+        Trains the model using the Expectation-Maximization (EM) algorithm.
+
+        Parameters
+        ----------
+        :X (dict): A dictionary where keys are trajectory identifiers and values are observation sequences (numpy arrays).
+        :save_iters (bool, optional): Whether to save the model after each iteration. Defaults to False.
+
+        Returns
+        -------
+        :self (GaussianHSMM): The trained model.
+        '''
+        
         score_per_iter = []
         score_per_sample = []
 
@@ -442,6 +604,18 @@ class HSMM:
         return self
 
     def bic(self, train):
+        '''
+        Computes the Bayesian Information Criterion (BIC) score to evaluate model performance.
+
+        Parameters
+        ----------
+        :train (dict): Observation sequences used for training.
+
+        Returns
+        -------
+        :score (float): The BIC score for the model.
+        '''
+        
         if self.max_len is None:
             keys = list(train.keys())
             lens = []
@@ -469,10 +643,19 @@ class HSMM:
 
     def fit_bic(self, X, states, return_models=False):
         '''
-        fit HSMM with the BIC criterion
-        :param X: degradation histories
-        :param states: list with number of states
-        :param return_models: return all models in a dictionary
+        Fits multiple models with different numbers of states, evaluates them using BIC, and selects the best one.
+
+        Parameters
+        ----------
+        :X (dict): Observation sequences (same format as fit).
+        :states (list[int]): List of state counts to evaluate.
+        :return_models (bool, optional): Whether to return all trained models. Defaults to False.
+
+        Returns
+        -------
+        :self (GaussianHSMM): The best-performing model.
+        :bic (list[float]): BIC scores for each fitted model.
+        :(optional) models (dict): All trained models, returned if return_models=True.
         '''
 
         bic = []
@@ -515,15 +698,21 @@ class HSMM:
 
     def RUL(self, viterbi_states, max_samples, equation=1):
         """
-        :param path: path for the results folder
-        :param index:
-        :param plot_rul:
-        :param viterbi_states: Single history
-        :param max_samples: maximum length of RUL (default: 3000)
-        :param equation: 1=best (with reduction with sojourn time to both terms)
-        :return:
+        Estimates the Remaining Useful Life (RUL) for a given state history using convolution of duration probabilities.
 
-        Works for a single state history.
+        Parameters
+        ----------
+        :viterbi_states (numpy.ndarray): Sequence of Viterbi states representing the history of hidden states.
+        :max_samples (int): Maximum length of RUL to consider.
+        :equation (int, optional): Equation type for RUL estimation. Default is 1.
+        
+        Returns
+        -------
+        :RUL (numpy.ndarray): RUL probability distribution for each timestep.
+        :mean_RUL (numpy.ndarray): Mean RUL for each timestep.
+        :UB_RUL (numpy.ndarray): Upper bound of the RUL distribution.
+        :LB_RUL (numpy.ndarray): Lower bound of the RUL distribution.
+
         """
 
         RUL = np.zeros((len(viterbi_states), max_samples))
@@ -614,12 +803,28 @@ class HSMM:
         return RUL, mean_RUL, UB_RUL, LB_RUL
 
     def prognostics(self, data, max_samples=None, plot_rul=True, get_metrics=True, equation=1):
-        """
-        :param data: degradation histories
-        :param max_samples: maximum length of RUL (default: 3000)
-        :param plot_rul: Display RUL plot for each sample
-        :return: None, json files are saved for pdf_rul and mean_rul
-        """
+        '''
+        Performs prognostics for given degradation histories, estimating RUL and saving the results.
+
+        Parameters
+        ----------
+        :data (dict): A dictionary where keys are trajectory IDs and values are degradation histories.
+        :max_samples (int, optional): Maximum length of RUL. Defaults to 10x the maximum trajectory length.
+        :plot_rul (bool, optional): Whether to plot RUL results for each sample. Default is True.
+        :get_metrics (bool, optional): Whether to compute and save evaluation metrics. Default is True.
+        :equation (int, optional): Equation type for RUL estimation. Default is 1.
+        
+        Returns
+        -------
+        No direct return. Saves:
+        :PDF RUL distributions.
+        :Mean RUL per step.
+        :Upper and lower RUL bounds.
+        :Evaluation metrics (if get_metrics=True).
+        :RUL plots (if plot_rul=True).
+
+        '''
+        
         if self.max_len is None:
             keys = list(data.keys())
             lens = []
@@ -700,12 +905,32 @@ class HSMM:
             print(f'\n {df_results}')
 
     def save_model(self):
+        '''
+        Saves the current model state to a file.
+
+        Returns
+        -------
+        None.
+        '''
+        
         path = os.path.join(os.getcwd(), 'results', 'models', f'{self.name}.txt')
         with open(path, 'wb') as f:
             pickle.dump(self.__dict__, f)
             print(f"Model saved to {path}.")
 
     def load_model(self, model_name):
+        '''
+        Loads a previously saved model state from a file.
+
+        Parameters
+        ----------
+        model_name (str): Name of the model file to load (without extension).
+
+        Returns
+        -------
+        None.
+        '''
+        
         path = os.path.join(os.getcwd(), 'results', 'models', f'{model_name}.txt')
         with open(path, 'rb') as f:
             obj = pickle.load(f)
@@ -714,15 +939,47 @@ class HSMM:
 
 # Sample Subclass: Explicit Duration HSMM with Gaussian Emissions
 class GaussianHSMM(HSMM):
+    '''
+    The GaussianHSMM class models Hidden Semi-Markov processes with Gaussian-distributed emissions. It supports explicit duration modeling, and it can handle left-to-right or arbitrary state transitions. K-means clustering is used for initialization.
+    '''
+    
     def __init__(self, n_states=2, n_durations=5, n_iter=20, tol=1e-2, left_to_right=False, obs_state_len=None,
                  f_value=None, random_state=None, name="",
                  kmeans_init='k-means++', kmeans_n_init='auto'):
+        '''
+        Parameters
+        ----------
+        :n_states (int): Number of hidden states in the model. Default is 2.
+        :n_durations (int): Maximum duration for each state. Default is 5.
+        :n_iter (int): Maximum number of iterations for model fitting. Default is 20.
+        :tol (float): Convergence threshold for the EM algorithm. Default is 1e-2.
+        :left_to_right (bool): If True, constrains transitions to progress in a left-to-right manner. Default is False.
+        :obs_state_len (int, optional): Length of observed state (relevant in specific configurations).
+        :f_value (float, optional): Emission value for the final state, if applicable.
+        :random_state (int or RandomState instance, optional): Seed or random state for reproducibility.
+        :name (str): Name identifier for the model.
+        :kmeans_init (str): Initialization method for K-means clustering ('k-means++' or 'random'). Default is 'k-means++'.
+        :kmeans_n_init (int or str): Number of initializations for K-means clustering. Default is 'auto'.
+        '''
+        
         super().__init__(n_states, n_durations, n_iter, tol, left_to_right, obs_state_len,
                          f_value, random_state, name)
         self.kmeans_init = kmeans_init
         self.kmeans_n_init = kmeans_n_init
 
     def _init(self, X=None):
+        '''
+        Initializes model parameters based on input data X.
+        
+        Parameters
+        ----------
+        :X (numpy.ndarray, optional): Observations to initialize the model. If None, defaults to 1D Gaussian emissions.
+
+        Returns
+        -------
+        None.
+        '''
+        
         super()._init()
         # note for programmers: for every attribute that needs X in score()/predict()/fit(),
         # there must be a condition "if X is None" because sample() doesn't need an X, but
@@ -770,6 +1027,14 @@ class GaussianHSMM(HSMM):
                 self.covmat = np.repeat(np.identity(self.n_dim)[None], self.n_states, axis=0)
 
     def _check(self):
+        '''
+        Performs validation checks to ensure model parameters are consistent.
+
+        Returns
+        -------
+        None.
+        '''
+        
         super()._check()
         # means
         self.mean = np.asarray(self.mean)
@@ -783,6 +1048,15 @@ class GaussianHSMM(HSMM):
                              .format(self.n_states, self.n_dim))
 
     def _dur_init(self):
+        '''
+        Initializes the duration probability matrix self.dur.
+
+
+        Returns
+        -------
+        None.
+        '''
+        
         # non-parametric duration
         if not hasattr(self, "dur") and not self.last_observed:
             self.dur = np.full((self.n_states, self.n_durations), 1.0 / self.n_durations)
@@ -793,6 +1067,14 @@ class GaussianHSMM(HSMM):
             self.dur[-1, self.obs_state_len] = 1
 
     def _dur_check(self):
+        '''
+        Validates the duration probability matrix self.dur.
+
+        Returns
+        -------
+        None.
+        '''
+        
         self.dur = np.asarray(self.dur)
         if self.dur.shape != (self.n_states, self.n_durations):
             raise ValueError("duration probabilities (self.dur) must have shape ({}, {})"
@@ -801,14 +1083,40 @@ class GaussianHSMM(HSMM):
             raise ValueError("duration probabilities (self.dur) must add up to 1.0")
 
     def _dur_probmat(self):
+        '''
+        Returns the duration probability matrix self.dur.
+        '''
         # non-parametric duration
         return self.dur
 
     def _dur_mstep(self, new_dur):
+        '''
+        Performs the M-step update for the duration probabilities.
+        
+        Parameters
+        ----------
+        new_dur (numpy.ndarray): Updated duration probabilities.
+
+        Returns
+        -------
+        None.
+        '''
+        
         # non-parametric duration
         self.dur = new_dur
 
     def _emission_logl(self, X):
+        '''
+        Calculates the log-likelihood of the emissions given the observations.
+        
+        Parameters
+        ----------
+        :X (numpy.ndarray): Observations.
+        
+        Returns
+        -------
+        :logframe (numpy.ndarray): Log-likelihood of each observation under each state.
+        '''
         # abort EM loop if any covariance matrix is not symmetric, positive-definite.
         # adapted from hmmlearn 0.2.3 (see _utils._validate_covars function)
         for n, cv in enumerate(self.covmat):
@@ -827,6 +1135,21 @@ class GaussianHSMM(HSMM):
         return logframe
 
     def _emission_mstep(self, X, emission_var, inplace=True):
+        '''
+        Performs the M-step update for emission parameters.
+
+        Parameters
+        ----------
+        :X (numpy.ndarray): Observations.
+        :emission_var (numpy.ndarray): Responsibilities or posteriors for each observation-state pair.
+        :inplace (bool, optional): If True, updates parameters in-place. If False, returns updated parameters.
+
+        Returns (if inplace=False)
+        -------
+        :mean (numpy.ndarray): Updated means for each state.
+        :covmat (numpy.ndarray): Updated covariance matrices for each state.
+        '''
+        
         denominator = logsumexp(emission_var, axis=0)
         # denominator = emission_var
         weight_normalized = np.exp(emission_var - denominator)[None].T
@@ -842,6 +1165,19 @@ class GaussianHSMM(HSMM):
             self.covmat = covmat
 
     def _state_sample(self, state, random_state=None):
+        '''
+        Generates a sample from the Gaussian distribution of a specified state.
+        
+        Parameters
+        ----------
+        :state (int): Index of the state to sample from.
+        :random_state (int or RandomState, optional): Random seed or state for reproducibility.
+        
+        Returns
+        -------
+        :sample (numpy.ndarray): Sampled observation.
+        '''
+        
         rnd_checked = np.random.default_rng(random_state)
         return rnd_checked.multivariate_normal(self.mean[state], self.covmat[state])
 
@@ -849,7 +1185,15 @@ class GaussianHSMM(HSMM):
 ######HMM
 class HMM:
     def __init__(self, n_states, n_obs_symbols, n_iter=20, tol=1e-2, left_to_right=False, name=""):
-        # create the folders
+        '''
+        :n_states (int): The number of states in the HMM. Must be ≥ 2.
+        :n_obs_symbols (int): The number of observation symbols.
+        :n_iter (int): The maximum number of iterations for training. Default is 20.
+        :tol (float): Tolerance for convergence during training. Default is 1e-2.
+        :left_to_right (bool): Whether the HMM uses a left-to-right structure. Default is False.
+        :name (str): Name of the model. Default is "hmm" if no name is provided.
+        '''
+
         create_folders()
 
         if not n_states >= 2:
@@ -867,6 +1211,16 @@ class HMM:
         self.name = name
 
     def _init(self, X=None):
+        '''
+        Initializes transition and emission matrices based on model structure (left_to_right).
+        Parameters
+        -------
+        : X (dict): Dataset of trajectories for determining the maximum sequence length. The default is None.
+        Returns
+        -------
+        None.
+
+        '''
         if not hasattr(self, "ini_tr") and not self.left_to_right:
             self.ini_tr = np.full((self.n_states, self.n_states), 1.0 / (self.n_states))
 
@@ -898,6 +1252,20 @@ class HMM:
             self.max_len = max(lens)
 
     def fit(self, X, return_all_scores=False, save_iters=False):
+        '''
+        Trains the HMM using the Baum-Welch algorithm.
+
+        Parameters
+        ----------
+        :X (dict): Observations organized as { "traj_<index>": [sequence] }.
+        :return_all_scores (bool): If True, returns log-likelihood scores for all iterations.
+        :save_iters (bool): If True, saves the model at each iteration.
+
+        Returns
+        -------
+        Trained HMM instance, optionally with log-likelihood scores.
+        '''
+        
         self._init(X)
         tr = np.zeros(self.ini_tr.shape)
         emi = np.zeros(self.ini_emi.shape)
@@ -953,11 +1321,19 @@ class HMM:
 
     def fit_bic(self, X, states, return_models=False):
         '''
-        fit HSMM with the BIC criterion
-        :param X: degradation histories
-        :param states: list with number of states
-        :param return_models: return all models in a dictionary
+        Fits multiple HMMs using the Bayesian Information Criterion (BIC) to select the best model.
+        
+        Parameters
+        ----------
+        :X (dict): Observation dataset.
+        :states (list): List of candidate numbers of states.
+        :return_models (bool): If True, returns all trained models and BIC scores.
+        
+        Returns
+        -------
+        :Best HMM model based on BIC and the BIC scores.
         '''
+        
 
         bic = []
         models = {
@@ -991,6 +1367,25 @@ class HMM:
         return best_model, bic
 
     def decode(self, history, calc_emi, calc_tr):
+        '''
+        Computes forward (fs) and backward (bs) probabilities for a given sequence.
+
+        Parameters
+        ----------
+        :history (list): Observation sequence.
+        :calc_emi (array): Current emission matrix.
+        :calc_tr (array): Current transition matrix.
+
+        Returns
+        -------
+        :pStates: Posterior probabilities for states.
+        :pSeq: Log-probability of the sequence.
+        :fs: Forward probabilities.
+        :bs: Backward probabilities.
+        :s: Scaling factors.
+
+        '''
+        
         history = np.concatenate([np.array([self.n_obs_symbols + 1]), history])
         end_traj = len(history)
         fs = np.zeros((self.n_states, end_traj))
@@ -1011,6 +1406,15 @@ class HMM:
         return pStates, pSeq, fs, bs, s
 
     def sample(self):
+        '''
+        Generates a random observation sequence and state sequence from the model.
+
+        Returns
+        -------
+        :history: Generated observation sequence.
+        :states: Corresponding state sequence.
+        '''
+        
         history = []
         states = []
         trc = np.cumsum(self.tr, axis=1)
@@ -1040,6 +1444,20 @@ class HMM:
         return history, states
 
     def sample_dataset(self, n_samples):
+        '''
+        Generates a dataset of sampled observation sequences.
+
+        Parameters
+        ----------
+        :n_samples (int): Number of sequences to generate.
+
+        Returns
+        -------
+        :obs: Generated observation sequences.
+        :states_all: Corresponding state sequences.
+
+        '''
+        
         obs = {}
         states_all = {}
         for i in range(n_samples):
@@ -1050,6 +1468,21 @@ class HMM:
         return obs, states_all
 
     def predict(self, history, return_score=False):
+        '''
+        Performs Viterbi decoding to predict the most likely state sequence.
+
+        Parameters
+        ----------
+        :history (list): Observation sequence.
+        :return_score (bool): If True, returns the log-probability of the best state sequence.
+
+        Returns
+        -------
+        :currentState: Most likely state sequence.
+        :logP (optional): Log-probability of the predicted sequence.
+
+        '''
+        
         end_traj = len(history)
         currentState = np.zeros(end_traj, dtype=int)
         if end_traj == 0:
@@ -1085,8 +1518,23 @@ class HMM:
             return currentState + 1, logP
         return currentState + 1
 
-    # method that given a history and a path of estimatedStates calculates the most likely transition and emission matrices
+    
     def estimate(self, history, estimatedStates, return_matrices=False):
+        '''
+        Estimates transition and emission matrices based on observed sequences and states.
+
+        Parameters
+        ----------
+        :history (list): Observation sequence.
+        :estimatedStates (list): Corresponding state sequence.
+        :return_matrices (bool): If True, returns the matrices instead of updating the model.
+
+        Returns
+        -------
+        :Updated HMM instance or matrices (tr, emi).
+
+        '''
+        
         tr = []
         emi = []
         end_traj = len(history)
@@ -1117,6 +1565,24 @@ class HMM:
             return self
 
     def RUL(self, estimatedStates, max_samples, confidence=0.95):
+        '''
+        Estimates the remaining useful life of a system based on state sequence.
+
+        Parameters
+        ----------
+        :estimatedStates (list): Sequence of estimated states.
+        :max_samples (int): Maximum number of timesteps for RUL estimation.
+        :confidence (float): Confidence level for bounds.
+
+        Returns
+        -------
+        :rul_mean: Mean RUL estimates.
+        :rul_upper_bound: Upper confidence bounds.
+        :rul_lower_bound: Lower confidence bounds.
+        :rul_matrix: RUL probability distributions.
+
+        '''
+        
         N = max(estimatedStates) - 1
         rul_matrix = np.zeros((len(estimatedStates), max_samples))
         prev_state = 0  # aux variable
@@ -1177,6 +1643,22 @@ class HMM:
         return rul_mean, rul_upper_bound, rul_lower_bound, rul_matrix
 
     def prognostics(self, data, max_samples=None, plot_rul=True, get_metrics=True):
+        '''
+        Performs prognostics and evaluates model performance.
+
+        Parameters
+        ----------
+        :data (dict): Observation data for multiple trajectories.
+        :max_samples (int): Maximum timesteps for RUL. Default is 10× the max sequence length.
+        :plot_rul (bool): If True, saves RUL plots.
+        :get_metrics (bool): If True, evaluates RUL predictions with metrics.
+        
+        Returns
+        -------
+        :None. Saves RUL estimates and metrics to files.
+        
+        '''
+        
         path = os.path.join(os.getcwd(), 'results')
         max_samples = ceil(self.max_len * 10) if max_samples is None else max_samples
         rul_mean_all, rul_upper_bound_all, rul_lower_bound_all = {}, {}, {}
@@ -1227,12 +1709,34 @@ class HMM:
             print(f'\n {df_results}')
 
     def save_model(self):
+        '''
+        Saves the trained model to a file.
+
+        Returns
+        -------
+        :None. File saved in results/models.
+
+        '''
+        
         path = os.path.join(os.getcwd(), 'results', 'models', f'{self.name}.txt')
         with open(path, 'wb') as f:
             pickle.dump(self.__dict__, f)
             print(f"Model saved to {path}.")
 
     def load_model(self, model_name):
+        '''
+        Loads a saved model.
+
+        Parameters
+        ----------
+        :model_name (str): Name of the model to load.
+
+        Returns
+        -------
+        None.
+
+        '''
+        
         path = os.path.join(os.getcwd(), 'results', 'models', f'{model_name}.txt')
         with open(path, 'rb') as f:
             obj = pickle.load(f)
