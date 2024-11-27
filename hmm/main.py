@@ -51,7 +51,7 @@ if mc_sampling:
                    left_to_right=True
                    )
     init_hmm_mc(hmm_init)
-    obs, states = hmm_init.sample_dataset(num_of_histories)
+    obs, states = sample_dataset_MC(hmm_init, num_of_histories)
     hmm_estim = HMM(n_states=6,
                    n_obs_symbols=30,
                    n_iter=10,
@@ -62,4 +62,7 @@ if mc_sampling:
     error_emi = round(np.mean(np.abs(hmm_init.emi - hmm_estim.emi)), 2)
     print(f"Estimation error\nTransition matrix: {error_tr}\nEmission matrix: {error_emi}")
     hmm_estim.prognostics(obs, plot_rul=True, get_metrics=True)
+    
+
+
     

@@ -678,7 +678,7 @@ def init_hmm_mc(hmm_class):
     tr = np.zeros((hmm_class.n_states, hmm_class.n_states))
     for i in range(hmm_class.n_states):
         if i < hmm_class.n_states - 1:
-            tr[i, i] = np.random.uniform(0.8, 0.97)
+            tr[i, i] = np.random.uniform(0.95, 0.97)
             tr[i, i + 1] = 1 - tr[i, i]
         else:
             tr[i, i] = 1.0  # Make the last state absorbing
@@ -701,3 +701,31 @@ def init_hmm_mc(hmm_class):
         # Last row: all zeros except 1 at the end
     emi[-1, -1] = 1.0
     hmm_class.emi = emi
+    
+    
+def sample_dataset_MC(hmm_obj, n_samples):
+    '''
+    Generates a dataset of sampled observation sequences for MC sampling
+
+    Parameters
+    ----------
+    :n_samples (int): Number of sequences to generate.
+
+    Returns
+    -------
+    :obs: Generated observation sequences.
+    :states_all: Corresponding state sequences.
+
+    '''
+    
+    obs = {}
+    states_all = {}
+    for i in range(n_samples):
+        sample = hmm_obj.sample()
+        history, states = sample
+        while len(states) > 130 or len(states) < 100:
+            sample = hmm_obj.sample()
+            history, states = sample
+        obs[f'traj_{i}'] = history
+        states_all[f'traj_{i}'] = states
+    return obs, states_all

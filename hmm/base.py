@@ -1404,44 +1404,49 @@ class HMM:
         pStates = np.delete(pStates, 0, axis=1)
 
         return pStates, pSeq, fs, bs, s
+    
 
     def sample(self):
         '''
-        Generates a random observation sequence and state sequence from the model.
+        Generates a random observation sequence and state sequence, starting from the initial state and terminating when the last state is reached.
+        
+        Parameters
+        ----------
+        None
 
         Returns
         -------
-        :history: Generated observation sequence.
-        :states: Corresponding state sequence.
+        :history (list): A list containing the generated sequence of observations, where each observation corresponds to a state in the sequence.
+        :states (list): A list containing the sequence of states visited during the process, where each state is represented by its index.
         '''
         
         history = []
         states = []
+    
+        # Cumulative transition and emission probabilities
         trc = np.cumsum(self.tr, axis=1)
         ec = np.cumsum(self.emi, axis=1)
-        trc = trc / np.tile(trc[:, -1:], (1, self.n_states))
-        ec = ec / np.tile(ec[:, -1:], (1, self.n_obs_symbols))
-        currentstate = 1
-        while currentstate < self.n_states:
-            stateVal = np.random.rand()
-            state = 1
-            for innerState in range(self.n_states - 2, -1, -1):
-                if stateVal > trc[currentstate - 1, innerState]:
-                    state = innerState + 2
-                    break
-            val = np.random.rand()
-            emit = 1
-            for inner in range(self.n_obs_symbols - 2, -1, -1):
-                if val > ec[state - 1, inner]:
-                    emit = inner + 2
-                    break
-            history.append(emit)
-            states.append(state)
-            currentstate = state
-        for i in range(5):
-            history.append(self.n_obs_symbols)
-            states.append(self.n_states)
+    
+        trc = trc / trc[:, -1][:, None]
+        ec = ec / ec[:, -1][:, None]
+        
+        currentstate = 0  
+        while currentstate < self.n_states - 1: 
+            # Sample observation
+            observation = np.searchsorted(ec[currentstate], np.random.rand())
+            history.append(observation+1)
+            states.append(currentstate+1)
+    
+            # Sample next state
+            currentstate = np.searchsorted(trc[currentstate], np.random.rand())
+    
+        # Terminal state emits its fixed observation
+        terminal_observation = np.argmax(self.emi[self.n_states - 1])  
+        history.append(terminal_observation+1)
+        states.append(currentstate+1)
+
         return history, states
+
 
     def sample_dataset(self, n_samples):
         '''
