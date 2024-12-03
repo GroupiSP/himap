@@ -1,7 +1,8 @@
 import os
 
-from scipy.stats import multivariate_normal
+from scipy.stats import multivariate_normal, norm, geom
 from scipy.special import logsumexp
+from scipy.signal import convolve
 from sklearn import cluster
 from sklearn.linear_model import LinearRegression
 from tqdm import tqdm
@@ -9,10 +10,6 @@ from itertools import zip_longest
 import matplotlib.pyplot as plt
 from math import ceil
 import copy
-from scipy.stats import geom
-from scipy.signal import convolve
-import scipy.stats as stats
-from scipy.stats import norm
 from ab import _forward, _backward, _u_only
 
 import smoothed as core
@@ -26,7 +23,7 @@ np.seterr(invalid='ignore', divide='ignore')
 class HSMM:
     def __init__(self, n_states=2, n_durations=5, n_iter=20, tol=1e-2, left_to_right=False, obs_state_len=None,
                  f_value=None, random_state=None, name=""):
-        
+
         '''
         :n_states (int): Number of hidden states. Must be ≥ 2.
         :n_durations (int): Number of duration categories per state. Must be ≥ 1.
@@ -115,6 +112,14 @@ class HSMM:
             # self.tmat[-1, -1] = 1
 
         self._dur_init()  # duration
+
+    def _init_mc(self):
+        """
+        Initialize the model parameters for MC sampling
+        :param X:
+        :return:
+        """
+        pass #implemented in subclass
 
     # _check: check if properties of model parameters are satisfied
     def _check(self):
@@ -222,7 +227,8 @@ class HSMM:
     # sample: generate random observation series
     def sample(self, n_samples=5, random_state=None):
         '''
-        Generates a sequence of observations and corresponding state sequences.
+        Generates a sequence of observations and corresponding state sequences performing a random walk on the model
+        (MC Sampling).
 
         Parameters
         ----------
@@ -235,7 +241,7 @@ class HSMM:
         :X (ndarray): Generated observation sequence.
         :state_sequence (ndarray): State sequence corresponding to the observations.
         '''
-        
+
         self._init(None)  # see "note for programmers" in init() in GaussianHSMM
         # self._check()
         # setup random state
@@ -266,6 +272,36 @@ class HSMM:
             X += [self._state_sample(currstate, rnd_checked) for i in range(currdur)]  # generate observation
             ctr_sample += currdur
         return ctr_sample, np.atleast_2d(X), np.array(state_sequence, dtype=int)
+
+    def MC_dataset(self, num, timesteps):
+        """
+        Generates a dataset of a number of observations and corresponding state sequences utilizing the sample method .
+
+        Parameters
+        ----------
+        :num (int): Number of samples to generate.
+        :timesteps (int): Number of timesteps for each sample.
+
+        Returns
+        -------
+        :obs (dict[str, List[int]]): A dictionary with trajectory observations.
+        :states (dict[str, List[int]]): A dictionary with the corresponding states for each trajectory.
+        """
+        self._init_mc()
+        obs, states = {}, {}
+
+        for i in range(num):
+            sample = self.sample(timesteps)
+            _, obs1, states1 = sample
+
+            for j in range(len(states1)):
+                if states1[j] > states1[j + 1]:
+                    idx = j
+                    break
+            obs.update({f'traj_{i + 1}': list(obs1[:idx + 1, 0])})
+            states.update({f'traj_{i + 1}': list(states1[:idx + 1])})
+
+        return obs, states
 
     # _core_u_only: Python implementation
     def _core_u_only(self, logframe):
@@ -305,7 +341,7 @@ class HSMM:
         :xi (numpy.ndarray): Transition probabilities between states at each step. Shape: (n_samples + 1, n_states, n_states).
         :alpha (numpy.ndarray): Forward probabilities for each state at each sample. Shape: (n_samples, n_states).
         '''
-        
+
         n_samples = u.shape[0]
         eta_samples = n_samples
         eta = np.empty((eta_samples + 1, self.n_states, self.n_durations))  # +1
@@ -332,7 +368,7 @@ class HSMM:
         :beta (numpy.ndarray): Backward probabilities for each state.
         :betastar (numpy.ndarray): Scaled backward probabilities.
         '''
-        
+
         n_samples = u.shape[0]
         beta = np.empty((n_samples, self.n_states))
         betastar = np.empty((n_samples, self.n_states))
@@ -359,7 +395,7 @@ class HSMM:
         -------
         :gamma (numpy.ndarray): Smoothed probabilities.
         '''
-        
+
         n_samples = beta.shape[0]
         gamma = np.empty((n_samples, self.n_states))
         core._smoothed(n_samples, self.n_states, self.n_durations,
@@ -381,7 +417,7 @@ class HSMM:
         :state_sequence (numpy.ndarray): The most probable sequence of states.
         :state_logl (float): Log-likelihood of the state sequence.
         '''
-        
+
         n_samples = u.shape[0]
         state_sequence, state_logl = core._viterbi(n_samples, self.n_states, self.n_durations,
                                                    log_mask_zero(self.pi),
@@ -402,7 +438,7 @@ class HSMM:
         -------
         :score (float): Total log-likelihood of the observations.
         '''
-        
+
         self._init(X)
         # self._check()
         logdur = log_mask_zero(self._dur_probmat())  # build logdur
@@ -429,7 +465,7 @@ class HSMM:
         :state_sequence (numpy.ndarray): Predicted state sequence.
         :state_logl (float): Log-likelihood of the predicted state sequence.
         '''
-        
+
         self._init(X)
         # self._check()
         logdur = log_mask_zero(self._dur_probmat())  # build logdur
@@ -456,7 +492,7 @@ class HSMM:
         -------
         :self (GaussianHSMM): The trained model.
         '''
-        
+
         score_per_iter = []
         score_per_sample = []
 
@@ -615,7 +651,7 @@ class HSMM:
         -------
         :score (float): The BIC score for the model.
         '''
-        
+
         if self.max_len is None:
             keys = list(train.keys())
             lens = []
@@ -776,7 +812,7 @@ class HSMM:
                         break
                 X = np.asarray(X).reshape(-1, 1)
                 y = np.asarray(y).reshape(-1, 1)
-                UB_RUL[i] = LinearRegression().fit(X, y).predict(np.asarray(0.05).reshape(-1, 1))
+                LB_RUL[i] = LinearRegression().fit(X, y).predict(np.asarray(0.05).reshape(-1, 1))
 
                 # LB RUL
                 X, y = [], []
@@ -787,7 +823,7 @@ class HSMM:
                         break
                 X = np.asarray(X).reshape(-1, 1)
                 y = np.asarray(y).reshape(-1, 1)
-                LB_RUL[i] = LinearRegression().fit(X, y).predict(np.asarray(0.95).reshape(-1, 1))
+                UB_RUL[i] = LinearRegression().fit(X, y).predict(np.asarray(0.95).reshape(-1, 1))
 
                 # mean RUL
                 value = np.arange(0, RUL.shape[1])
@@ -824,7 +860,7 @@ class HSMM:
         :RUL plots (if plot_rul=True).
 
         '''
-        
+
         if self.max_len is None:
             keys = list(data.keys())
             lens = []
@@ -876,7 +912,7 @@ class HSMM:
                 true_rul_dict = {}
                 for key in mean_rul_per_step.keys():
                     true_rul_dict[key] = len(mean_rul_per_step[key])
-                df_results = evaluate_test_set(mean_rul_per_step, lower_rul_per_step, upper_rul_per_step, true_rul_dict)
+                df_results = evaluate_test_set(mean_rul_per_step, upper_rul_per_step, lower_rul_per_step, true_rul_dict)
 
         path_mean_rul = os.path.join(path, 'dictionaries', f"mean_rul_per_step_{self.name}.json")
         path_pdf_rul = os.path.join(path, 'dictionaries', f"pdf_ruls_{self.name}.json")
@@ -898,7 +934,7 @@ class HSMM:
         print(f"\nPrognostics complete. Results saved to: {path}")
         if plot_rul:
             print(f"\nRUL plots saved to: {os.path.join(path, 'dictionaries', 'figures')}")
-            
+
         if get_metrics:
             df_results.to_csv(f'{path}/df_results.csv', index=False)
             print(f'\n Metrics saved to: {path}')
@@ -912,7 +948,7 @@ class HSMM:
         -------
         None.
         '''
-        
+
         path = os.path.join(os.getcwd(), 'results', 'models', f'{self.name}.txt')
         with open(path, 'wb') as f:
             pickle.dump(self.__dict__, f)
@@ -930,7 +966,7 @@ class HSMM:
         -------
         None.
         '''
-        
+
         path = os.path.join(os.getcwd(), 'results', 'models', f'{model_name}.txt')
         with open(path, 'rb') as f:
             obj = pickle.load(f)
@@ -942,7 +978,7 @@ class GaussianHSMM(HSMM):
     '''
     The GaussianHSMM class models Hidden Semi-Markov processes with Gaussian-distributed emissions. It supports explicit duration modeling, and it can handle left-to-right or arbitrary state transitions. K-means clustering is used for initialization.
     '''
-    
+
     def __init__(self, n_states=2, n_durations=5, n_iter=20, tol=1e-2, left_to_right=False, obs_state_len=None,
                  f_value=None, random_state=None, name="",
                  kmeans_init='k-means++', kmeans_n_init='auto'):
@@ -961,7 +997,7 @@ class GaussianHSMM(HSMM):
         :kmeans_init (str): Initialization method for K-means clustering ('k-means++' or 'random'). Default is 'k-means++'.
         :kmeans_n_init (int or str): Number of initializations for K-means clustering. Default is 'auto'.
         '''
-        
+
         super().__init__(n_states, n_durations, n_iter, tol, left_to_right, obs_state_len,
                          f_value, random_state, name)
         self.kmeans_init = kmeans_init
@@ -979,7 +1015,7 @@ class GaussianHSMM(HSMM):
         -------
         None.
         '''
-        
+
         super()._init()
         # note for programmers: for every attribute that needs X in score()/predict()/fit(),
         # there must be a condition "if X is None" because sample() doesn't need an X, but
@@ -1026,6 +1062,59 @@ class GaussianHSMM(HSMM):
             else:
                 self.covmat = np.repeat(np.identity(self.n_dim)[None], self.n_states, axis=0)
 
+
+    def _init_mc(self):
+        """
+        Initializes model parameters for the Monte Carlo Sampling example
+        :param X:
+        :return:
+        """
+        pi = np.zeros(self.n_states)
+        pi[0] = 1
+
+        # durations
+        dur = np.zeros((self.n_states, self.n_durations))
+        mean_dur = int(self.n_durations/2)
+        std_dur = int(5*(self.n_states-2) +1)
+
+        for i in range(len(dur) - 1):
+            x = np.linspace(0, mean_dur * 2, mean_dur * 2)
+            for k in range(len(x)):
+                dur[i, k] = norm(mean_dur, std_dur).pdf(x[k,])
+                dur[i, ((x.shape[0] // 2) - 1)] += 1 - dur[i].sum()
+            mean_dur -= 20
+            std_dur -= 5
+
+        dur[-1, 9] = 1
+
+        for i in range(len(dur)):
+            dur[i, ((dur.shape[1] // 2) - 1)] += 1 - dur[i].sum()
+
+        tmat = np.zeros((self.n_states, self.n_states))
+        for i in range(len(tmat)):
+            for j in range(len(tmat[i]) - 1):
+                if i == j and j < len(tmat[i]) - 2:
+                    tmat[i, j + 1] = 1
+
+                elif i == j and j == len(tmat[i]) - 2:
+                    tmat[i, j + 1] = 1
+
+        tmat[-1, -2] = 1
+
+        mean_v=[i*10 for i in range(1,self.n_states)]
+        mean_v.append(mean_v[-1]+15)
+        mean = np.array(mean_v).reshape(-1,1)  # shape should be (n_states, n_dim)
+
+        covmat_v=[6. for i in range(self.n_states-1)]
+        covmat_v.append(0.1)
+        covmat = np.array(covmat_v).reshape((self.n_states, 1, 1))
+
+        self.pi = pi
+        self.tmat = tmat
+        self.mean = mean
+        self.covmat = covmat
+        self.dur = dur
+
     def _check(self):
         '''
         Performs validation checks to ensure model parameters are consistent.
@@ -1034,7 +1123,7 @@ class GaussianHSMM(HSMM):
         -------
         None.
         '''
-        
+
         super()._check()
         # means
         self.mean = np.asarray(self.mean)
@@ -1056,7 +1145,7 @@ class GaussianHSMM(HSMM):
         -------
         None.
         '''
-        
+
         # non-parametric duration
         if not hasattr(self, "dur") and not self.last_observed:
             self.dur = np.full((self.n_states, self.n_durations), 1.0 / self.n_durations)
@@ -1074,7 +1163,7 @@ class GaussianHSMM(HSMM):
         -------
         None.
         '''
-        
+
         self.dur = np.asarray(self.dur)
         if self.dur.shape != (self.n_states, self.n_durations):
             raise ValueError("duration probabilities (self.dur) must have shape ({}, {})"
@@ -1101,7 +1190,7 @@ class GaussianHSMM(HSMM):
         -------
         None.
         '''
-        
+
         # non-parametric duration
         self.dur = new_dur
 
@@ -1149,7 +1238,7 @@ class GaussianHSMM(HSMM):
         :mean (numpy.ndarray): Updated means for each state.
         :covmat (numpy.ndarray): Updated covariance matrices for each state.
         '''
-        
+
         denominator = logsumexp(emission_var, axis=0)
         # denominator = emission_var
         weight_normalized = np.exp(emission_var - denominator)[None].T
@@ -1177,7 +1266,7 @@ class GaussianHSMM(HSMM):
         -------
         :sample (numpy.ndarray): Sampled observation.
         '''
-        
+
         rnd_checked = np.random.default_rng(random_state)
         return rnd_checked.multivariate_normal(self.mean[state], self.covmat[state])
 
@@ -1251,6 +1340,10 @@ class HMM:
 
             self.max_len = max(lens)
 
+#todo: implement from inits.py
+    def _init_mc(self):
+        pass
+
     def fit(self, X, return_all_scores=False, save_iters=False):
         '''
         Trains the HMM using the Baum-Welch algorithm.
@@ -1265,7 +1358,7 @@ class HMM:
         -------
         Trained HMM instance, optionally with log-likelihood scores.
         '''
-        
+
         self._init(X)
         tr = np.zeros(self.ini_tr.shape)
         emi = np.zeros(self.ini_emi.shape)
@@ -1333,7 +1426,6 @@ class HMM:
         -------
         :Best HMM model based on BIC and the BIC scores.
         '''
-        
 
         bic = []
         models = {
@@ -1385,7 +1477,7 @@ class HMM:
         :s: Scaling factors.
 
         '''
-        
+
         history = np.concatenate([np.array([self.n_obs_symbols + 1]), history])
         end_traj = len(history)
         fs = np.zeros((self.n_states, end_traj))
@@ -1404,7 +1496,6 @@ class HMM:
         pStates = np.delete(pStates, 0, axis=1)
 
         return pStates, pSeq, fs, bs, s
-    
 
     def sample(self):
         '''
@@ -1419,34 +1510,33 @@ class HMM:
         :history (list): A list containing the generated sequence of observations, where each observation corresponds to a state in the sequence.
         :states (list): A list containing the sequence of states visited during the process, where each state is represented by its index.
         '''
-        
+
         history = []
         states = []
-    
+
         # Cumulative transition and emission probabilities
         trc = np.cumsum(self.tr, axis=1)
         ec = np.cumsum(self.emi, axis=1)
-    
+
         trc = trc / trc[:, -1][:, None]
         ec = ec / ec[:, -1][:, None]
-        
-        currentstate = 0  
-        while currentstate < self.n_states - 1: 
+
+        currentstate = 0
+        while currentstate < self.n_states - 1:
             # Sample observation
             observation = np.searchsorted(ec[currentstate], np.random.rand())
-            history.append(observation+1)
-            states.append(currentstate+1)
-    
+            history.append(observation + 1)
+            states.append(currentstate + 1)
+
             # Sample next state
             currentstate = np.searchsorted(trc[currentstate], np.random.rand())
-    
+
         # Terminal state emits its fixed observation
-        terminal_observation = np.argmax(self.emi[self.n_states - 1])  
-        history.append(terminal_observation+1)
-        states.append(currentstate+1)
+        terminal_observation = np.argmax(self.emi[self.n_states - 1])
+        history.append(terminal_observation + 1)
+        states.append(currentstate + 1)
 
         return history, states
-
 
     def sample_dataset(self, n_samples):
         '''
@@ -1462,12 +1552,15 @@ class HMM:
         :states_all: Corresponding state sequences.
 
         '''
-        
+
         obs = {}
         states_all = {}
         for i in range(n_samples):
             sample = self.sample()
             history, states = sample
+            while len(states) > 130 or len(states) < 100:
+                sample = self.sample()
+                history, states = sample
             obs[f'traj_{i}'] = history
             states_all[f'traj_{i}'] = states
         return obs, states_all
@@ -1487,7 +1580,7 @@ class HMM:
         :logP (optional): Log-probability of the predicted sequence.
 
         '''
-        
+
         end_traj = len(history)
         currentState = np.zeros(end_traj, dtype=int)
         if end_traj == 0:
@@ -1523,7 +1616,6 @@ class HMM:
             return currentState + 1, logP
         return currentState + 1
 
-    
     def estimate(self, history, estimatedStates, return_matrices=False):
         '''
         Estimates transition and emission matrices based on observed sequences and states.
@@ -1539,7 +1631,7 @@ class HMM:
         :Updated HMM instance or matrices (tr, emi).
 
         '''
-        
+
         tr = []
         emi = []
         end_traj = len(history)
@@ -1587,7 +1679,7 @@ class HMM:
         :rul_matrix: RUL probability distributions.
 
         '''
-        
+
         N = max(estimatedStates) - 1
         rul_matrix = np.zeros((len(estimatedStates), max_samples))
         prev_state = 0  # aux variable
@@ -1663,7 +1755,7 @@ class HMM:
         :None. Saves RUL estimates and metrics to files.
         
         '''
-        
+
         path = os.path.join(os.getcwd(), 'results')
         max_samples = ceil(self.max_len * 10) if max_samples is None else max_samples
         rul_mean_all, rul_upper_bound_all, rul_lower_bound_all = {}, {}, {}
@@ -1707,7 +1799,7 @@ class HMM:
         print(f"\nPrognostics complete. Results saved to: {os.path.join(path, 'dictionaries')}")
         if plot_rul:
             print(f"\nRUL plots saved to: {os.path.join(path, 'dictionaries', 'figures')}")
-            
+
         if get_metrics:
             df_results.to_csv(f'{path}/df_results.csv', index=False)
             print(f'\n Metrics saved to: {path}')
@@ -1722,7 +1814,7 @@ class HMM:
         :None. File saved in results/models.
 
         '''
-        
+
         path = os.path.join(os.getcwd(), 'results', 'models', f'{self.name}.txt')
         with open(path, 'wb') as f:
             pickle.dump(self.__dict__, f)
@@ -1741,7 +1833,7 @@ class HMM:
         None.
 
         '''
-        
+
         path = os.path.join(os.getcwd(), 'results', 'models', f'{model_name}.txt')
         with open(path, 'rb') as f:
             obj = pickle.load(f)

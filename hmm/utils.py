@@ -38,40 +38,6 @@ def create_data_hsmm(files, obs_state_len, f_value):
     return traj
 
 
-def MC_sampling(num, timesteps, HSMM):
-    '''
-    Performs Monte Carlo sampling using the Hidden Semi-Markov Model (HSMM).
-
-    Parameters
-    ----------
-    :num (int): Number of samples to generate.
-    :timesteps (int): Number of timesteps for each sample.
-    :HSMM (HSMM): The HSMM model object used for sampling.
-
-    Returns
-    -------
-    :obs (dict[str, List[int]]): A dictionary with trajectory observations.
-    :states (dict[str, List[int]]): A dictionary with the corresponding states for each trajectory.
-    :means (List[float]): A list of mean values from the HSMM model.
-    '''
-    
-    obs, states = {}, {}
-
-    for i in range(num):
-        sample = HSMM.sample(timesteps)
-        _, obs1, states1 = sample
-
-        for j in range(len(states1)):
-            if states1[j] > states1[j + 1]:
-                idx = j
-                break
-        obs.update({f'traj_{i + 1}': list(obs1[:idx + 1, 0])})
-        states.update({f'traj_{i + 1}': list(states1[:idx + 1])})
-
-    means = list(HSMM.mean[:, 0])
-    return obs, states, means
-
-
 # masks error when applying log(0)
 def log_mask_zero(a):
     '''

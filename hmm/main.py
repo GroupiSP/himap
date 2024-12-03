@@ -17,13 +17,10 @@ if mc_sampling:
                              n_iter=100
                              )
 
-    # command to initialize a model for MC sampling
-    init4durval_observ_state_1(hsmm_init)
-
     # MC sampling command
     num_of_histories = 20
     max_timesteps = 600
-    obs, states, means = MC_sampling(num_of_histories, max_timesteps, hsmm_init)
+    obs, states= hsmm_init.MC_dataset(num_of_histories, max_timesteps)
 
     plot_multiple_observ(obs, states, num2plot=5)
 
@@ -42,7 +39,7 @@ if mc_sampling:
     # fit with bic command
     # hsmm_estim, models, bic = hsmm_estim.fit_bic(obs, states=[2, 3, 4, 5, 6, 7, 8], return_models=True)
 
-    hsmm_estim.prognostics(obs, plot_rul=True)
+    hsmm_estim.prognostics(obs, plot_rul=True, get_metrics=True)
     
     #MC sampling for HMM
     hmm_init = HMM(n_states=6,
