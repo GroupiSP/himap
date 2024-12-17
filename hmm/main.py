@@ -15,10 +15,8 @@ def run_process(args):
     :param args:
     :return:
     """
-    hmm = args.hmm
     hsmm = args.hsmm
     mc_sampling = args.mc_sampling
-    cmapss = args.cmapss
     bic_fit = args.bic_ft
     save = args.save
     metrics = args.metrics
@@ -27,7 +25,7 @@ def run_process(args):
     n_states = args.n_states
 
     if mc_sampling:
-        if hmm:
+        if not hsmm:
             hmm_init = HMM(n_states=n_states, n_obs_symbols=30)
             obs, states = hmm_init.sample_dataset(num_histories)
             hmm_estim = HMM(n_states=n_states,
@@ -40,7 +38,7 @@ def run_process(args):
             if save:
                 hmm_estim.save_model()
             hmm_estim.prognostics(obs, plot_rul=enable_visuals, get_metrics=metrics)
-        elif hsmm:
+        else:
             hsmm_init = GaussianHSMM(n_states=n_states, n_durations=260, f_value=60, obs_state_len=10)
             obs, states = hsmm_init.MC_dataset(num_histories, timesteps=1000)
             hsmm_estim = GaussianHSMM(n_states=n_states,
@@ -55,14 +53,13 @@ def run_process(args):
             if save:
                 hsmm_estim.save_model()
             hsmm_estim.prognostics(obs, plot_rul=enable_visuals, get_metrics=metrics)
-        else:
-            raise ValueError("Please select either Hidden Markov Model or Hidden Semi-Markov Model for the example")
 
-    elif cmapss:
+
+    else:
         f_value = 21
         obs_state_len = 5
         seqs_train, seqs_test = load_data_cmapss(f_value=f_value, obs_state_len=obs_state_len)
-        if hmm:
+        if not hsmm:
             hmm_c = HMM(n_states=n_states, n_obs_symbols=f_value)
             if bic_fit:
                 hmm_c, bic = hmm_c.fit_bic(seqs_train, states=list(np.arange(2, n_states + 2)))
@@ -71,7 +68,7 @@ def run_process(args):
             if save:
                 hmm_c.save_model()
             hmm_c.prognostics(seqs_test, plot_rul=enable_visuals, get_metrics=metrics)
-        elif hsmm:
+        else:
             hsmm_c = GaussianHSMM(n_states=n_states, n_durations=200, f_value=f_value, obs_state_len=obs_state_len)
             if bic_fit:
                 hsmm_c, bic = hsmm_c.fit_bic(seqs_train, states=list(np.arange(2, n_states + 2)))
@@ -80,19 +77,14 @@ def run_process(args):
             if save:
                 hsmm_c.save_model()
             hsmm_c.prognostics(seqs_test, plot_rul=enable_visuals, get_metrics=metrics)
-        else:
-            raise ValueError("Please select either Hidden Markov Model or Hidden Semi-Markov Model for the example")
-    else:
-        raise ValueError("Please select either Monte-Carlo Sampling or CMAPSS data for the example")
 
 
-def himap_main(hmm, hsmm, mc_sampling, cmapss, bic_fit, save, metrics, enable_visuals, num_histories, n_states):
+
+def himap_main(hsmm, mc_sampling, bic_fit, save, metrics, enable_visuals, num_histories, n_states):
     """
     Main function for running the HMM models
-    :param hmm: True for Hidden Markov Model
     :param hsmm: True for Hidden Semi-Markov Model
     :param mc_sampling: True for Monte-Carlo Sampling
-    :param cmapss: True for CMAPSS data
     :param bic_fit: True for Bayesian Information Criterion fitting
     :param save: True for saving the fitted models
     :param metrics: True for calculating performance metrics
@@ -108,12 +100,7 @@ def himap_main(hmm, hsmm, mc_sampling, cmapss, bic_fit, save, metrics, enable_vi
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument(
-        "--hmm",
-        default=hmm,
-        type=str,
-        help="Use Hidden Markov Model(hmm), default=False",
-    )
+    
     parser.add_argument(
         "--hsmm",
         default=hsmm,
@@ -126,12 +113,7 @@ def himap_main(hmm, hsmm, mc_sampling, cmapss, bic_fit, save, metrics, enable_vi
         type=str2bool,
         help="Use Monte-Carlo generated data for the example, default=False",
     )
-    parser.add_argument(
-        "--cmapss",
-        default=cmapss,
-        type=str2bool,
-        help="Use the CMAPSS data for the example, default=True",
-    )
+
     parser.add_argument(
         "--bic_ft",
         default=bic_fit,
@@ -179,6 +161,6 @@ def himap_main(hmm, hsmm, mc_sampling, cmapss, bic_fit, save, metrics, enable_vi
 
 
 if __name__ == "__main__":
-    hmm, hsmm, mc_sampling, cmapss, bic_fit, save, metrics, enable_visuals, num_histories, n_states = (
-        True, False, False, True, True, True, True, True, 20, 6)
-    himap_main(hmm, hsmm, mc_sampling, cmapss, bic_fit, save, metrics, enable_visuals, num_histories, n_states)
+    hsmm, mc_sampling, bic_fit, save, metrics, enable_visuals, num_histories, n_states = (
+        False, False, True, True, True, True, 20, 6)
+    himap_main(hsmm, mc_sampling, bic_fit, save, metrics, enable_visuals, num_histories, n_states)
