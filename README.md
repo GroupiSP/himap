@@ -49,17 +49,31 @@ pip install -r requirements.txt
 >**Note**
 >This is the beta version of the example, where the test_cmapss.py file is used. We need to add the parser.args method to pull inputs from the cmd and have flags for mc example or cmapss example and for hmm or hsmm.
 
-To describe how to train and use the HMM and HSMM models, we show an example below. To run the code from the Anaconda terminal with default values, go to the `hmm` folder inside the `hsmm_dev` directory and run the `test_cmapss.py` file via the commands:
+To describe how to train and use the HMM and HSMM models, we show an example below. To run the code from the Anaconda terminal with default values, go to the `hmm` folder inside the `hsmm_dev` directory and run the `main.py` file via the commands:
 
 ```
 cd hmm
 ```
 
 ```
-python test_cmapss.py
+python main.py
 ```
 
-This runs the HMM model for the C-MAPSS dataset by default.
+This runs the HMM model for the C-MAPSS dataset by default and fits the best model utilizing the Bayesian Information Criterion.
+
+If you want to fit the HSMM model to the C-MAPSS data run the command:
+
+```
+python main.py --hmm False --hsmm True
+```
+
+If you want to run the example utilizing Monte Carlo Sampling generated data run the command:
+
+```
+python main.py --cmapss False --mc_sampling True
+```
+
+See the `main.py` file for different existing variables and options.
 
 ### Results
 
