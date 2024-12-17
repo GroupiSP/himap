@@ -112,5 +112,5 @@ The results are saved inside the directory `../hsmm_dev/hmm/results/`
 
 ## Contributors
 
-- [Athanasios Kontogiannis](https://github.com/thanoskont)
+- [Thanos Kontogiannis](https://github.com/thanoskont)
 - [Mariana Salinas-Camus](https://github.com/mariana-sc)
