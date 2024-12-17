@@ -1,7 +1,16 @@
 # hsmm
+
 Package for HMM and HSMM models including prognostics
 
+## Table of Contents
+
+- [Configuration and Installation](#installation)
+- [Data Structure](#structure)
+- [Example](#example)
+- [Contributors](#contributors)
+
 ## Installation
+
 The steps to configure and install the packages are the following:
 
 1. Create an Anaconda environment and activate it.
@@ -30,9 +39,6 @@ conda install git
 ```
 git clone https://github.com/thanoskont/hsmm_dev.git
 ```
->**Note**
->This command will be the correct when everything is merged to the main branch. For our use now, in order to pull directly from the hmm_add branch use:
->``` git clone -b hmm_add --single-branch https://github.com/thanoskont/hsmm_dev.git ```
 
 
   Step 2c
@@ -45,9 +51,34 @@ cd hsmm_dev
 pip install -r requirements.txt
 ```
 
+## Structure
+
+
+```
+../hsmm_dev/
+      └── LICENSE
+      └── README.md
+      └── requirements.txt
+    
+      ├── hmm/                                                          -- Required
+          └── ab.py                                                     -- Required
+          └── base.py                                                   -- Required
+          └── main.py                                                   -- Required
+          └── plot.py                                                   -- Required
+          └── smoothed.pyd                                              -- Required
+          └── utils.py                                                  -- Required
+
+          ├── example_data/                                             -- Required      
+              └── test_FD001_disc_20_mod.csv                            -- Required
+              └── train_FD001_disc_20_mod.csv                           -- Required
+
+          ├── results/                                                  -- Automatically generated      
+              ├── dictionaries                                          -- Automatically generated
+              ├── figures/                                              -- Automatically generated
+              ├── models/                                               -- Automatically generated
+```
+
 ## Example
->**Note**
->This is the beta version of the example, where the test_cmapss.py file is used. We need to add the parser.args method to pull inputs from the cmd and have flags for mc example or cmapss example and for hmm or hsmm.
 
 To describe how to train and use the HMM and HSMM models, we show an example below. To run the code from the Anaconda terminal with default values, go to the `hmm` folder inside the `hsmm_dev` directory and run the `main.py` file via the commands:
 
@@ -78,3 +109,8 @@ See the `main.py` file for different existing variables and options.
 ### Results
 
 The results are saved inside the directory `../hsmm_dev/hmm/results/`
+
+## Contributors
+
+- [Athanasios Kontogiannis](https://github.com/thanoskont)
+- [Mariana Salinas-Camus](https://github.com/mariana-sc)
