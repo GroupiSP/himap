@@ -3,6 +3,7 @@ import pickle
 import json
 import pandas as pd
 from numba import jit
+import argparse
 import os
 
 
@@ -10,12 +11,24 @@ class NumpyArrayEncoder(json.JSONEncoder):
     '''
     Custom JSON encoder to handle numpy.ndarray and numpy.integer objects for serialization.
     '''
+
     def default(self, obj):
         if isinstance(obj, np.ndarray):
             return obj.tolist()
         if isinstance(obj, np.integer):
             return int(obj)
         return json.JSONEncoder.default(self, obj)
+
+
+def str2bool(v):
+    if isinstance(v, bool):
+        return v
+    if v.lower() in ("yes", "true", "t", "y", "1"):
+        return True
+    elif v.lower() in ("no", "false", "f", "n", "0"):
+        return False
+    else:
+        raise argparse.ArgumentTypeError("Boolean value expected.")
 
 
 def create_data_hsmm(files, obs_state_len, f_value):
@@ -38,39 +51,34 @@ def create_data_hsmm(files, obs_state_len, f_value):
     return traj
 
 
-def MC_sampling(num, timesteps, HSMM):
-    '''
-    Performs Monte Carlo sampling using the Hidden Semi-Markov Model (HSMM).
+def load_data_cmapss(obs_state_len=5, f_value=21):
+    """
+    Loads the C-MAPSS dataset and prepares it for input into the HMMs.
+    :param obs_state_len:
+    :param f_value:
+    :return:
+    """
+    examples_path = os.path.join(os.getcwd(), "example_data")
+    train = pd.read_csv(os.path.join(examples_path,'train_FD001_disc_20_mod.csv'),
+                        sep=';')  # the discretized data starts from 0, to work with HMM it has to start from 1
+    test = pd.read_csv(os.path.join(examples_path,'test_FD001_disc_20_mod.csv'), sep=';')
+    train_units = np.unique(train['unit_nr'].to_numpy())
+    test_units = np.unique(test['unit_nr'].to_numpy())
+    seqs_train = {}
+    for i, unit in enumerate(train_units):
+        seq_unit = train.loc[train['unit_nr'] == unit]['s_discretized'].to_numpy() + 1
+        failure = [f_value] * obs_state_len
+        seq_unit = np.concatenate([seq_unit, failure]).tolist()
+        seqs_train[f'traj_{i}'] = seq_unit
 
-    Parameters
-    ----------
-    :num (int): Number of samples to generate.
-    :timesteps (int): Number of timesteps for each sample.
-    :HSMM (HSMM): The HSMM model object used for sampling.
+    seqs_test = {}
+    for i, unit in enumerate(test_units):
+        seq_unit = test.loc[test['unit_nr'] == unit]['s_discretized'].to_numpy() + 1
+        failure = [f_value] * obs_state_len
+        seq_unit = np.concatenate([seq_unit, failure]).tolist()
+        seqs_test[f'traj_{i}'] = seq_unit
 
-    Returns
-    -------
-    :obs (dict[str, List[int]]): A dictionary with trajectory observations.
-    :states (dict[str, List[int]]): A dictionary with the corresponding states for each trajectory.
-    :means (List[float]): A list of mean values from the HSMM model.
-    '''
-    
-    obs, states = {}, {}
-
-    for i in range(num):
-        sample = HSMM.sample(timesteps)
-        _, obs1, states1 = sample
-
-        for j in range(len(states1)):
-            if states1[j] > states1[j + 1]:
-                idx = j
-                break
-        obs.update({f'traj_{i + 1}': list(obs1[:idx + 1, 0])})
-        states.update({f'traj_{i + 1}': list(states1[:idx + 1])})
-
-    means = list(HSMM.mean[:, 0])
-    return obs, states, means
-
+    return seqs_train, seqs_test
 
 # masks error when applying log(0)
 def log_mask_zero(a):
@@ -85,29 +93,9 @@ def log_mask_zero(a):
     -------
     np.ndarray or float: The log of a, with zero values masked.
     '''
-    
+
     with np.errstate(divide="ignore", invalid='ignore'):
         return np.log(a)
-
-
-def get_single_history(data, index):
-    '''
-    Retrieves a single history from a data matrix and reshapes it.
-
-    Parameters
-    ----------
-    :data (np.ndarray): A 2D array containing multiple histories (shape: [num_trajectories, history_length]).
-    :index (int): The index of the desired history.
-
-    Returns
-    -------
-    :history (np.ndarray): A reshaped 1D array of the selected history, excluding all-zero rows.
-    '''
-    
-    history = data[index, :].reshape((data.shape[1], 1))
-    history = history[~np.all(history == 0, axis=1)]
-
-    return history
 
 
 def get_single_history_states(states, index, last_state):
@@ -124,7 +112,7 @@ def get_single_history_states(states, index, last_state):
     -------
     :history_states (List[int]): The list of states from the start to the point where last_state is found.
     '''
-    
+
     history_states = states[index]
 
     for j in range(len(history_states)):
@@ -147,7 +135,7 @@ def get_viterbi(HSMM, data):
     -------
     :results (List[List[int]]): A list of lists containing the predicted states for each trajectory.
     '''
-    
+
     results = []
     keys = list(data.keys())
     for i in range(len(data)):
@@ -185,6 +173,7 @@ def fix_input_data(traj, f_value, obs_state_len, is_zero_indexed=True):
         traj[key].extend([f_value for _ in range(obs_state_len)])
     return traj
 
+
 def get_rmse(mean_rul_dict, true_rul_dict):
     '''
     Computes the Root Mean Square Error (RMSE) between predicted Remaining Useful Life (RUL) and true RUL.
@@ -198,7 +187,7 @@ def get_rmse(mean_rul_dict, true_rul_dict):
     -------
     :df_results (pd.DataFrame): A DataFrame containing RMSE values for each trajectory, including the average RMSE.
     '''
-    
+
     df_results = pd.DataFrame(columns=['Name', 'rmse'])
     for key in mean_rul_dict.keys():
         predicted_values = mean_rul_dict[key]
@@ -210,15 +199,16 @@ def get_rmse(mean_rul_dict, true_rul_dict):
         predicted_values = np.pad(predicted_values, (0, max_length - len(predicted_values)), constant_values=0)
 
         # Calculate RMSE
-        rmse_pred = np.sqrt(np.mean((predicted_values - true_values)**2))
-        new_row = pd.DataFrame([{'Name':key, 'rmse':rmse_pred}])
+        rmse_pred = np.sqrt(np.mean((predicted_values - true_values) ** 2))
+        new_row = pd.DataFrame([{'Name': key, 'rmse': rmse_pred}])
         df_results = pd.concat([df_results, new_row], ignore_index=True)
-    
+
     # Calculate and append the average coverage
     average_rmse = df_results['rmse'].mean()
-    new_row = pd.DataFrame([{'Name':'Average', 'rmse':average_rmse}])
+    new_row = pd.DataFrame([{'Name': 'Average', 'rmse': average_rmse}])
     df_results = pd.concat([df_results, new_row], ignore_index=True)
     return df_results
+
 
 def get_coverage(upper_bound_dict, lower_bound_dict, true_rul_dict):
     '''
@@ -234,7 +224,7 @@ def get_coverage(upper_bound_dict, lower_bound_dict, true_rul_dict):
     -------
     :df_results (pd.DataFrame): A DataFrame containing coverage values for each trajectory, including the average coverage.
     '''
-    
+
     df_results = pd.DataFrame(columns=['Name', 'coverage'])
     for key in upper_bound_dict.keys():
         upper_bounds = upper_bound_dict[key]
@@ -245,13 +235,14 @@ def get_coverage(upper_bound_dict, lower_bound_dict, true_rul_dict):
             l <= t <= u for t, l, u in zip(true_values, lower_bounds, upper_bounds)
         )
         cov = count_within_bounds / len(true_values)
-        new_row = pd.DataFrame([{'Name':key,'coverage':cov}])
+        new_row = pd.DataFrame([{'Name': key, 'coverage': cov}])
         df_results = pd.concat([df_results, new_row], ignore_index=True)
     # Calculate and append the average coverage
     average_coverage = df_results['coverage'].mean()
-    new_row = pd.DataFrame([{'Name':'Average','coverage':average_coverage}])
+    new_row = pd.DataFrame([{'Name': 'Average', 'coverage': average_coverage}])
     df_results = pd.concat([df_results, new_row], ignore_index=True)
     return df_results
+
 
 def calculate_area_weighted_by_time(x_values, y_values):
     '''
@@ -266,12 +257,13 @@ def calculate_area_weighted_by_time(x_values, y_values):
     -------
     :area (float): The area under the curve weighted by time.
     '''
-    
+
     area = 0
     for i in range(1, len(x_values)):
         interval = x_values[i] - x_values[0]
-        area += interval * (y_values[i] + y_values[i-1]) / 2
+        area += interval * (y_values[i] + y_values[i - 1]) / 2
     return area
+
 
 def get_wsu(upper_bound_dict, lower_bound_dict):
     '''
@@ -286,22 +278,23 @@ def get_wsu(upper_bound_dict, lower_bound_dict):
     -------
     :df_results (pd.DataFrame): A DataFrame containing WSU values for each trajectory, including the average WSU.
     '''
-    
+
     df_results = pd.DataFrame(columns=['Name', 'wsu'])
     for key in upper_bound_dict.keys():
         upper_bounds = upper_bound_dict[key]
         lower_bounds = lower_bound_dict[key]
-        area_upper =  calculate_area_weighted_by_time(range(len(upper_bounds)), upper_bounds)
+        area_upper = calculate_area_weighted_by_time(range(len(upper_bounds)), upper_bounds)
         area_lower = calculate_area_weighted_by_time(range(len(lower_bounds)), lower_bounds)
         area_wsu = area_upper - area_lower
-        new_row = pd.DataFrame([{'Name':key,'wsu':area_wsu}])
+        new_row = pd.DataFrame([{'Name': key, 'wsu': area_wsu}])
         df_results = pd.concat([df_results, new_row], ignore_index=True)
-    
+
     # Calculate and append the average coverage
     average_wsu = df_results['wsu'].mean()
-    new_row = pd.DataFrame([{'Name':'Average','wsu':average_wsu}])
+    new_row = pd.DataFrame([{'Name': 'Average', 'wsu': average_wsu}])
     df_results = pd.concat([df_results, new_row], ignore_index=True)
     return df_results
+
 
 def evaluate_test_set(mean_rul_dict, upper_bound_dict, lower_bound_dict, true_rul_dict):
     '''
@@ -318,14 +311,14 @@ def evaluate_test_set(mean_rul_dict, upper_bound_dict, lower_bound_dict, true_ru
     -------
     :combined_df (pd.DataFrame): A DataFrame combining RMSE, coverage, and WSU for each trajectory, including the average values.
     '''
-    
+
     df_rmse = get_rmse(mean_rul_dict, true_rul_dict)
     df_coverage = get_coverage(upper_bound_dict, lower_bound_dict, true_rul_dict)
     df_wsu = get_wsu(upper_bound_dict, lower_bound_dict)
     # Merge the dataframes on the 'name' column
     combined_df = pd.merge(df_rmse, df_coverage, on='Name')
     combined_df = pd.merge(combined_df, df_wsu, on='Name')
-    return combined_df   
+    return combined_df
 
 
 @jit(nopython=True)
@@ -353,7 +346,7 @@ def baumwelch_method(n_states, n_obs_symbols, logPseq, fs, bs, scale, score, his
     :tr (np.ndarray): Updated transition matrix after the algorithm has performed parameter estimation.
     :emi (np.ndarray): Updated emission matrix after the algorithm has performed parameter estimation.
     '''
-    
+
     score += logPseq
     logf = np.log(fs)
     logb = np.log(bs)
@@ -401,7 +394,7 @@ def fs_calculation(n_states, end_traj, fs, s, history, calc_emi, calc_tr):
     :fs (np.ndarray): The updated forward probabilities matrix.
     :s (np.ndarray): The updated scaling factors.
     '''
-    
+
     for count in range(1, end_traj):
         for state in range(n_states):
             fs[state, count] = calc_emi[state, history[count] - 1] * np.sum(fs[:, count - 1] * calc_tr[:, state])
@@ -430,7 +423,7 @@ def bs_calculation(n_states, end_traj, bs, s, history, calc_emi, calc_tr):
     -------
     :bs (np.ndarray): The updated backward probabilities matrix.
     '''
-    
+
     for count in range(end_traj - 2, -1, -1):
         for state in range(n_states):
             bs[state, count] = (1 / s[0, count + 1]) * np.sum(
@@ -468,7 +461,7 @@ def calculate_cdf(pmf, confidence_level):
     :lower_value (int): The index corresponding to the lower percentile.
     :upper_value (int): The index corresponding to the upper percentile.
     '''
-    
+
     cdf = np.cumsum(pmf)
     # Calculate the lower and upper percentiles
     lower_percentile = (1 - confidence_level) / 2

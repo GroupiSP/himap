@@ -1,65 +1,184 @@
-import numpy as np
-from inits import *
+import warnings
+
+warnings.filterwarnings(action="ignore", category=DeprecationWarning)
+warnings.simplefilter(action="ignore", category=FutureWarning)
+warnings.simplefilter(action="ignore", category=UserWarning)
+
 from utils import *
 from base import GaussianHSMM, HMM
-from plot import plot_multiple_observ
+import argparse
 
-import matplotlib
 
-matplotlib.use('TkAgg')
-import matplotlib.pyplot as plt
+def run_process(args):
+    """
+    Run the process for the selected model
+    :param args:
+    :return:
+    """
+    hmm = args.hmm
+    hsmm = args.hsmm
+    mc_sampling = args.mc_sampling
+    cmapss = args.cmapss
+    bic_fit = args.bic_ft
+    save = args.save
+    metrics = args.metrics
+    enable_visuals = args.enable_visuals
+    num_histories = args.num_histories
+    n_states = args.n_states
 
-mc_sampling = True
+    if mc_sampling:
+        if hmm:
+            hmm_init = HMM(n_states=n_states, n_obs_symbols=30)
+            obs, states = hmm_init.sample_dataset(num_histories)
+            hmm_estim = HMM(n_states=n_states,
+                            n_obs_symbols=hmm_init.n_obs_symbols,
+                            )
+            if bic_fit:
+                hmm_estim, bic = hmm_estim.fit_bic(obs, states=list(np.arange(2, n_states + 4)))
+            else:
+                hmm_estim.fit(obs)
+            if save:
+                hmm_estim.save_model()
+            hmm_estim.prognostics(obs, plot_rul=enable_visuals, get_metrics=metrics)
+        elif hsmm:
+            hsmm_init = GaussianHSMM(n_states=n_states, n_durations=260, f_value=60, obs_state_len=10)
+            obs, states = hsmm_init.MC_dataset(num_histories, timesteps=1000)
+            hsmm_estim = GaussianHSMM(n_states=n_states,
+                                      n_durations=hsmm_init.n_durations,
+                                      f_value=hsmm_init.f_value,
+                                      obs_state_len=hsmm_init.obs_state_len,
+                                      )
+            if bic_fit:
+                hsmm_estim, bic = hsmm_estim.fit_bic(obs, states=list(np.arange(2, n_states + 4)))
+            else:
+                hsmm_estim.fit(obs)
+            if save:
+                hsmm_estim.save_model()
+            hsmm_estim.prognostics(obs, plot_rul=enable_visuals, get_metrics=metrics)
+        else:
+            raise ValueError("Please select either Hidden Markov Model or Hidden Semi-Markov Model for the example")
 
-if mc_sampling:
-    hsmm_init = GaussianHSMM(n_states=6,
-                             n_durations=260,
-                             n_iter=100
-                             )
+    elif cmapss:
+        f_value = 21
+        obs_state_len = 5
+        seqs_train, seqs_test = load_data_cmapss(f_value=f_value, obs_state_len=obs_state_len)
+        if hmm:
+            hmm_c = HMM(n_states=n_states, n_obs_symbols=f_value)
+            if bic_fit:
+                hmm_c, bic = hmm_c.fit_bic(seqs_train, states=list(np.arange(2, n_states + 2)))
+            else:
+                hmm_c.fit(seqs_train, save_iters=False)
+            if save:
+                hmm_c.save_model()
+            hmm_c.prognostics(seqs_test, plot_rul=enable_visuals, get_metrics=metrics)
+        elif hsmm:
+            hsmm_c = GaussianHSMM(n_states=n_states, n_durations=200, f_value=f_value, obs_state_len=obs_state_len)
+            if bic_fit:
+                hsmm_c, bic = hsmm_c.fit_bic(seqs_train, states=list(np.arange(2, n_states + 2)))
+            else:
+                hsmm_c.fit(seqs_train)
+            if save:
+                hsmm_c.save_model()
+            hsmm_c.prognostics(seqs_test, plot_rul=enable_visuals, get_metrics=metrics)
+        else:
+            raise ValueError("Please select either Hidden Markov Model or Hidden Semi-Markov Model for the example")
+    else:
+        raise ValueError("Please select either Monte-Carlo Sampling or CMAPSS data for the example")
 
-    # command to initialize a model for MC sampling
-    init4durval_observ_state_1(hsmm_init)
 
-    # MC sampling command
-    num_of_histories = 20
-    max_timesteps = 600
-    obs, states, means = MC_sampling(num_of_histories, max_timesteps, hsmm_init)
+def himap_main(hmm, hsmm, mc_sampling, cmapss, bic_fit, save, metrics, enable_visuals, num_histories, n_states):
+    """
+    Main function for running the HMM models
+    :param hmm: True for Hidden Markov Model
+    :param hsmm: True for Hidden Semi-Markov Model
+    :param mc_sampling: True for Monte-Carlo Sampling
+    :param cmapss: True for CMAPSS data
+    :param bic_fit: True for Bayesian Information Criterion fitting
+    :param save: True for saving the fitted models
+    :param metrics: True for calculating performance metrics
+    :param enable_visuals: True for generating and saving figures
+    :param num_histories: The number of generated histories via Monte Carlo Sampling
+    :param n_states: The number of hidden states for Markov Model
+    :return:
+    """
+    print(
+        "This is the code for applying the hmm models to CMAPSS data or to Monte-Carlo Simulated data \n"
+    )
+    print("Code running...\n")
 
-    plot_multiple_observ(obs, states, num2plot=5)
+    parser = argparse.ArgumentParser()
 
-    hsmm_estim = GaussianHSMM(n_states=6,
-                              n_durations=140,
-                              n_iter=2,
-                              tol=0.5,
-                              f_value=60,
-                              obs_state_len=10,
-                              left_to_right=True
-                             )
+    parser.add_argument(
+        "--hmm",
+        default=hmm,
+        type=str,
+        help="Use Hidden Markov Model(hmm), default=False",
+    )
+    parser.add_argument(
+        "--hsmm",
+        default=hsmm,
+        type=str,
+        help="Use Hidden Semi-Markov Model (hsmm), default=True",
+    )
+    parser.add_argument(
+        "--mc_sampling",
+        default=mc_sampling,
+        type=str2bool,
+        help="Use Monte-Carlo generated data for the example, default=False",
+    )
+    parser.add_argument(
+        "--cmapss",
+        default=cmapss,
+        type=str2bool,
+        help="Use the CMAPSS data for the example, default=True",
+    )
+    parser.add_argument(
+        "--bic_ft",
+        default=bic_fit,
+        type=str2bool,
+        help="Enable Bayesian Information Criterion fitting for Markov Models, default=False",
+    )
+    parser.add_argument(
+        "--save",
+        default=save,
+        type=str2bool,
+        help="Enable saving of the fitted models, default=True",
+    )
 
-    hsmm_estim.fit(obs, save_iters=True)
-    hsmm_estim.save_model()
+    parser.add_argument(
+        "--metrics",
+        default=metrics,
+        type=str2bool,
+        help="Enable calculation of performance metrics for RUL prediction, default=True",
+    )
 
-    # fit with bic command
-    # hsmm_estim, models, bic = hsmm_estim.fit_bic(obs, states=[2, 3, 4, 5, 6, 7, 8], return_models=True)
+    parser.add_argument(
+        "--enable_visuals",
+        default=enable_visuals,
+        type=str2bool,
+        help="Enable generating and saving figures, default=True",
+    )
 
-    hsmm_estim.prognostics(obs, plot_rul=True)
-    
-    #MC sampling for HMM
-    hmm_init = HMM(n_states=6,
-                   n_obs_symbols=30,
-                   n_iter=2,
-                   left_to_right=True
-                   )
-    init_hmm_mc(hmm_init)
-    obs, states = hmm_init.sample_dataset(num_of_histories)
-    hmm_estim = HMM(n_states=6,
-                   n_obs_symbols=30,
-                   n_iter=10,
-                   left_to_right=True
-                   )
-    hmm_estim.fit(obs)
-    error_tr = round(np.mean(np.abs(hmm_init.tr - hmm_estim.tr)), 2)
-    error_emi = round(np.mean(np.abs(hmm_init.emi - hmm_estim.emi)), 2)
-    print(f"Estimation error\nTransition matrix: {error_tr}\nEmission matrix: {error_emi}")
-    hmm_estim.prognostics(obs, plot_rul=True, get_metrics=True)
-    
+    parser.add_argument(
+        "--num_histories",
+        default=num_histories,
+        type=int,
+        help="Select the number of generated histories via Monte Carlo Sampling, default=50",
+    )
+
+    parser.add_argument(
+        "--n_states",
+        default=n_states,
+        type=int,
+        help="Select the number of hidden states for Markov Model, default=6",
+    )
+
+    args = parser.parse_args()
+
+    run_process(args)
+
+
+if __name__ == "__main__":
+    hmm, hsmm, mc_sampling, cmapss, bic_fit, save, metrics, enable_visuals, num_histories, n_states = (
+        False, True, False, True, True, True, True, True, 20, 6)
+    himap_main(hmm, hsmm, mc_sampling, cmapss, bic_fit, save, metrics, enable_visuals, num_histories, n_states)
