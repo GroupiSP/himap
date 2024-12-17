@@ -180,5 +180,5 @@ def himap_main(hmm, hsmm, mc_sampling, cmapss, bic_fit, save, metrics, enable_vi
 
 if __name__ == "__main__":
     hmm, hsmm, mc_sampling, cmapss, bic_fit, save, metrics, enable_visuals, num_histories, n_states = (
-        False, True, False, True, True, True, True, True, 20, 6)
+        True, False, False, True, True, True, True, True, 20, 6)
     himap_main(hmm, hsmm, mc_sampling, cmapss, bic_fit, save, metrics, enable_visuals, num_histories, n_states)
