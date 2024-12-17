@@ -84,39 +84,6 @@ def _backward(n_samples, n_states, n_durations,
                 beta[t, j] = logsumexp(beta_addends)
 
 
-#
-# def _smoothed(n_samples, n_states, n_durations,
-#               beta, betastar,
-#               right_censor,
-#               eta, xi, gamma):
-#
-#     for t in range(n_samples - 1, -1, -1):
-#         for i in range(n_states):
-#             # eta computation
-#             # note: if with right censor, then eta[t, :, :] for t >= n_samples will only
-#             # be used for gamma computation. since beta[t, :] = 0 for t >= n_samples, hence
-#             # no modifications to eta at t >= n_samples.
-#             for d in range(n_durations):
-#                 eta[t, i, d] = eta[t, i, d] + beta[t, i]
-#             # xi computation
-#             # note: at t == n_samples - 1, it is decided that xi[t, :, :] should be log(0),
-#             # either with right censor or without, because there is no more next data.
-#             for j in range(n_states):
-#                 if t == n_samples - 1:
-#                     xi[t, i, j] = -np.inf
-#                 else:
-#                     xi[t, i, j] = xi[t, i, j] + betastar[t + 1, j]
-#             # gamma computation
-#             # note: this is the slow "original" method. the paper provides a faster
-#             # recursive method (using xi), but it requires subtraction and produced
-#             # numerical inaccuracies from our initial tests.
-#             gamma[t, i] = -np.inf
-#             for d in range(n_durations):
-#                 for h in range(n_durations):
-#                     if h >= d and (t + d < n_samples or right_censor != 0):
-#                         gamma[t, i] = np.logaddexp(gamma[t, i], eta[t + d, i, h])
-#
-
 def _u_only(n_samples, n_states, n_durations,
             log_obsprob, u):
     for t in range(n_samples):

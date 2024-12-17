@@ -1,11 +1,10 @@
 import matplotlib
 
-matplotlib.use('TkAgg')
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
 import os
 
-#todo: documentation for all of the functions
 
 def plot_multiple_observ(obs, states, num2plot):
     '''
@@ -18,14 +17,14 @@ def plot_multiple_observ(obs, states, num2plot):
     '''
     fig_path = os.path.join(os.getcwd(), 'results', 'figures', 'mc_traj.png')
     title = f'Degradation histories with MC sampling\n {num2plot} random samples out of {len(obs)} total samples'
-    fig, axs = plt.subplots(num2plot,figsize=(19, 10))
+    fig, axs = plt.subplots(num2plot, figsize=(19, 10))
     keys = list(obs.keys())
     for i in range(num2plot):
         k = np.random.randint(len(obs))
         states4plot = states[keys[k]]
         obs4plot = obs[keys[k]]
 
-        ax1=axs[i]
+        ax1 = axs[i]
 
         color = 'tab:red'
         ax1.set_xlabel('time')
@@ -40,7 +39,7 @@ def plot_multiple_observ(obs, states, num2plot):
         ax2.plot(states4plot, color=color, linewidth=2, alpha=.8, label='HI')
         ax2.tick_params(axis='y', labelcolor=color, )
         ax2.set_yticks([tick for tick in ax2.get_yticks() if tick % 1 == 0])
-        ax2.set_ylim(top=max(states4plot)+1)
+        ax2.set_ylim(top=max(states4plot) + 1)
         plt.xlim(left=0)
         plt.ylim(bottom=0)
 
@@ -49,15 +48,15 @@ def plot_multiple_observ(obs, states, num2plot):
     plt.close()
     print(f'MC trajectories figure saved at {fig_path}')
 
+
 def plot_ruls(rul_mean, rul_upper, rul_lower, fig_path):
     """
-    plot RUL
-    :param rul_mean:
-    :param rul_upper:
-    :param rul_lower:
-    :param k:
-    :param fig_path:
-    :return:
+    plot RUL with CIs
+    :param rul_mean: mean RUL dictionary
+    :param rul_upper: RUL upper bound dictionary
+    :param rul_lower: RUL lower bound dictionary
+    :param fig_path: path to save the figure
+    :return: None
     """
     fig, ax = plt.subplots(figsize=(19, 10))
     ax.plot(range(len(rul_mean), 0, -1), label='True RUL', color='black', linewidth=2)
