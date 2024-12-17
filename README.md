@@ -64,13 +64,13 @@ This runs the HMM model for the C-MAPSS dataset by default and fits the best mod
 If you want to fit the HSMM model to the C-MAPSS data run the command:
 
 ```
-python main.py --hmm False --hsmm True
+python main.py --hsmm True 
 ```
 
 If you want to run the example utilizing Monte Carlo Sampling generated data run the command:
 
 ```
-python main.py --cmapss False --mc_sampling True
+python main.py --mc_sampling True
 ```
 
 See the `main.py` file for different existing variables and options.
