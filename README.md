@@ -1,4 +1,4 @@
-# hsmm
+# HiMAP:  Hidden Markov for Advanced Prognostics
 
 Package for HMM and HSMM models including prognostics
 
