@@ -12,7 +12,7 @@ from math import ceil
 import copy
 from ab import _forward, _backward, _u_only
 
-import smoothed as core
+from cython_build import fwd_bwd as core
 
 from utils import *
 from plot import *

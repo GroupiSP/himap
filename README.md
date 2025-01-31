@@ -1,5 +1,14 @@
-# hsmm
+# HiMAP:  Hidden Markov for Advanced Prognostics
+
 Package for HMM and HSMM models including prognostics
+
+## Table of Contents
+
+- [Configuration and Installation](#installation)
+- [Data Structure](#structure)
+- [Example](#example)
+- [Contributors](#contributors)
+
 
 ## Installation
 The steps to configure and install the packages are the following:
@@ -45,15 +54,53 @@ cd hsmm_dev
 pip install -r requirements.txt
 ```
 
+4. To compile the Cython code, run the following commands:
+```
+cd hmm/cython_build
+```
+
+```
+python setup.py build_ext --inplace
+```
+
+```
+cd ..
+```
+
+
+## Structure
+
+
+```
+../hsmm_dev/
+      └── LICENSE
+      └── README.md
+      └── requirements.txt
+    
+      ├── hmm/                                                          -- Required
+          └── ab.py                                                     -- Required
+          └── base.py                                                   -- Required
+          └── main.py                                                   -- Required
+          └── plot.py                                                   -- Required
+          └── smoothed.pyd                                              -- Required
+          └── utils.py                                                  -- Required
+
+          ├── example_data/                                             -- Required      
+              └── test_FD001_disc_20_mod.csv                            -- Required
+              └── train_FD001_disc_20_mod.csv                           -- Required
+
+          ├── results/                                                  -- Automatically generated      
+              ├── dictionaries                                          -- Automatically generated
+              ├── figures/                                              -- Automatically generated
+              ├── models/                                               -- Automatically generated
+```
+
 ## Example
 >**Note**
 >This is the beta version of the example, where the test_cmapss.py file is used. We need to add the parser.args method to pull inputs from the cmd and have flags for mc example or cmapss example and for hmm or hsmm.
 
 To describe how to train and use the HMM and HSMM models, we show an example below. To run the code from the Anaconda terminal with default values, go to the `hmm` folder inside the `hsmm_dev` directory and run the `main.py` file via the commands:
 
-```
-cd hmm
-```
 
 ```
 python main.py
@@ -78,3 +125,8 @@ See the `main.py` file for different existing variables and options.
 ### Results
 
 The results are saved inside the directory `../hsmm_dev/hmm/results/`
+
+## Contributors
+
+- [Thanos Kontogiannis](https://github.com/thanoskont)
+- [Mariana Salinas-Camus](https://github.com/mariana-sc)
