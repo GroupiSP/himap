@@ -84,6 +84,11 @@ cd ..
           └── plot.py                                                   -- Required
           └── smoothed.pyd                                              -- Required
           └── utils.py                                                  -- Required
+          
+          ├── cython_build/                                             -- Required      
+              └── fwd_bwd.pyx                                           -- Required
+              └── setup.py                                              -- Required
+
 
           ├── example_data/                                             -- Required      
               └── test_FD001_disc_20_mod.csv                            -- Required
