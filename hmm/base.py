@@ -1278,8 +1278,14 @@ class HMM:
 
         create_folders()
 
-        if not n_states >= 2:
-            raise ValueError("number of states (n_states) must be at least 2")
+        assert n_states >= 2, "number of states (n_states) must be at least 2"
+        # Assertion for n_obs_symbols
+        assert isinstance(n_obs_symbols, int) and n_obs_symbols > 0, "number of observation symbols must be a positive integer"
+        # Assertion for n_iter
+        assert isinstance(n_iter, int) and n_iter > 0, "number of iterations must be a positive integer"
+        # Assertion for tol
+        assert isinstance(tol, (float, int)) and tol > 0, "tolerance must be a positive float or int"
+        
         if len(name) == 0:
             name = f"hmm"
             print(f"Model name not provided. Default name: {name}")
@@ -1380,6 +1386,17 @@ class HMM:
         -------
         Trained HMM instance, optionally with log-likelihood scores.
         """
+        
+        assert isinstance(X, dict), "X should be a dictionary with trajectories."
+   
+        # Ensure each key in X is in the expected format
+        for key in X:
+            assert key.startswith("traj_"), f"Each key in X must start with 'traj_', but found: {key}"
+     
+        # Validate that each trajectory in X is a list or array
+        for traj in X.values():
+            assert isinstance(traj, (list, np.ndarray)), "Each trajectory should be a list or numpy array."
+
 
         self._init(X)
         score_per_iter = []
@@ -1446,6 +1463,23 @@ class HMM:
         -------
         :Best HMM model based on BIC and the BIC scores.
         """
+        
+        assert isinstance(X, dict), "X should be a dictionary with trajectories."
+
+        # Ensure each key in X is in the expected format
+        for key in X:
+            assert key.startswith("traj_"), f"Each key in X must start with 'traj_', but found: {key}"
+        
+        # Validate that each trajectory in X is a list or numpy array
+        for traj in X.values():
+            assert isinstance(traj, (list, np.ndarray)), "Each trajectory should be a list or numpy array."
+        
+        # Validate that 'states' is a list of integers and each value is >= 2
+        assert isinstance(states, list), "'states' should be a list of integers."
+        for i, n_states in enumerate(states):
+            assert isinstance(n_states, (int, np.integer)), f"Value at index {i} in 'states' must be an integer, but found: {type(n_states).__name__}"
+            assert n_states >= 2, f"Value at index {i} in 'states' must be >= 2, but found: {n_states}"
+
 
         bic = []
         models = {
@@ -1777,9 +1811,16 @@ class HMM:
         :None. Saves RUL estimates and metrics to files.
         
         """
-
-        path = os.path.join(os.getcwd(), 'results')
+        assert isinstance(data, dict), "Data should be a dictionary containing observation trajectories."
+        assert all(isinstance(v, (list, np.ndarray)) for v in data.values()), "Each trajectory in data must be a list or numpy array."
+        assert isinstance(plot_rul, bool), "plot_rul should be a boolean value."
+        assert isinstance(get_metrics, bool), "get_metrics should be a boolean value."
+        assert max_samples is None or isinstance(max_samples, int), "max_samples must be an integer or None."
+    
+        # Set max_samples to a default if None
         max_samples = ceil(self.max_len * 10) if max_samples is None else max_samples
+        assert max_samples > 0, "max_samples must be a positive integer."
+        path = os.path.join(os.getcwd(), 'results')
         rul_mean_all, rul_upper_bound_all, rul_lower_bound_all = {}, {}, {}
         pdf_ruls_all = {f"traj_{i}": {} for i in range(
             len(data))}  # different initialization due to the structure of the dictionary cointaining the timesteps
