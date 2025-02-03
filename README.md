@@ -55,10 +55,13 @@ pip install -r requirements.txt
 ```
 
 4. To compile the Cython code, run the following commands:
+   
+  Step 4a
 ```
 cd hmm/cython_build
 ```
 
+  Steb 4b
 ```
 python setup.py build_ext --inplace
 ```
