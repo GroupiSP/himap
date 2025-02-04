@@ -9,6 +9,29 @@ Package for HMM and HSMM models including prognostics
 - [Example](#example)
 - [Contributors](#contributors)
 
+## Requirements
+> [!WARNING]
+> A C++ compiler is required to build the .pyx files.
+
+### Windows users:
+Microsoft Visual C/C++ (MSVC) 14.0 or higher is required to build the .pyx files.
+
+https://visualstudio.microsoft.com/visual-cpp-build-tools/ 
+
+(Download Build Tool - After Visual Studio Installer is ready, choose Desktop development with C++)
+
+### Linux users:
+The GNU C Compiler (gcc) is usually present. Next to a C compiler, Cython requires the Python header files. 
+On Ubuntu or Debian run the following command:
+
+```
+sudo apt-get install build-essential python3-dev
+```
+
+>[!Note]
+>For more information refer to the Cython package documentation:
+>
+>https://cython.readthedocs.io/en/latest/src/quickstart/install.html
 
 ## Installation
 The steps to configure and install the packages are the following:
