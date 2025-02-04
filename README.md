@@ -41,13 +41,13 @@ The steps to configure and install the packages are the following:
   Step 1a
 
 ```
-conda create -n hmm_env python=3.9.16
+conda create -n himap python=3.9.16
 ```
 
   Step 1b
 
 ```
-conda activate hmm_env
+conda activate himap
 ```
 
 
