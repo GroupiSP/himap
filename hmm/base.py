@@ -1,5 +1,4 @@
 import os
-
 from scipy.stats import multivariate_normal, norm, geom
 from scipy.special import logsumexp
 from scipy.signal import convolve
@@ -480,6 +479,19 @@ class HSMM:
         -------
         :self (GaussianHSMM): The trained model.
         """
+        
+        assert isinstance(X, dict), "X should be a dictionary with trajectories."
+   
+        # Ensure each key in X is in the expected format
+        for key in X:
+            assert key.startswith("traj_"), f"Each key in X must start with 'traj_', but found: {key}"
+     
+        # Validate that each trajectory in X is a list or array
+        for traj in X.values():
+            assert isinstance(traj, (list, np.ndarray)), "Each trajectory should be a list or numpy array."
+            
+        assert isinstance(save_iters, bool), "save_iters must be a boolean."
+
 
         score_per_iter = []
         score_per_sample = []
@@ -681,6 +693,22 @@ class HSMM:
         :bic (list[float]): BIC scores for each fitted model.
         :(optional) models (dict): All trained models, returned if return_models=True.
         """
+        
+        assert isinstance(X, dict), "X should be a dictionary with trajectories."
+
+        # Ensure each key in X is in the expected format
+        for key in X:
+            assert key.startswith("traj_"), f"Each key in X must start with 'traj_', but found: {key}"
+        
+        # Validate that each trajectory in X is a list or numpy array
+        for traj in X.values():
+            assert isinstance(traj, (list, np.ndarray)), "Each trajectory should be a list or numpy array."
+        
+        # Validate that 'states' is a list of integers and each value is >= 2
+        assert isinstance(states, list), "'states' should be a list of integers."
+        for i, n_states in enumerate(states):
+            assert isinstance(n_states, (int, np.integer)), f"Value at index {i} in 'states' must be an integer, but found: {type(n_states).__name__}"
+            assert n_states >= 2, f"Value at index {i} in 'states' must be >= 2, but found: {n_states}"
 
         bic = []
         keys = list(X.keys())
@@ -850,6 +878,12 @@ class HSMM:
         :RUL plots (if plot_rul=True).
 
         """
+        
+        assert isinstance(data, dict), "Data should be a dictionary containing observation trajectories."
+        assert all(isinstance(v, (list, np.ndarray)) for v in data.values()), "Each trajectory in data must be a list or numpy array."
+        assert isinstance(plot_rul, bool), "plot_rul should be a boolean value."
+        assert isinstance(get_metrics, bool), "get_metrics should be a boolean value."
+        assert max_samples is None or isinstance(max_samples, int), "max_samples must be an integer or None."
 
         if self.max_len is None:
             keys = list(data.keys())
@@ -1397,6 +1431,8 @@ class HMM:
         for traj in X.values():
             assert isinstance(traj, (list, np.ndarray)), "Each trajectory should be a list or numpy array."
 
+        assert isinstance(return_all_scores, bool), "return_all_scores must be a boolean."
+        assert isinstance(save_iters, bool), "save_iters must be a boolean."
 
         self._init(X)
         score_per_iter = []
@@ -1607,6 +1643,7 @@ class HMM:
         :states_all: Corresponding state sequences.
 
         """
+        assert isinstance(n_samples, int) and n_samples > 0, "n_samples must be a positive integer."
 
         self._init_mc()
         obs = {}
