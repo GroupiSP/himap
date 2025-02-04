@@ -27,7 +27,7 @@ def run_process(args):
     if mc_sampling:
         if not hsmm:
             hmm_init = HMM(n_states=n_states, n_obs_symbols=30)
-            obs, states = hmm_init.sample_dataset(num_histories)
+            obs, states = hmm_init.mc_dataset(num_histories)
             hmm_estim = HMM(n_states=n_states,
                             n_obs_symbols=hmm_init.n_obs_symbols,
                             )
@@ -40,7 +40,7 @@ def run_process(args):
             hmm_estim.prognostics(obs, plot_rul=enable_visuals, get_metrics=metrics)
         else:
             hsmm_init = GaussianHSMM(n_states=n_states, n_durations=260, f_value=60, obs_state_len=10)
-            obs, states = hsmm_init.MC_dataset(num_histories, timesteps=1000)
+            obs, states = hsmm_init.mc_dataset(num_histories, timesteps=1000)
             hsmm_estim = GaussianHSMM(n_states=n_states,
                                       n_durations=hsmm_init.n_durations,
                                       f_value=hsmm_init.f_value,

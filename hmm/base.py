@@ -265,7 +265,7 @@ class HSMM:
             ctr_sample += currdur
         return ctr_sample, np.atleast_2d(X), np.array(state_sequence, dtype=int)
 
-    def MC_dataset(self, num, timesteps):
+    def mc_dataset(self, num, timesteps):
         """
         Generates a dataset of a number of observations and corresponding state sequences utilizing the sample method .
 
@@ -279,6 +279,10 @@ class HSMM:
         :obs (dict[str, List[int]]): A dictionary with trajectory observations.
         :states (dict[str, List[int]]): A dictionary with the corresponding states for each trajectory.
         """
+
+        assert isinstance(num, int) and num > 0, "num must be a positive integer."
+        assert isinstance(timesteps, int) and timesteps > 0, "timesteps must be a positive integer."
+
         self._init_mc()
         obs, states = {}, {}
 
@@ -1590,7 +1594,8 @@ class HMM:
 
     def sample(self):
         """
-        Generates a random observation sequence and state sequence, starting from the initial state and terminating when the last state is reached.
+        Generates a sequence of observations and corresponding state sequences performing a random walk on the model
+        (MC Sampling).
         
         Parameters
         ----------
@@ -1629,9 +1634,9 @@ class HMM:
 
         return history, states
 
-    def sample_dataset(self, n_samples):
+    def mc_dataset(self, n_samples):
         """
-        Generates a dataset of sampled observation sequences.
+        Generates a dataset of a number of observations and corresponding state sequences utilizing the sample method .
 
         Parameters
         ----------
