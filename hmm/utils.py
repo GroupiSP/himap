@@ -326,25 +326,21 @@ def baumwelch_method(n_states, n_obs_symbols, logPseq, fs, bs, scale, score, his
     '''
     Implements the Baum-Welch algorithm for parameter estimation in Hidden Markov Models (HMM).
 
-    Parameters
-    ----------
-    :n_states (int): The number of hidden states in the model.
-    :n_obs_symbols (int): The number of observation symbols.
-    :logPseq (float): The log-probability of the observed sequence.
-    :fs (np.ndarray): The forward probabilities matrix (shape: [n_states, sequence_length]).
-    :bs (np.ndarray): The backward probabilities matrix (shape: [n_states, sequence_length]).
-    :scale (np.ndarray): The scale factors for normalization (shape: [1, sequence_length]).
-    :score (float): The cumulative score (log probability) to be updated.
-    :history (List[int]): The sequence of observed symbols (integer indices).
-    :tr (np.ndarray): The transition matrix (shape: [n_states, n_states]).
-    :emi (np.ndarray): The emission matrix (shape: [n_states, n_obs_symbols]).
-    :calc_tr (np.ndarray): A precomputed matrix of transition probabilities (shape: [n_states, n_states]).
-    :calc_emi (np.ndarray): A precomputed matrix of emission probabilities (shape: [n_states, n_obs_symbols]).
+    :param int n_states (int): The number of hidden states in the model.
+    :param int n_obs_symbols (int): The number of observation symbols.
+    :param float logPseq (float): The log-probability of the observed sequence.
+    :param np.ndarray fs (np.ndarray): The forward probabilities matrix (shape: [n_states, sequence_length]).
+    :param np.ndarray bs (np.ndarray): The backward probabilities matrix (shape: [n_states, sequence_length]).
+    :param np.ndarray scale (np.ndarray): The scale factors for normalization (shape: [1, sequence_length]).
+    :param float score (float): The cumulative score (log probability) to be updated.
+    :param List[int] history (List[int]): The sequence of observed symbols (integer indices).
+    :param np.ndarray tr (np.ndarray): The transition matrix (shape: [n_states, n_states]).
+    :param np.ndarray emi (np.ndarray): The emission matrix (shape: [n_states, n_obs_symbols]).
+    :param np.ndarray calc_tr (np.ndarray): A precomputed matrix of transition probabilities (shape: [n_states, n_states]).
+    :param np.ndarray calc_emi (np.ndarray): A precomputed matrix of emission probabilities (shape: [n_states, n_obs_symbols]).
 
-    Returns
-    -------
-    :tr (np.ndarray): Updated transition matrix after the algorithm has performed parameter estimation.
-    :emi (np.ndarray): Updated emission matrix after the algorithm has performed parameter estimation.
+    :return np.ndarray tr (np.ndarray): Updated transition matrix after the algorithm has performed parameter estimation.
+    :return np.ndarray emi (np.ndarray): Updated emission matrix after the algorithm has performed parameter estimation.
     '''
 
     score += logPseq

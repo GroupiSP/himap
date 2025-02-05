@@ -20,19 +20,35 @@ np.seterr(invalid='ignore', divide='ignore')
 
 
 class HSMM:
+    """
+    Base class for Hidden Semi-Markov Models (HSMMs)
+    """
     def __init__(self, n_states=2, n_durations=5, n_iter=20, tol=1e-2, left_to_right=False, obs_state_len=None,
                  f_value=None, random_state=None, name=""):
 
         """
-        :n_states (int): Number of hidden states. Must be ≥ 2.
-        :n_durations (int): Number of duration categories per state. Must be ≥ 1.
-        :n_iter (int): Maximum number of iterations for training.
-        :tol (float): Convergence threshold for stopping the training.
-        :left_to_right (bool): Indicates whether the model follows a left-to-right topology.
-        :obs_state_len (int, optional): Length of the observed state (required if f_value is provided).
-        :f_value (int/float, optional): Final observed value of the state (required if obs_state_len is provided).
-        :random_state (int/None, optional): Seed for reproducibility.
-        :name (str, optional): Name of the model. Defaults to "hsmm" if not provided.
+        Initializes the Hidden Semi-Markov Model (HSMM) with the provided parameters.
+
+        Parameters
+        ----------
+        n_states : int
+            Number of hidden states. Must be ≥ 2.
+        n_durations : int
+            Number of duration categories per state. Must be ≥ 1.
+        n_iter : int
+            Maximum number of iterations for training.
+        tol : float
+            Convergence threshold for stopping the training.
+        left_to_right : bool
+            Indicates whether the model follows a left-to-right topology.
+        obs_state_len : int, optional
+            Length of the observed state (required if f_value is provided).
+        f_value : int/float, optional
+            Final observed value of the state (required if obs_state_len is provided).
+        random_state : int/None, optional
+            Seed for reproducibility.
+        name : str, optional
+            Name of the model. Defaults to "hsmm" if not provided.
         """
 
         if not n_states >= 2:
@@ -84,7 +100,7 @@ class HSMM:
 
         Returns
         -------
-        None.
+        None
 
         """
         if not hasattr(self, "pi") and not self.left_to_right:
@@ -220,19 +236,24 @@ class HSMM:
 
     def sample(self, n_samples=5, random_state=None):
         """
-        Generates a sequence of observations and corresponding state sequences performing a random walk on the model
-        (MC Sampling).
+        Generates a sequence of observations and corresponding state sequences performing a random walk on the model (MC Sampling).
 
         Parameters
         ----------
-        :n_samples (int): Number of observations to generate.
-        :random_state (int/None): Seed for reproducibility.
+        n_samples : int
+            Number of observations to generate.
+        random_state : int/None
+            Seed for reproducibility.
 
         Returns
         -------
-        :ctr_sample (int): Number of samples generated.
-        :X (ndarray): Generated observation sequence.
-        :state_sequence (ndarray): State sequence corresponding to the observations.
+        ctr_sample : int
+            Number of samples generated.
+        X : ndarray
+            Generated observation sequence.
+        state_sequence : ndarray
+            State sequence corresponding to the observations.
+
         """
 
         self._init(None)  # see "note for programmers" in init() in GaussianHSMM
@@ -267,18 +288,23 @@ class HSMM:
 
     def mc_dataset(self, num, timesteps):
         """
-        Generates a dataset of a number of observations and corresponding state sequences utilizing the sample method .
+        Generates a dataset of a number of observations and corresponding state sequences utilizing the sample method.
 
         Parameters
         ----------
-        :num (int): Number of samples to generate.
-        :timesteps (int): Number of maximum timesteps for each sample.
+        num : int
+            Number of samples to generate.
+        timesteps : int
+            Number of maximum timesteps for each sample.
 
         Returns
         -------
-        :obs (dict[str, List[int]]): A dictionary with trajectory observations.
-        :states (dict[str, List[int]]): A dictionary with the corresponding states for each trajectory.
+        obs : dict[str, List[int]]
+            A dictionary with trajectory observations.
+        states : dict[str, List[int]]
+            A dictionary with the corresponding states for each trajectory.
         """
+
 
         assert isinstance(num, int) and num > 0, "num must be a positive integer."
         assert isinstance(timesteps, int) and timesteps > 0, "timesteps must be a positive integer."
@@ -302,18 +328,19 @@ class HSMM:
     def _core_u_only(self, logframe):
         """
         Computes intermediate matrix u for duration probabilities.
-        
+
         Parameters
         ----------
-        
-        :logframe (numpy.ndarray): A 2D array of log-likelihood values for each observation under each state. Shape: (n_samples, n_states).
-        
+        logframe : ndarray
+            A 2D array of log-likelihood values for each observation under each state. Shape: (n_samples, n_states).
+
         Returns
         -------
-        
-        :u (numpy.ndarray): A 3D array of intermediate values computed for each sample, state, and duration. Shape: (n_samples, n_states, n_durations).
-        
+        u : ndarray
+            A 3D array of intermediate values computed for each sample, state, and duration. Shape: (n_samples, n_states, n_durations).
+
         """
+
         n_samples = logframe.shape[0]
         u = np.empty((n_samples, self.n_states, self.n_durations))
         _u_only(n_samples, self.n_states, self.n_durations,
