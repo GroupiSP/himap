@@ -7,14 +7,22 @@ import os
 
 
 def plot_multiple_observ(obs, states, num2plot):
-    '''
-    plot multiple degradation histories from MC sampling
-    :param obs: all histories
-    :param states: params from MC sampling
-    :param means: params from MC sampling
-    :param num2plot: number of histories to plot
-    :return:
-    '''
+    """
+    Plot multiple degradation histories from MC sampling.
+
+    Parameters
+    ----------
+    obs : dict
+        Dictionary containing all observations.
+    states : dict
+        Dictionary containing all statesm of the corresponding observations.
+    num2plot : int
+        Number of histories to plot.
+
+    Returns
+    -------
+    None
+    """
     fig_path = os.path.join(os.getcwd(), 'results', 'figures', 'mc_traj.png')
     title = f'Degradation histories with MC sampling\n {num2plot} random samples out of {len(obs)} total samples'
     fig, axs = plt.subplots(num2plot, figsize=(19, 10))
@@ -51,12 +59,22 @@ def plot_multiple_observ(obs, states, num2plot):
 
 def plot_ruls(rul_mean, rul_upper, rul_lower, fig_path):
     """
-    plot RUL with CIs
-    :param rul_mean: mean RUL dictionary
-    :param rul_upper: RUL upper bound dictionary
-    :param rul_lower: RUL lower bound dictionary
-    :param fig_path: path to save the figure
-    :return: None
+    Plot RUL predictiction with confidence intervals vs true RUL.
+
+    Parameters
+    ----------
+    rul_mean : list
+        Mean RUL predictions.
+    rul_upper : list
+        Upper bound of the confidence interval.
+    rul_lower : list
+        Lower bound of the confidence interval.
+    fig_path : str
+        Path to save the figure.
+
+    Returns
+    -------
+    None
     """
     fig, ax = plt.subplots(figsize=(19, 10))
     ax.plot(range(len(rul_mean), 0, -1), label='True RUL', color='black', linewidth=2)
