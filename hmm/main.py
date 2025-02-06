@@ -17,13 +17,21 @@ def run_process(args):
     ----------
     args : argparse.Namespace
         Arguments for the process. Expected attributes are:
+
         - hsmm (bool): Flag to indicate if HSMM model should be used.
+
         - mc_sampling (bool): Flag to indicate if Monte Carlo sampling should be used.
+
         - bic_fit (bool): Flag to indicate if BIC fitting should be performed.
+
         - save (bool): Flag to indicate if the model should be saved.
+
         - metrics (bool): Flag to indicate if metrics should be calculated.
+
         - enable_visuals (bool): Flag to indicate if visualizations should be enabled.
+
         - num_histories (int): Number of histories for Monte Carlo sampling.
+
         - n_states (int): Number of states for the HMM/HSMM model.
     
     Returns

@@ -326,7 +326,7 @@ class HSMM:
 
     def _core_u_only(self, logframe):
         """
-        Computes intermediate matrix u for duration probabilities.
+        Computes auxiliary matrix u for duration probabilities utilizing the ``ab._u_only`` method.
 
         Parameters
         ----------
@@ -338,6 +338,10 @@ class HSMM:
         u : ndarray
             A 3D array of intermediate values computed for each sample, state, and duration. Shape: (n_samples, n_states, n_durations).
 
+        See Also
+        --------
+        ab._u_only : Computes the auxiliary matrix u for duration probabilities.
+
         """
 
         n_samples = logframe.shape[0]
@@ -348,7 +352,8 @@ class HSMM:
 
     def _core_forward(self, u, logdur):
         """
-        Performs the forward step of the HSMM algorithm using duration and transition probabilities.
+        Performs the forward step of the HSMM algorithm using duration and transition probabilities,
+        utilizing the ``ab._forward`` method.
 
         Parameters
         ----------
@@ -366,6 +371,10 @@ class HSMM:
         alpha : ndarray
             Forward probabilities for each state at each sample. Shape: (n_samples, n_states).
 
+        See Also
+        --------
+        ab._forward : Performs the forward step of the HSMM algorithm.
+
         """
 
         n_samples = u.shape[0]
@@ -382,6 +391,7 @@ class HSMM:
         """
         Implements the backward algorithm for the HSMM.
         Computes backward probabilities and intermediate variables for scaling.
+        Utilizes the ``ab._backward`` method.
 
         Parameters
         ----------
@@ -396,6 +406,10 @@ class HSMM:
             Backward probabilities for each state.
         betastar : ndarray
             Scaled backward probabilities.
+
+        See Also
+        --------
+        ab._backward : Implements the backward algorithm for the HSMM.
 
         """
 
@@ -412,7 +426,7 @@ class HSMM:
     def _core_smoothed(self, beta, betastar, eta, xi):
         """
         Combines forward and backward variables to compute the smoothed probabilities.
-        Implemented in Cython with ``core._smoothed``.
+        Implemented in Cython.
 
         Parameters
         ----------
@@ -1414,6 +1428,7 @@ class HMM:
     """
     The HMM class models Hidden Markov processes with discrete emissions.
     """
+
     def __init__(self, n_states=2, n_obs_symbols=30, n_iter=100, tol=1e-2, left_to_right=True, name=""):
         """
         Parameters

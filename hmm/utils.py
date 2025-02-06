@@ -562,8 +562,11 @@ def create_folders():
     - The created folder structure is as follows:
       
       results/
+
       ├── dictionaries/
+
       ├── figures/
+
       ├── models/
 
     Examples

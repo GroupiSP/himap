@@ -22,6 +22,10 @@ def plot_multiple_observ(obs, states, num2plot):
     Returns
     -------
     None
+
+    Notes
+    -----
+    The figure is saved at '/path/to/current/directory/results/figures/mc_traj.png'.
     """
     fig_path = os.path.join(os.getcwd(), 'results', 'figures', 'mc_traj.png')
     title = f'Degradation histories with MC sampling\n {num2plot} random samples out of {len(obs)} total samples'
@@ -75,6 +79,10 @@ def plot_ruls(rul_mean, rul_upper, rul_lower, fig_path):
     Returns
     -------
     None
+
+    Notes
+    -----
+    The figure is saved at '/path/to/current/directory/results/figures/'.
     """
     fig, ax = plt.subplots(figsize=(19, 10))
     ax.plot(range(len(rul_mean), 0, -1), label='True RUL', color='black', linewidth=2)
