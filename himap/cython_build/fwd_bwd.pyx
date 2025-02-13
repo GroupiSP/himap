@@ -1,4 +1,4 @@
-# cython_core: language_level=3, boundscheck=False, wraparound=False
+#cython: language_level=3, boundscheck=False, wraparound=False
 
 import numpy as np
 

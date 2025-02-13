@@ -29,7 +29,7 @@ def _curr_u(n_samples, u, t, j, d):
     See Also
     --------
     _forward : Function that computes the forward variable.
-    base.HSMM._core_u_only : Method that computes the u values.
+    himap.base.HSMM._core_u_only : Method that computes the u values.
     """
     if t - d >= 0 and t < n_samples:
         return u[t, j, d]
@@ -84,7 +84,7 @@ def _forward(n_samples, n_states, n_durations,
 
     See Also
     --------
-    base.HSMM._core_forward : Method that computes the forward variable.
+    himap.base.HSMM._core_forward : Method that computes the forward variable.
     """
     # set number of iterations for t
     if right_censor != 0:
@@ -161,7 +161,7 @@ def _backward(n_samples, n_states, n_durations,
 
     See Also
     --------
-    base.HSMM._core_backward : Method that computes the backward variable.
+    himap.base.HSMM._core_backward : Method that computes the backward variable.
 
     Notes
     -----
@@ -215,7 +215,7 @@ def _u_only(n_samples, n_states, n_durations,
 
     See Also
     --------
-    base.HSMM._core_u_only : Method that computes the u values.
+    himap.base.HSMM._core_u_only : Method that computes the u values.
 
     Notes
     -----

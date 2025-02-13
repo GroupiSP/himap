@@ -4,8 +4,8 @@ warnings.filterwarnings(action="ignore")
 warnings.simplefilter(action="ignore", category=FutureWarning)
 warnings.simplefilter(action="ignore", category=UserWarning)
 
-from utils import *
-from base import GaussianHSMM, HMM
+from himap.utils import *
+from himap.base import GaussianHSMM, HMM
 import argparse
 
 

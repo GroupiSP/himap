@@ -1,4 +1,7 @@
-import os
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+warnings.simplefilter(action='ignore', category=DeprecationWarning)
+warnings.simplefilter(action='ignore', category=RuntimeWarning)
 from scipy.stats import multivariate_normal, norm, geom
 from scipy.special import logsumexp
 from scipy.signal import convolve
@@ -6,17 +9,15 @@ from sklearn import cluster
 from sklearn.linear_model import LinearRegression
 from tqdm import tqdm
 from itertools import zip_longest
-import matplotlib.pyplot as plt
 from math import ceil
-import copy
-from ab import _forward, _backward, _u_only
+from himap.ab import _forward, _backward, _u_only
 
-from cython_build import fwd_bwd as core
+from himap.cython_build import fwd_bwd as core
 
-from utils import *
-from plot import *
+from himap.utils import *
+from himap.plot import *
 
-np.seterr(invalid='ignore', divide='ignore')
+np.seterr(invalid='ignore', divide='ignore', )
 
 
 class HSMM:
@@ -104,7 +105,7 @@ class HSMM:
 
         See Also
         --------
-        utils.create_data_hsmm : Generates a dataset of trajectories for the model.
+        himap.utils.create_data_hsmm : Generates a dataset of trajectories for the model.
 
         """
         if not hasattr(self, "pi") and not self.left_to_right:
@@ -340,7 +341,7 @@ class HSMM:
 
         See Also
         --------
-        ab._u_only : Computes the auxiliary matrix u for duration probabilities.
+        himap.ab._u_only : Computes the auxiliary matrix u for duration probabilities.
 
         """
 
@@ -373,7 +374,7 @@ class HSMM:
 
         See Also
         --------
-        ab._forward : Performs the forward step of the HSMM algorithm.
+        himap.ab._forward : Performs the forward step of the HSMM algorithm.
 
         """
 
@@ -409,7 +410,7 @@ class HSMM:
 
         See Also
         --------
-        ab._backward : Implements the backward algorithm for the HSMM.
+        himap.ab._backward : Implements the backward algorithm for the HSMM.
 
         """
 
@@ -552,7 +553,7 @@ class HSMM:
 
         See Also
         --------
-        utils.create_data_hsmm : Generates a dataset of trajectories for the model.
+        himap.utils.create_data_hsmm : Generates a dataset of trajectories for the model.
         """
         assert isinstance(X, dict), "X should be a dictionary with trajectories."
 
@@ -775,7 +776,7 @@ class HSMM:
 
         See Also
         --------
-        utils.create_data_hsmm : Generates a dataset of trajectories for the model.
+        himap.utils.create_data_hsmm : Generates a dataset of trajectories for the model.
         HSMM.bic : Computes the Bayesian Information Criterion (BIC) score to evaluate model performance.
         HSMM.fit : Trains the model using the Expectation-Maximization (EM) algorithm.
         """
@@ -985,7 +986,7 @@ class HSMM:
         See Also
         --------
         HSMM.RUL : Estimates the Remaining Useful Life (RUL) for a given state history using convolution of duration probabilities.
-        utils.create_data_hsmm : Generates a dataset of trajectories for the model.
+        himap.utils.create_data_hsmm : Generates a dataset of trajectories for the model.
         """
         assert isinstance(data, dict), "Data should be a dictionary containing observation trajectories."
         assert all(isinstance(v, (list, np.ndarray)) for v in
@@ -1485,7 +1486,7 @@ class HMM:
 
         See Also
         --------
-        utils.create_data_hsmm : Generates a dataset of trajectories for the model.
+        himap.utils.create_data_hsmm : Generates a dataset of trajectories for the model.
         """
         if not hasattr(self, "ini_tr") and not self.left_to_right:
             self.ini_tr = np.full((self.n_states, self.n_states), 1.0 / (self.n_states))
@@ -1575,7 +1576,7 @@ class HMM:
 
         See Also
         --------
-        utils.create_data_hsmm : Generates a dataset of trajectories for the model.
+        himap.utils.create_data_hsmm : Generates a dataset of trajectories for the model.
         """
         assert isinstance(X, dict), "X should be a dictionary with trajectories."
 
@@ -2044,7 +2045,7 @@ class HMM:
         See Also
         --------
         HMM.RUL : Estimates the remaining useful life of a system based on state sequence.
-        utils.create_data_hsmm : Generates a dataset of trajectories for the model.
+        himap.utils.create_data_hsmm : Generates a dataset of trajectories for the model.
         """
         assert isinstance(data, dict), "Data should be a dictionary containing observation trajectories."
         assert all(isinstance(v, (list, np.ndarray)) for v in
