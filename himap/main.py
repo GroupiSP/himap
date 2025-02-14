@@ -1,11 +1,16 @@
+import sys
+import os
+
+sys.path.append(os.path.join(os.path.dirname(__file__)))
+
 import warnings
 
 warnings.filterwarnings(action="ignore")
 warnings.simplefilter(action="ignore", category=FutureWarning)
 warnings.simplefilter(action="ignore", category=UserWarning)
 
-from .utils import *
-from .base import GaussianHSMM, HMM
+from utils import *
+from base import GaussianHSMM, HMM
 import argparse
 
 

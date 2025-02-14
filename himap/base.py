@@ -15,12 +15,12 @@ from sklearn.linear_model import LinearRegression
 from tqdm import tqdm
 from itertools import zip_longest
 from math import ceil
-from .ab import _forward, _backward, _u_only
+from ab import _forward, _backward, _u_only
 
-from .cython_build import fwd_bwd as core
+from cython_build import fwd_bwd as core
 
-from .utils import *
-from .plot import *
+from utils import *
+from plot import *
 
 np.seterr(invalid='ignore', divide='ignore', )
 
