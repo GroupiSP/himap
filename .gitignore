@@ -1,0 +1,12 @@
+/docs/
+/dist/
+/build/
+*.egg-info/
+/results
+/pyproject.toml
+/setup.py
+/himap/cython_build/build/
+/himap/cython_build/fwd_bwd.cp39-win_amd64.pyd
+/himap/cython_build/fwd_bwd.c
+/himap/docs_v2/
+/himap/results/

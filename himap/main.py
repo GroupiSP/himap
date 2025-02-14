@@ -1,6 +1,11 @@
+import sys
+import os
+
+sys.path.append(os.path.join(os.path.dirname(__file__)))
+
 import warnings
 
-warnings.filterwarnings(action="ignore", category=DeprecationWarning)
+warnings.filterwarnings(action="ignore")
 warnings.simplefilter(action="ignore", category=FutureWarning)
 warnings.simplefilter(action="ignore", category=UserWarning)
 
@@ -12,8 +17,31 @@ import argparse
 def run_process(args):
     """
     Run the process for the selected model
-    :param args:
-    :return:
+
+    Parameters
+    ----------
+    args : argparse.Namespace
+        Arguments for the process. Expected attributes are:
+
+        - hsmm (bool): Flag to indicate if HSMM model should be used.
+
+        - mc_sampling (bool): Flag to indicate if Monte Carlo sampling should be used.
+
+        - bic_fit (bool): Flag to indicate if BIC fitting should be performed.
+
+        - save (bool): Flag to indicate if the model should be saved.
+
+        - metrics (bool): Flag to indicate if metrics should be calculated.
+
+        - enable_visuals (bool): Flag to indicate if visualizations should be enabled.
+
+        - num_histories (int): Number of histories for Monte Carlo sampling.
+
+        - n_states (int): Number of states for the HMM/HSMM model.
+    
+    Returns
+    -------
+    None
     """
     hsmm = args.hsmm
     mc_sampling = args.mc_sampling
@@ -27,7 +55,7 @@ def run_process(args):
     if mc_sampling:
         if not hsmm:
             hmm_init = HMM(n_states=n_states, n_obs_symbols=30)
-            obs, states = hmm_init.sample_dataset(num_histories)
+            obs, states = hmm_init.mc_dataset(num_histories)
             hmm_estim = HMM(n_states=n_states,
                             n_obs_symbols=hmm_init.n_obs_symbols,
                             )
@@ -40,7 +68,7 @@ def run_process(args):
             hmm_estim.prognostics(obs, plot_rul=enable_visuals, get_metrics=metrics)
         else:
             hsmm_init = GaussianHSMM(n_states=n_states, n_durations=260, f_value=60, obs_state_len=10)
-            obs, states = hsmm_init.MC_dataset(num_histories, timesteps=1000)
+            obs, states = hsmm_init.mc_dataset(num_histories, timesteps=1000)
             hsmm_estim = GaussianHSMM(n_states=n_states,
                                       n_durations=hsmm_init.n_durations,
                                       f_value=hsmm_init.f_value,
@@ -83,15 +111,29 @@ def run_process(args):
 def himap_main(hsmm, mc_sampling, bic_fit, save, metrics, enable_visuals, num_histories, n_states):
     """
     Main function for running the HMM models
-    :param hsmm: True for Hidden Semi-Markov Model
-    :param mc_sampling: True for Monte-Carlo Sampling
-    :param bic_fit: True for Bayesian Information Criterion fitting
-    :param save: True for saving the fitted models
-    :param metrics: True for calculating performance metrics
-    :param enable_visuals: True for generating and saving figures
-    :param num_histories: The number of generated histories via Monte Carlo Sampling
-    :param n_states: The number of hidden states for Markov Model
-    :return:
+
+    Parameters
+    ----------
+    hsmm : bool
+        If True use Hidden Semi-Markov Model. If False use Hidden Markov Model.
+    mc_sampling : bool
+        If True use Monte-Carlo Sampling as case example. If False use CMAPSS data.
+    bic_fit : bool
+        If True enable Bayesian Information Criterion fitting for Markov Models.
+    save : bool
+        If True enable saving of the fitted models.
+    metrics : bool
+        If True enable calculation of performance metrics for RUL prediction.
+    enable_visuals : bool
+        If True enable generating and saving figures.
+    num_histories : int
+        The number of generated histories via Monte Carlo Sampling. It is only used if mc_sampling is True.
+    n_states : int
+        The number of hidden states for Markov Model.
+    
+    Returns
+    -------
+    None
     """
     print(
         "This is the code for applying the hmm models to CMAPSS data or to Monte-Carlo Simulated data \n"
