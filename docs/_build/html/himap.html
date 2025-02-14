@@ -1,0 +1,2152 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>API Documentation &mdash; HiMAP  documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=5929fcd5"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Fundamentals of HMMs for Prognostics" href="fundamentals.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            HiMAP
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Documentation overview:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="quick_start.html">Quick Start Guide: Prognostics using C-MAPSS</a></li>
+<li class="toctree-l1"><a class="reference internal" href="fundamentals.html">Fundamentals of HMMs for Prognostics</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-himap.ab">himap.ab module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#himap.ab._curr_u"><code class="docutils literal notranslate"><span class="pre">_curr_u()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#himap.ab._forward"><code class="docutils literal notranslate"><span class="pre">_forward()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#himap.ab._backward"><code class="docutils literal notranslate"><span class="pre">_backward()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#himap.ab._u_only"><code class="docutils literal notranslate"><span class="pre">_u_only()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-himap.base">himap.base module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#himap.base.HSMM"><code class="docutils literal notranslate"><span class="pre">HSMM</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.HSMM._init"><code class="docutils literal notranslate"><span class="pre">HSMM._init()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.HSMM._init_mc"><code class="docutils literal notranslate"><span class="pre">HSMM._init_mc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.HSMM._check"><code class="docutils literal notranslate"><span class="pre">HSMM._check()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.HSMM._dur_init"><code class="docutils literal notranslate"><span class="pre">HSMM._dur_init()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.HSMM._dur_check"><code class="docutils literal notranslate"><span class="pre">HSMM._dur_check()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.HSMM._dur_probmat"><code class="docutils literal notranslate"><span class="pre">HSMM._dur_probmat()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.HSMM._dur_mstep"><code class="docutils literal notranslate"><span class="pre">HSMM._dur_mstep()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.HSMM._emission_logl"><code class="docutils literal notranslate"><span class="pre">HSMM._emission_logl()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.HSMM._emission_pre_mstep"><code class="docutils literal notranslate"><span class="pre">HSMM._emission_pre_mstep()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.HSMM._emission_mstep"><code class="docutils literal notranslate"><span class="pre">HSMM._emission_mstep()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.HSMM._state_sample"><code class="docutils literal notranslate"><span class="pre">HSMM._state_sample()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.HSMM.sample"><code class="docutils literal notranslate"><span class="pre">HSMM.sample()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.HSMM.mc_dataset"><code class="docutils literal notranslate"><span class="pre">HSMM.mc_dataset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.HSMM._core_u_only"><code class="docutils literal notranslate"><span class="pre">HSMM._core_u_only()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.HSMM._core_forward"><code class="docutils literal notranslate"><span class="pre">HSMM._core_forward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.HSMM._core_backward"><code class="docutils literal notranslate"><span class="pre">HSMM._core_backward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.HSMM._core_smoothed"><code class="docutils literal notranslate"><span class="pre">HSMM._core_smoothed()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.HSMM._core_viterbi"><code class="docutils literal notranslate"><span class="pre">HSMM._core_viterbi()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.HSMM.score"><code class="docutils literal notranslate"><span class="pre">HSMM.score()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.HSMM.predict"><code class="docutils literal notranslate"><span class="pre">HSMM.predict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.HSMM.fit"><code class="docutils literal notranslate"><span class="pre">HSMM.fit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.HSMM.bic"><code class="docutils literal notranslate"><span class="pre">HSMM.bic()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.HSMM.fit_bic"><code class="docutils literal notranslate"><span class="pre">HSMM.fit_bic()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.HSMM.RUL"><code class="docutils literal notranslate"><span class="pre">HSMM.RUL()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.HSMM.prognostics"><code class="docutils literal notranslate"><span class="pre">HSMM.prognostics()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.HSMM.save_model"><code class="docutils literal notranslate"><span class="pre">HSMM.save_model()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.HSMM.load_model"><code class="docutils literal notranslate"><span class="pre">HSMM.load_model()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#himap.base.GaussianHSMM"><code class="docutils literal notranslate"><span class="pre">GaussianHSMM</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.GaussianHSMM._init"><code class="docutils literal notranslate"><span class="pre">GaussianHSMM._init()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.GaussianHSMM._init_mc"><code class="docutils literal notranslate"><span class="pre">GaussianHSMM._init_mc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.GaussianHSMM._check"><code class="docutils literal notranslate"><span class="pre">GaussianHSMM._check()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.GaussianHSMM._dur_init"><code class="docutils literal notranslate"><span class="pre">GaussianHSMM._dur_init()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.GaussianHSMM._dur_check"><code class="docutils literal notranslate"><span class="pre">GaussianHSMM._dur_check()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.GaussianHSMM._dur_probmat"><code class="docutils literal notranslate"><span class="pre">GaussianHSMM._dur_probmat()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.GaussianHSMM._dur_mstep"><code class="docutils literal notranslate"><span class="pre">GaussianHSMM._dur_mstep()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.GaussianHSMM._emission_logl"><code class="docutils literal notranslate"><span class="pre">GaussianHSMM._emission_logl()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.GaussianHSMM._emission_mstep"><code class="docutils literal notranslate"><span class="pre">GaussianHSMM._emission_mstep()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.GaussianHSMM._state_sample"><code class="docutils literal notranslate"><span class="pre">GaussianHSMM._state_sample()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#himap.base.HMM"><code class="docutils literal notranslate"><span class="pre">HMM</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.HMM._init"><code class="docutils literal notranslate"><span class="pre">HMM._init()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.HMM._init_mc"><code class="docutils literal notranslate"><span class="pre">HMM._init_mc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.HMM.fit"><code class="docutils literal notranslate"><span class="pre">HMM.fit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.HMM.fit_bic"><code class="docutils literal notranslate"><span class="pre">HMM.fit_bic()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.HMM.decode"><code class="docutils literal notranslate"><span class="pre">HMM.decode()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.HMM.sample"><code class="docutils literal notranslate"><span class="pre">HMM.sample()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.HMM.mc_dataset"><code class="docutils literal notranslate"><span class="pre">HMM.mc_dataset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.HMM.predict"><code class="docutils literal notranslate"><span class="pre">HMM.predict()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.HMM.estimate"><code class="docutils literal notranslate"><span class="pre">HMM.estimate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.HMM.RUL"><code class="docutils literal notranslate"><span class="pre">HMM.RUL()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.HMM.prognostics"><code class="docutils literal notranslate"><span class="pre">HMM.prognostics()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.HMM.save_model"><code class="docutils literal notranslate"><span class="pre">HMM.save_model()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.HMM.load_model"><code class="docutils literal notranslate"><span class="pre">HMM.load_model()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-himap.main">himap.main module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#himap.main.run_process"><code class="docutils literal notranslate"><span class="pre">run_process()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#himap.main.himap_main"><code class="docutils literal notranslate"><span class="pre">himap_main()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-himap.plot">himap.plot module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#himap.plot.plot_multiple_observ"><code class="docutils literal notranslate"><span class="pre">plot_multiple_observ()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#himap.plot.plot_ruls"><code class="docutils literal notranslate"><span class="pre">plot_ruls()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-himap.utils">himap.utils module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#himap.utils.NumpyArrayEncoder"><code class="docutils literal notranslate"><span class="pre">NumpyArrayEncoder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#himap.utils.NumpyArrayEncoder.default"><code class="docutils literal notranslate"><span class="pre">NumpyArrayEncoder.default()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#himap.utils.str2bool"><code class="docutils literal notranslate"><span class="pre">str2bool()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#himap.utils.create_data_hsmm"><code class="docutils literal notranslate"><span class="pre">create_data_hsmm()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#himap.utils.load_data_cmapss"><code class="docutils literal notranslate"><span class="pre">load_data_cmapss()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#himap.utils.log_mask_zero"><code class="docutils literal notranslate"><span class="pre">log_mask_zero()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#himap.utils.get_single_history_states"><code class="docutils literal notranslate"><span class="pre">get_single_history_states()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#himap.utils.get_viterbi"><code class="docutils literal notranslate"><span class="pre">get_viterbi()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#himap.utils.fix_input_data"><code class="docutils literal notranslate"><span class="pre">fix_input_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#himap.utils.get_rmse"><code class="docutils literal notranslate"><span class="pre">get_rmse()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#himap.utils.get_coverage"><code class="docutils literal notranslate"><span class="pre">get_coverage()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#himap.utils.calculate_area_weighted_by_time"><code class="docutils literal notranslate"><span class="pre">calculate_area_weighted_by_time()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#himap.utils.get_wsu"><code class="docutils literal notranslate"><span class="pre">get_wsu()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#himap.utils.evaluate_test_set"><code class="docutils literal notranslate"><span class="pre">evaluate_test_set()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#himap.utils.baumwelch_method"><code class="docutils literal notranslate"><span class="pre">baumwelch_method()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#himap.utils.fs_calculation"><code class="docutils literal notranslate"><span class="pre">fs_calculation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#himap.utils.bs_calculation"><code class="docutils literal notranslate"><span class="pre">bs_calculation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#himap.utils.calculate_expected_value"><code class="docutils literal notranslate"><span class="pre">calculate_expected_value()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#himap.utils.calculate_cdf"><code class="docutils literal notranslate"><span class="pre">calculate_cdf()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#himap.utils.create_folders"><code class="docutils literal notranslate"><span class="pre">create_folders()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">HiMAP</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">API Documentation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/himap.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="api-documentation">
+<h1>API Documentation<a class="headerlink" href="#api-documentation" title="Link to this heading"></a></h1>
+<section id="module-himap.ab">
+<span id="himap-ab-module"></span><h2>himap.ab module<a class="headerlink" href="#module-himap.ab" title="Link to this heading"></a></h2>
+<p><strong>Functions:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.ab._curr_u" title="himap.ab._curr_u"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_curr_u</span></code></a>(n_samples, u, t, j, d)</p></td>
+<td><p>Provides the current value of u checking whether the t-d is non-negative, t is less than n_samples, and d is greate than or equal to t - (n_samples - 1).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.ab._forward" title="himap.ab._forward"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_forward</span></code></a>(n_samples, n_states, n_durations, ...)</p></td>
+<td><p>Computes the forward variable alpha needed for the likelihood computation and the parameters re-estimation.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.ab._backward" title="himap.ab._backward"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_backward</span></code></a>(n_samples, n_states, n_durations, ...)</p></td>
+<td><p>Computes the backward variable beta needed for the likelihood computation and the parameters re-estimation.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.ab._u_only" title="himap.ab._u_only"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_u_only</span></code></a>(n_samples, n_states, n_durations, ...)</p></td>
+<td><p>Computes the u values needed for the forward variable computation.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py function">
+<dt class="sig sig-object py" id="himap.ab._curr_u">
+<span class="sig-prename descclassname"><span class="pre">himap.ab.</span></span><span class="sig-name descname"><span class="pre">_curr_u</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_samples</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">j</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">d</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.ab._curr_u" title="Link to this definition"></a></dt>
+<dd><p>Provides the current value of u checking whether the t-d is non-negative,
+t is less than n_samples, and d is greate than or equal to t - (n_samples - 1).
+Utilized by the <code class="docutils literal notranslate"><span class="pre">_forward</span></code> auxiliary function.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_samples</strong> (<em>int</em>) – Number of samples.</p></li>
+<li><p><strong>u</strong> (<em>np.ndarray</em>) – Array of shape (n_samples, n_states, n_durations) containing the u values as produced by the <code class="docutils literal notranslate"><span class="pre">_u_only</span></code> function.</p></li>
+<li><p><strong>t</strong> (<em>int</em>) – Current time step.</p></li>
+<li><p><strong>j</strong> (<em>int</em>) – Current state.</p></li>
+<li><p><strong>d</strong> (<em>int</em>) – Current duration.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>curr_u</strong> – Current value of u.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#himap.ab._forward" title="himap.ab._forward"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_forward</span></code></a></dt><dd><p>Function that computes the forward variable.</p>
+</dd>
+<dt><a class="reference internal" href="#himap.base.HSMM._core_u_only" title="himap.base.HSMM._core_u_only"><code class="xref py py-obj docutils literal notranslate"><span class="pre">himap.base.HSMM._core_u_only</span></code></a></dt><dd><p>Method that computes the u values.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="himap.ab._forward">
+<span class="sig-prename descclassname"><span class="pre">himap.ab.</span></span><span class="sig-name descname"><span class="pre">_forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_samples</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_states</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_durations</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_startprob</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_transmat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_durprob</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">left_censor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right_censor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xi</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.ab._forward" title="Link to this definition"></a></dt>
+<dd><p>Computes the forward variable alpha needed for the likelihood computation and the parameters re-estimation.
+Utilized by the <code class="docutils literal notranslate"><span class="pre">HSMM._core_forward</span></code> method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_samples</strong> (<em>int</em>) – Number of samples.</p></li>
+<li><p><strong>n_states</strong> (<em>int</em>) – Number of states.</p></li>
+<li><p><strong>n_durations</strong> (<em>int</em>) – Number of durations.</p></li>
+<li><p><strong>log_startprob</strong> (<em>np.ndarray</em>) – Array of shape (n_states,) containing the log of the initial state probabilities.</p></li>
+<li><p><strong>log_transmat</strong> (<em>np.ndarray</em>) – Array of shape (n_states, n_states) containing the log of the transition probabilities.</p></li>
+<li><p><strong>log_durprob</strong> (<em>np.ndarray</em>) – Array of shape (n_states, n_durations) containing the log of the duration probabilities.</p></li>
+<li><p><strong>left_censor</strong> (<em>int</em>) – 0 if no left censoring, 1 if left censoring (Default is 0).</p></li>
+<li><p><strong>right_censor</strong> (<em>int</em>) – 0 if no right censoring, 1 if right censoring (Default is 0).</p></li>
+<li><p><strong>eta</strong> (<em>np.ndarray</em>) – Array of shape (n_samples, n_states, n_durations) containing the eta values.</p></li>
+<li><p><strong>u</strong> (<em>np.ndarray</em>) – Array of shape (n_samples, n_states, n_durations) containing the u values as produced by the <code class="docutils literal notranslate"><span class="pre">_u_only</span></code> auxiliary
+function.</p></li>
+<li><p><strong>xi</strong> (<em>np.ndarray</em>) – Array of shape (n_samples, n_states, n_states) containing the xi values.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>alpha</strong> – Array of shape (n_states,) containing the alpha values.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#himap.base.HSMM._core_forward" title="himap.base.HSMM._core_forward"><code class="xref py py-obj docutils literal notranslate"><span class="pre">himap.base.HSMM._core_forward</span></code></a></dt><dd><p>Method that computes the forward variable.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="himap.ab._backward">
+<span class="sig-prename descclassname"><span class="pre">himap.ab.</span></span><span class="sig-name descname"><span class="pre">_backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_samples</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_states</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_durations</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_startprob</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_transmat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_durprob</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right_censor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">betastar</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.ab._backward" title="Link to this definition"></a></dt>
+<dd><p>Computes the backward variable beta needed for the likelihood computation and the parameters re-estimation.
+Utilized by the <code class="docutils literal notranslate"><span class="pre">HSMM._core_backward</span></code> method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_samples</strong> (<em>int</em>) – Number of samples.</p></li>
+<li><p><strong>n_states</strong> (<em>int</em>) – Number of states.</p></li>
+<li><p><strong>n_durations</strong> (<em>int</em>) – Number of durations.</p></li>
+<li><p><strong>log_startprob</strong> (<em>np.ndarray</em>) – Array of shape (n_states,) containing the log of the initial state probabilities.</p></li>
+<li><p><strong>log_transmat</strong> (<em>np.ndarray</em>) – Array of shape (n_states, n_states) containing the log of the transition probabilities.</p></li>
+<li><p><strong>log_durprob</strong> (<em>np.ndarray</em>) – Array of shape (n_states, n_durations) containing the log of the duration probabilities.</p></li>
+<li><p><strong>right_censor</strong> (<em>int</em>) – 0 if no right censoring, 1 if right censoring (Default is 0).</p></li>
+<li><p><strong>beta</strong> (<em>np.ndarray</em>) – Array of shape (n_samples, n_states) containing the initialized beta values.</p></li>
+<li><p><strong>u</strong> (<em>np.ndarray</em>) – Array of shape (n_samples, n_states, n_durations) containing the u values as produced by the <code class="docutils literal notranslate"><span class="pre">_u_only</span></code> auxiliary
+function.</p></li>
+<li><p><strong>betastar</strong> (<em>np.ndarray</em>) – Array of shape (n_samples, n_states) containing the beta* values.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#himap.base.HSMM._core_backward" title="himap.base.HSMM._core_backward"><code class="xref py py-obj docutils literal notranslate"><span class="pre">himap.base.HSMM._core_backward</span></code></a></dt><dd><p>Method that computes the backward variable.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Notes</p>
+<p>The beta values are computed inplace.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="himap.ab._u_only">
+<span class="sig-prename descclassname"><span class="pre">himap.ab.</span></span><span class="sig-name descname"><span class="pre">_u_only</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_samples</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_states</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_durations</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_obsprob</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">u</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.ab._u_only" title="Link to this definition"></a></dt>
+<dd><p>Computes the u values needed for the forward variable computation.
+Utilized by the <code class="docutils literal notranslate"><span class="pre">HSMM._core_u_only</span></code> method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_samples</strong> (<em>int</em>) – Number of samples.</p></li>
+<li><p><strong>n_states</strong> (<em>int</em>) – Number of states.</p></li>
+<li><p><strong>n_durations</strong> (<em>int</em>) – Number of durations.</p></li>
+<li><p><strong>log_obsprob</strong> (<em>np.ndarray</em>) – Array of shape (n_samples, n_states) containing the log of the observation probabilities.</p></li>
+<li><p><strong>u</strong> (<em>np.ndarray</em>) – Array of shape (n_samples, n_states, n_durations) containing the u values.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#himap.base.HSMM._core_u_only" title="himap.base.HSMM._core_u_only"><code class="xref py py-obj docutils literal notranslate"><span class="pre">himap.base.HSMM._core_u_only</span></code></a></dt><dd><p>Method that computes the u values.</p>
+</dd>
+</dl>
+</div>
+<p class="rubric">Notes</p>
+<p>The u values are computed inplace.</p>
+</dd></dl>
+
+</section>
+<section id="module-himap.base">
+<span id="himap-base-module"></span><h2>himap.base module<a class="headerlink" href="#module-himap.base" title="Link to this heading"></a></h2>
+<p><strong>Classes:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HSMM" title="himap.base.HSMM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HSMM</span></code></a>([n_states, n_durations, n_iter, tol, ...])</p></td>
+<td><p>Base class for Hidden Semi-Markov Models (HSMMs)</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.GaussianHSMM" title="himap.base.GaussianHSMM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GaussianHSMM</span></code></a>([n_states, n_durations, ...])</p></td>
+<td><p>The GaussianHSMM class models Hidden Semi-Markov processes with Gaussian-distributed emissions.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HMM" title="himap.base.HMM"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HMM</span></code></a>([n_states, n_obs_symbols, n_iter, tol, ...])</p></td>
+<td><p>The HMM class models Hidden Markov processes with discrete emissions.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="himap.base.HSMM">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">himap.base.</span></span><span class="sig-name descname"><span class="pre">HSMM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_states</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_durations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">left_to_right</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obs_state_len</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.HSMM" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base class for Hidden Semi-Markov Models (HSMMs)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_states</strong> (<em>int</em>) – Number of hidden states. Must be ≥ 2.</p></li>
+<li><p><strong>n_durations</strong> (<em>int</em>) – Number of duration categories per state. Must be ≥ 1.</p></li>
+<li><p><strong>n_iter</strong> (<em>int</em>) – Maximum number of iterations for training.</p></li>
+<li><p><strong>tol</strong> (<em>float</em>) – Convergence threshold for stopping the training.</p></li>
+<li><p><strong>left_to_right</strong> (<em>bool</em>) – Indicates whether the model follows a left-to-right topology.</p></li>
+<li><p><strong>obs_state_len</strong> (<em>int</em><em>, </em><em>optional</em>) – Length of the observed state (required if f_value is provided).</p></li>
+<li><p><strong>f_value</strong> (<em>int/float</em><em>, </em><em>optional</em>) – Final observed value of the state (required if obs_state_len is provided).</p></li>
+<li><p><strong>random_state</strong> (<em>int/None</em><em>, </em><em>optional</em>) – Seed for reproducibility.</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of the model. Defaults to “hsmm” if not provided.</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Methods:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HSMM._init" title="himap.base.HSMM._init"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_init</span></code></a>([X])</p></td>
+<td><p>Initializes model parameters if they are not already set.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.HSMM._init_mc" title="himap.base.HSMM._init_mc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_init_mc</span></code></a>()</p></td>
+<td><p>Initialize the model parameters for MC sampling (to be implemented in child class).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HSMM._check" title="himap.base.HSMM._check"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_check</span></code></a>()</p></td>
+<td><p>Validates the initialized parameters:</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.HSMM._dur_init" title="himap.base.HSMM._dur_init"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_dur_init</span></code></a>(*args)</p></td>
+<td><p>Ιnitializes duration parameters if there are no arguments yet (to be implemented in child class).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HSMM._dur_check" title="himap.base.HSMM._dur_check"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_dur_check</span></code></a>(*args)</p></td>
+<td><p>Checks if properties of duration parameters are satisfied arguments (to be implemented in child class).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.HSMM._dur_probmat" title="himap.base.HSMM._dur_probmat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_dur_probmat</span></code></a>(*args)</p></td>
+<td><p>Compute the probability per state of each duration arguments (to be implemented in child class).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HSMM._dur_mstep" title="himap.base.HSMM._dur_mstep"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_dur_mstep</span></code></a>(*args)</p></td>
+<td><p>Compute the duration parameters (to be implemented in child class).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.HSMM._emission_logl" title="himap.base.HSMM._emission_logl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_emission_logl</span></code></a>(*args)</p></td>
+<td><p>Compute the log-likelihood of each observation under each state (to be implemented in child class).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HSMM._emission_pre_mstep" title="himap.base.HSMM._emission_pre_mstep"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_emission_pre_mstep</span></code></a>(*args)</p></td>
+<td><p>Prepare for emission parameters re-estimation (process gamma and save output to emission_var) (to be implemented in child class).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.HSMM._emission_mstep" title="himap.base.HSMM._emission_mstep"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_emission_mstep</span></code></a>(*args)</p></td>
+<td><p>Compute the emission parameters.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HSMM._state_sample" title="himap.base.HSMM._state_sample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_state_sample</span></code></a>(*args)</p></td>
+<td><p>Genrate observation sequence for given state arguments (to be implemented in child class).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.HSMM.sample" title="himap.base.HSMM.sample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample</span></code></a>([n_samples, random_state])</p></td>
+<td><p>Generates a sequence of observations and corresponding state sequence performing a random walk on the model (MC Sampling).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HSMM.mc_dataset" title="himap.base.HSMM.mc_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mc_dataset</span></code></a>(num, timesteps)</p></td>
+<td><p>Generates a dataset of a number of observations and corresponding state sequences utilizing the <code class="docutils literal notranslate"><span class="pre">sample</span></code> method.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.HSMM._core_u_only" title="himap.base.HSMM._core_u_only"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_core_u_only</span></code></a>(logframe)</p></td>
+<td><p>Computes auxiliary matrix u for duration probabilities utilizing the <code class="docutils literal notranslate"><span class="pre">ab._u_only</span></code> method.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HSMM._core_forward" title="himap.base.HSMM._core_forward"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_core_forward</span></code></a>(u, logdur)</p></td>
+<td><p>Performs the forward step of the HSMM algorithm using duration and transition probabilities, utilizing the <code class="docutils literal notranslate"><span class="pre">ab._forward</span></code> method.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.HSMM._core_backward" title="himap.base.HSMM._core_backward"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_core_backward</span></code></a>(u, logdur)</p></td>
+<td><p>Implements the backward algorithm for the HSMM.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HSMM._core_smoothed" title="himap.base.HSMM._core_smoothed"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_core_smoothed</span></code></a>(beta, betastar, eta, xi)</p></td>
+<td><p>Combines forward and backward variables to compute the smoothed probabilities.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.HSMM._core_viterbi" title="himap.base.HSMM._core_viterbi"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_core_viterbi</span></code></a>(u, logdur)</p></td>
+<td><p>Implements the Viterbi algorithm for finding the most probable state sequence given the observations.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HSMM.score" title="himap.base.HSMM.score"><code class="xref py py-obj docutils literal notranslate"><span class="pre">score</span></code></a>(X)</p></td>
+<td><p>Computes the log-likelihood of the observation sequences under the current model.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.HSMM.predict" title="himap.base.HSMM.predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code></a>(X)</p></td>
+<td><p>Predicts the most likely hidden state sequence for a given observation sequence using the Viterbi algorithm.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HSMM.fit" title="himap.base.HSMM.fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code></a>(X[, save_iters])</p></td>
+<td><p>Trains the model using the Expectation-Maximization (EM) algorithm.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.HSMM.bic" title="himap.base.HSMM.bic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bic</span></code></a>(train)</p></td>
+<td><p>Computes the Bayesian Information Criterion (BIC) score to evaluate model performance.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HSMM.fit_bic" title="himap.base.HSMM.fit_bic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit_bic</span></code></a>(X, states[, return_models])</p></td>
+<td><p>Fits multiple models with different numbers of states, evaluates them using <code class="docutils literal notranslate"><span class="pre">bic</span></code> method, and selects the best one.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.HSMM.RUL" title="himap.base.HSMM.RUL"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RUL</span></code></a>(viterbi_states, max_samples[, equation])</p></td>
+<td><p>Estimates the Remaining Useful Life (RUL) for a given state history using convolution of duration probabilities.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HSMM.prognostics" title="himap.base.HSMM.prognostics"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prognostics</span></code></a>(data[, max_samples, plot_rul, ...])</p></td>
+<td><p>Performs prognostics for given degradation histories, estimating RUL utilizing the <code class="docutils literal notranslate"><span class="pre">RUL</span></code> method and saving the results.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.HSMM.save_model" title="himap.base.HSMM.save_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_model</span></code></a>()</p></td>
+<td><p>Saves the current model state to a file.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HSMM.load_model" title="himap.base.HSMM.load_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_model</span></code></a>(model_name)</p></td>
+<td><p>Loads a previously saved model state from a file.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.HSMM._init">
+<span class="sig-name descname"><span class="pre">_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.HSMM._init" title="Link to this definition"></a></dt>
+<dd><p>Initializes model parameters if they are not already set.
+For left-to-right models:
+Sets the initial state to 1 (pi[0] = 1) and enforces forward transitions.
+For other topologies:
+Distributes probabilities evenly among states.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>X</strong> (<em>dict</em>) – Observation dataset (optional) as a dictionary with trajectory identifiers and observation sequences
+made with the <code class="docutils literal notranslate"><span class="pre">utils.create_data_hsmm</span></code> method.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#himap.utils.create_data_hsmm" title="himap.utils.create_data_hsmm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">himap.utils.create_data_hsmm</span></code></a></dt><dd><p>Generates a dataset of trajectories for the model.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.HSMM._init_mc">
+<span class="sig-name descname"><span class="pre">_init_mc</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.HSMM._init_mc" title="Link to this definition"></a></dt>
+<dd><p>Initialize the model parameters for MC sampling
+(to be implemented in child class).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.HSMM._check">
+<span class="sig-name descname"><span class="pre">_check</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.HSMM._check" title="Link to this definition"></a></dt>
+<dd><p>Validates the initialized parameters:</p>
+<p>Ensures starting probabilities (pi) sum to 1.
+Checks transition matrix (tmat) shape and sums across rows.
+Verifies duration probabilities.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.HSMM._dur_init">
+<span class="sig-name descname"><span class="pre">_dur_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.HSMM._dur_init" title="Link to this definition"></a></dt>
+<dd><p>Ιnitializes duration parameters if there are no arguments yet
+(to be implemented in child class).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.HSMM._dur_check">
+<span class="sig-name descname"><span class="pre">_dur_check</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.HSMM._dur_check" title="Link to this definition"></a></dt>
+<dd><p>Checks if properties of duration parameters are satisfied
+arguments
+(to be implemented in child class).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.HSMM._dur_probmat">
+<span class="sig-name descname"><span class="pre">_dur_probmat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.HSMM._dur_probmat" title="Link to this definition"></a></dt>
+<dd><p>Compute the probability per state of each duration
+arguments
+(to be implemented in child class).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.HSMM._dur_mstep">
+<span class="sig-name descname"><span class="pre">_dur_mstep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.HSMM._dur_mstep" title="Link to this definition"></a></dt>
+<dd><p>Compute the duration parameters
+(to be implemented in child class).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.HSMM._emission_logl">
+<span class="sig-name descname"><span class="pre">_emission_logl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.HSMM._emission_logl" title="Link to this definition"></a></dt>
+<dd><p>Compute the log-likelihood of each observation under each state
+(to be implemented in child class).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.HSMM._emission_pre_mstep">
+<span class="sig-name descname"><span class="pre">_emission_pre_mstep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.HSMM._emission_pre_mstep" title="Link to this definition"></a></dt>
+<dd><p>Prepare for emission parameters re-estimation
+(process gamma and save output to emission_var)
+(to be implemented in child class).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.HSMM._emission_mstep">
+<span class="sig-name descname"><span class="pre">_emission_mstep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.HSMM._emission_mstep" title="Link to this definition"></a></dt>
+<dd><p>Compute the emission parameters.
+arguments
+(to be implemented in child class).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.HSMM._state_sample">
+<span class="sig-name descname"><span class="pre">_state_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.HSMM._state_sample" title="Link to this definition"></a></dt>
+<dd><p>Genrate observation sequence for given state
+arguments
+(to be implemented in child class).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.HSMM.sample">
+<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.HSMM.sample" title="Link to this definition"></a></dt>
+<dd><p>Generates a sequence of observations and corresponding state sequence performing a random walk on the model (MC Sampling).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_samples</strong> (<em>int</em>) – Number of observations to generate.</p></li>
+<li><p><strong>random_state</strong> (<em>int/None</em>) – Seed for reproducibility.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>ctr_sample</strong> (<em>int</em>) – Number of samples generated.</p></li>
+<li><p><strong>X</strong> (<em>ndarray</em>) – Generated observation sequence.</p></li>
+<li><p><strong>state_sequence</strong> (<em>ndarray</em>) – State sequence corresponding to the observations.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.HSMM.mc_dataset">
+<span class="sig-name descname"><span class="pre">mc_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timesteps</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.HSMM.mc_dataset" title="Link to this definition"></a></dt>
+<dd><p>Generates a dataset of a number of observations and corresponding state sequences utilizing the <code class="docutils literal notranslate"><span class="pre">sample</span></code> method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num</strong> (<em>int</em>) – Number of samples to generate.</p></li>
+<li><p><strong>timesteps</strong> (<em>int</em>) – Number of maximum timesteps for each sample.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>obs</strong> (<em>dict[str, List[int]]</em>) – A dictionary with trajectory observations.</p></li>
+<li><p><strong>states</strong> (<em>dict[str, List[int]]</em>) – A dictionary with the corresponding states for each trajectory.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#himap.base.HSMM.sample" title="himap.base.HSMM.sample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HSMM.sample</span></code></a></dt><dd><p>Generates a sequence of observations and corresponding state sequence performing a random walk on the model (MC Sampling).</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.HSMM._core_u_only">
+<span class="sig-name descname"><span class="pre">_core_u_only</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logframe</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.HSMM._core_u_only" title="Link to this definition"></a></dt>
+<dd><p>Computes auxiliary matrix u for duration probabilities utilizing the <code class="docutils literal notranslate"><span class="pre">ab._u_only</span></code> method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>logframe</strong> (<em>ndarray</em>) – A 2D array of log-likelihood values for each observation under each state. Shape: (n_samples, n_states).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>u</strong> – A 3D array of intermediate values computed for each sample, state, and duration. Shape: (n_samples, n_states, n_durations).</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#himap.ab._u_only" title="himap.ab._u_only"><code class="xref py py-obj docutils literal notranslate"><span class="pre">himap.ab._u_only</span></code></a></dt><dd><p>Computes the auxiliary matrix u for duration probabilities.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.HSMM._core_forward">
+<span class="sig-name descname"><span class="pre">_core_forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logdur</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.HSMM._core_forward" title="Link to this definition"></a></dt>
+<dd><p>Performs the forward step of the HSMM algorithm using duration and transition probabilities,
+utilizing the <code class="docutils literal notranslate"><span class="pre">ab._forward</span></code> method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>u</strong> (<em>ndarray</em>) – Intermediate values computed from _core_u_only. Shape: (n_samples, n_states, n_durations).</p></li>
+<li><p><strong>logdur</strong> (<em>ndarray</em>) – Logarithm of the duration probabilities for each state. Shape: (n_states, n_durations).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>eta</strong> (<em>ndarray</em>) – Smoothed probabilities for states and durations at each sample. Shape: (n_samples + 1, n_states, n_durations).</p></li>
+<li><p><strong>xi</strong> (<em>ndarray</em>) – Transition probabilities between states at each step. Shape: (n_samples + 1, n_states, n_states).</p></li>
+<li><p><strong>alpha</strong> (<em>ndarray</em>) – Forward probabilities for each state at each sample. Shape: (n_samples, n_states).</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#himap.ab._forward" title="himap.ab._forward"><code class="xref py py-obj docutils literal notranslate"><span class="pre">himap.ab._forward</span></code></a></dt><dd><p>Performs the forward step of the HSMM algorithm.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.HSMM._core_backward">
+<span class="sig-name descname"><span class="pre">_core_backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logdur</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.HSMM._core_backward" title="Link to this definition"></a></dt>
+<dd><p>Implements the backward algorithm for the HSMM.
+Computes backward probabilities and intermediate variables for scaling.
+Utilizes the <code class="docutils literal notranslate"><span class="pre">ab._backward</span></code> method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>u</strong> (<em>ndarray</em>) – Scaled forward probabilities from _core_u_only.</p></li>
+<li><p><strong>logdur</strong> (<em>ndarray</em>) – Logarithmic duration probability matrix.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>beta</strong> (<em>ndarray</em>) – Backward probabilities for each state.</p></li>
+<li><p><strong>betastar</strong> (<em>ndarray</em>) – Scaled backward probabilities.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#himap.ab._backward" title="himap.ab._backward"><code class="xref py py-obj docutils literal notranslate"><span class="pre">himap.ab._backward</span></code></a></dt><dd><p>Implements the backward algorithm for the HSMM.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.HSMM._core_smoothed">
+<span class="sig-name descname"><span class="pre">_core_smoothed</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">betastar</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eta</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xi</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.HSMM._core_smoothed" title="Link to this definition"></a></dt>
+<dd><p>Combines forward and backward variables to compute the smoothed probabilities.
+Implemented in Cython.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>beta</strong> (<em>ndarray</em>) – Backward probabilities for each state.</p></li>
+<li><p><strong>betastar</strong> (<em>ndarray</em>) – Scaled backward probabilities.</p></li>
+<li><p><strong>eta</strong> (<em>ndarray</em>) – Transition probabilities.</p></li>
+<li><p><strong>xi</strong> (<em>ndarray</em>) – Joint probabilities of transitions.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>gamma</strong> – Smoothed probabilities.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.HSMM._core_viterbi">
+<span class="sig-name descname"><span class="pre">_core_viterbi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">u</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logdur</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.HSMM._core_viterbi" title="Link to this definition"></a></dt>
+<dd><p>Implements the Viterbi algorithm for finding the most probable state sequence given the observations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>u</strong> (<em>ndarray</em>) – Scaled forward probabilities from _core_u_only.</p></li>
+<li><p><strong>logdur</strong> (<em>ndarray</em>) – Logarithmic duration probability matrix.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>state_sequence</strong> (<em>ndarray</em>) – The most probable sequence of states.</p></li>
+<li><p><strong>state_logl</strong> (<em>float</em>) – Log-likelihood of the state sequence.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.HSMM.score">
+<span class="sig-name descname"><span class="pre">score</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.HSMM.score" title="Link to this definition"></a></dt>
+<dd><p>Computes the log-likelihood of the observation sequences under the current model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>X</strong> (<em>ndarray</em>) – Observation sequences.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>score</strong> – Total log-likelihood of the observations.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.HSMM.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.HSMM.predict" title="Link to this definition"></a></dt>
+<dd><p>Predicts the most likely hidden state sequence for a given observation sequence using the Viterbi algorithm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>X</strong> (<em>ndarray</em>) – Observation sequences.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>state_sequence</strong> (<em>ndarray</em>) – Predicted state sequence.</p></li>
+<li><p><strong>state_logl</strong> (<em>float</em>) – Log-likelihood of the predicted state sequence.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.HSMM.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_iters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.HSMM.fit" title="Link to this definition"></a></dt>
+<dd><p>Trains the model using the Expectation-Maximization (EM) algorithm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>dict</em>) – Observation sequences following the format of the <code class="docutils literal notranslate"><span class="pre">utils.create_data_hsmm</span></code> method.</p></li>
+<li><p><strong>save_iters</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to save the model after each iteration. Defaults to False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>self</strong> – The trained model.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>object</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#himap.utils.create_data_hsmm" title="himap.utils.create_data_hsmm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">himap.utils.create_data_hsmm</span></code></a></dt><dd><p>Generates a dataset of trajectories for the model.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.HSMM.bic">
+<span class="sig-name descname"><span class="pre">bic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">train</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.HSMM.bic" title="Link to this definition"></a></dt>
+<dd><p>Computes the Bayesian Information Criterion (BIC) score to evaluate model performance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>train</strong> (<em>dict</em>) – Observation sequences used for training.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>score</strong> – The BIC score for the model.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.HSMM.fit_bic">
+<span class="sig-name descname"><span class="pre">fit_bic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">states</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_models</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.HSMM.fit_bic" title="Link to this definition"></a></dt>
+<dd><p>Fits multiple models with different numbers of states, evaluates them using <code class="docutils literal notranslate"><span class="pre">bic</span></code> method, and selects the best one.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>dict</em>) – Observation sequences (same format as fit).</p></li>
+<li><p><strong>states</strong> (<em>list</em><em>[</em><em>int</em><em>]</em>) – List of state counts to evaluate.</p></li>
+<li><p><strong>return_models</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to return all trained models. Defaults to False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>self</strong> (<em>object</em>) – The best-performing model.</p></li>
+<li><p><strong>bic</strong> (<em>list[float]</em>) – BIC scores for each fitted model.</p></li>
+<li><p><strong>models</strong> (<em>dict, optional</em>) – All trained models, returned if return_models=True.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#himap.utils.create_data_hsmm" title="himap.utils.create_data_hsmm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">himap.utils.create_data_hsmm</span></code></a></dt><dd><p>Generates a dataset of trajectories for the model.</p>
+</dd>
+<dt><a class="reference internal" href="#himap.base.HSMM.bic" title="himap.base.HSMM.bic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HSMM.bic</span></code></a></dt><dd><p>Computes the Bayesian Information Criterion (BIC) score to evaluate model performance.</p>
+</dd>
+<dt><a class="reference internal" href="#himap.base.HSMM.fit" title="himap.base.HSMM.fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HSMM.fit</span></code></a></dt><dd><p>Trains the model using the Expectation-Maximization (EM) algorithm.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.HSMM.RUL">
+<span class="sig-name descname"><span class="pre">RUL</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">viterbi_states</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_samples</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.HSMM.RUL" title="Link to this definition"></a></dt>
+<dd><p>Estimates the Remaining Useful Life (RUL) for a given state history using convolution of duration probabilities.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>viterbi_states</strong> (<em>numpy.ndarray</em>) – Sequence of Viterbi states representing the history of hidden states.</p></li>
+<li><p><strong>max_samples</strong> (<em>int</em>) – Maximum length of RUL to consider.</p></li>
+<li><p><strong>equation</strong> (<em>int</em><em>, </em><em>optional</em>) – Equation type for RUL estimation. Default is 1.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>RUL</strong> (<em>numpy.ndarray</em>) – RUL probability distribution for each timestep.</p></li>
+<li><p><strong>mean_RUL</strong> (<em>numpy.ndarray</em>) – Mean RUL for each timestep.</p></li>
+<li><p><strong>UB_RUL</strong> (<em>numpy.ndarray</em>) – Upper bound of the RUL distribution.</p></li>
+<li><p><strong>LB_RUL</strong> (<em>numpy.ndarray</em>) – Lower bound of the RUL distribution.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.HSMM.prognostics">
+<span class="sig-name descname"><span class="pre">prognostics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_rul</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_metrics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">equation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.HSMM.prognostics" title="Link to this definition"></a></dt>
+<dd><p>Performs prognostics for given degradation histories, estimating RUL utilizing the <code class="docutils literal notranslate"><span class="pre">RUL</span></code> method and saving the results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>dict</em>) – A dictionary where keys are trajectory IDs and values are degradation histories following the format of the <code class="docutils literal notranslate"><span class="pre">utils.create_data_hsmm</span></code> method.</p></li>
+<li><p><strong>max_samples</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum length of RUL. Defaults to 10x the maximum trajectory length.</p></li>
+<li><p><strong>plot_rul</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to plot RUL results for each sample. Default is True.</p></li>
+<li><p><strong>get_metrics</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to compute and save evaluation metrics. Default is True.</p></li>
+<li><p><strong>equation</strong> (<em>int</em><em>, </em><em>optional</em>) – Equation type for RUL estimation. Default is 1.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Saves the following in the ‘results’ directory:</p>
+<ul class="simple">
+<li><p>PDF RUL distributions.</p></li>
+<li><p>Mean RUL per step.</p></li>
+<li><p>Upper and lower RUL bounds.</p></li>
+<li><p>Evaluation metrics (if get_metrics=True).</p></li>
+<li><p>RUL plots (if plot_rul=True).</p></li>
+</ul>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#himap.base.HSMM.RUL" title="himap.base.HSMM.RUL"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HSMM.RUL</span></code></a></dt><dd><p>Estimates the Remaining Useful Life (RUL) for a given state history using convolution of duration probabilities.</p>
+</dd>
+<dt><a class="reference internal" href="#himap.utils.create_data_hsmm" title="himap.utils.create_data_hsmm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">himap.utils.create_data_hsmm</span></code></a></dt><dd><p>Generates a dataset of trajectories for the model.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.HSMM.save_model">
+<span class="sig-name descname"><span class="pre">save_model</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.HSMM.save_model" title="Link to this definition"></a></dt>
+<dd><p>Saves the current model state to a file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.HSMM.load_model">
+<span class="sig-name descname"><span class="pre">load_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.HSMM.load_model" title="Link to this definition"></a></dt>
+<dd><p>Loads a previously saved model state from a file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>model_name</strong> (<em>str</em>) – Name of the model file to load (without extension).</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="himap.base.GaussianHSMM">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">himap.base.</span></span><span class="sig-name descname"><span class="pre">GaussianHSMM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_states</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_durations</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">left_to_right</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obs_state_len</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kmeans_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'k-means++'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kmeans_n_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.GaussianHSMM" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#himap.base.HSMM" title="himap.base.HSMM"><code class="xref py py-class docutils literal notranslate"><span class="pre">HSMM</span></code></a></p>
+<p>The GaussianHSMM class models Hidden Semi-Markov processes with Gaussian-distributed emissions.
+It supports explicit duration modeling, and it can handle left-to-right or arbitrary state transitions.
+K-means clustering is used for initialization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_states</strong> (<em>int</em>) – Number of hidden states in the model. Default is 2.</p></li>
+<li><p><strong>n_durations</strong> (<em>int</em>) – Maximum duration for each state. Default is 5.</p></li>
+<li><p><strong>n_iter</strong> (<em>int</em>) – Maximum number of iterations for model fitting. Default is 100.</p></li>
+<li><p><strong>tol</strong> (<em>float</em>) – Convergence threshold for the EM algorithm. Default is 0.5.</p></li>
+<li><p><strong>left_to_right</strong> (<em>bool</em>) – If True, constrains transitions to progress in a left-to-right manner. Default is True for prognostics.</p></li>
+<li><p><strong>obs_state_len</strong> (<em>int</em><em>, </em><em>optional</em>) – Length of observed state (relevant in specific configurations).</p></li>
+<li><p><strong>f_value</strong> (<em>float</em><em>, </em><em>optional</em>) – Emission value for the final state, if applicable.</p></li>
+<li><p><strong>random_state</strong> (<em>int</em><em> or </em><em>RandomState instance</em><em>, </em><em>optional</em>) – Seed or random state for reproducibility.</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – Name identifier for the model.</p></li>
+<li><p><strong>kmeans_init</strong> (<em>str</em>) – Initialization method for K-means clustering (‘k-means++’ or ‘random’). Default is ‘k-means++’.</p></li>
+<li><p><strong>kmeans_n_init</strong> (<em>int</em><em> or </em><em>str</em>) – Number of initializations for K-means clustering. Default is ‘auto’.</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Methods:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.GaussianHSMM._init" title="himap.base.GaussianHSMM._init"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_init</span></code></a>([X])</p></td>
+<td><p>Initializes model parameters based on input data <code class="docutils literal notranslate"><span class="pre">X</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.GaussianHSMM._init_mc" title="himap.base.GaussianHSMM._init_mc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_init_mc</span></code></a>()</p></td>
+<td><p>Initializes model parameters for the Monte Carlo Sampling example.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.GaussianHSMM._check" title="himap.base.GaussianHSMM._check"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_check</span></code></a>()</p></td>
+<td><p>Performs validation checks to ensure model parameters are consistent.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.GaussianHSMM._dur_init" title="himap.base.GaussianHSMM._dur_init"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_dur_init</span></code></a>()</p></td>
+<td><p>Initializes the duration probability matrix <code class="docutils literal notranslate"><span class="pre">self.dur</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.GaussianHSMM._dur_check" title="himap.base.GaussianHSMM._dur_check"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_dur_check</span></code></a>()</p></td>
+<td><p>Validates the duration probability matrix <code class="docutils literal notranslate"><span class="pre">self.dur</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.GaussianHSMM._dur_probmat" title="himap.base.GaussianHSMM._dur_probmat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_dur_probmat</span></code></a>()</p></td>
+<td><p>Returns the duration probability matrix <code class="docutils literal notranslate"><span class="pre">self.dur</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.GaussianHSMM._dur_mstep" title="himap.base.GaussianHSMM._dur_mstep"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_dur_mstep</span></code></a>(new_dur)</p></td>
+<td><p>Performs the M-step update for the duration probabilities.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.GaussianHSMM._emission_logl" title="himap.base.GaussianHSMM._emission_logl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_emission_logl</span></code></a>(X)</p></td>
+<td><p>Calculates the log-likelihood of the emissions given the observations.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.GaussianHSMM._emission_mstep" title="himap.base.GaussianHSMM._emission_mstep"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_emission_mstep</span></code></a>(X, emission_var[, inplace])</p></td>
+<td><p>Performs the M-step update for emission parameters.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.GaussianHSMM._state_sample" title="himap.base.GaussianHSMM._state_sample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_state_sample</span></code></a>(state[, random_state])</p></td>
+<td><p>Generates a sample from the Gaussian distribution of a specified state.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.GaussianHSMM._init">
+<span class="sig-name descname"><span class="pre">_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.GaussianHSMM._init" title="Link to this definition"></a></dt>
+<dd><p>Initializes model parameters based on input data <code class="docutils literal notranslate"><span class="pre">X</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>X</strong> (<em>numpy.ndarray</em><em>, </em><em>optional</em>) – Observations to initialize the model. If None, defaults to 1D Gaussian emissions.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.GaussianHSMM._init_mc">
+<span class="sig-name descname"><span class="pre">_init_mc</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.GaussianHSMM._init_mc" title="Link to this definition"></a></dt>
+<dd><p>Initializes model parameters for the Monte Carlo Sampling example.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.GaussianHSMM._check">
+<span class="sig-name descname"><span class="pre">_check</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.GaussianHSMM._check" title="Link to this definition"></a></dt>
+<dd><p>Performs validation checks to ensure model parameters are consistent.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.GaussianHSMM._dur_init">
+<span class="sig-name descname"><span class="pre">_dur_init</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.GaussianHSMM._dur_init" title="Link to this definition"></a></dt>
+<dd><p>Initializes the duration probability matrix <code class="docutils literal notranslate"><span class="pre">self.dur</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.GaussianHSMM._dur_check">
+<span class="sig-name descname"><span class="pre">_dur_check</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.GaussianHSMM._dur_check" title="Link to this definition"></a></dt>
+<dd><p>Validates the duration probability matrix <code class="docutils literal notranslate"><span class="pre">self.dur</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.GaussianHSMM._dur_probmat">
+<span class="sig-name descname"><span class="pre">_dur_probmat</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.GaussianHSMM._dur_probmat" title="Link to this definition"></a></dt>
+<dd><p>Returns the duration probability matrix <code class="docutils literal notranslate"><span class="pre">self.dur</span></code>.
+(no changes for non-parametric duration distributions)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.GaussianHSMM._dur_mstep">
+<span class="sig-name descname"><span class="pre">_dur_mstep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_dur</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.GaussianHSMM._dur_mstep" title="Link to this definition"></a></dt>
+<dd><p>Performs the M-step update for the duration probabilities.
+(no changes for non-parametric duration distributions)
+:param new_dur: Updated duration probabilities.
+:type new_dur: numpy.ndarray</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.GaussianHSMM._emission_logl">
+<span class="sig-name descname"><span class="pre">_emission_logl</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.GaussianHSMM._emission_logl" title="Link to this definition"></a></dt>
+<dd><p>Calculates the log-likelihood of the emissions given the observations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>X</strong> (<em>numpy.ndarray</em>) – Observations.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>logframe</strong> – Log-likelihood of each observation under each state.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.GaussianHSMM._emission_mstep">
+<span class="sig-name descname"><span class="pre">_emission_mstep</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emission_var</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.GaussianHSMM._emission_mstep" title="Link to this definition"></a></dt>
+<dd><p>Performs the M-step update for emission parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>numpy.ndarray</em>) – Observations.</p></li>
+<li><p><strong>emission_var</strong> (<em>numpy.ndarray</em>) – Responsibilities or posteriors for each observation-state pair.</p></li>
+<li><p><strong>inplace</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, updates parameters in-place. If False, returns updated parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>mean</strong> (<em>numpy.ndarray, optional</em>) – Updated means for each state (if inplace=False).</p></li>
+<li><p><strong>covmat</strong> (<em>numpy.ndarray, optional</em>) – Updated covariance matrices for each state (if inplace=False).</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.GaussianHSMM._state_sample">
+<span class="sig-name descname"><span class="pre">_state_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.GaussianHSMM._state_sample" title="Link to this definition"></a></dt>
+<dd><p>Generates a sample from the Gaussian distribution of a specified state.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>state</strong> (<em>int</em>) – Index of the state to sample from.</p></li>
+<li><p><strong>random_state</strong> (<em>int</em><em> or </em><em>RandomState</em><em>, </em><em>optional</em>) – Random seed or state for reproducibility.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>sample</strong> – Sampled observation.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>numpy.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="himap.base.HMM">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">himap.base.</span></span><span class="sig-name descname"><span class="pre">HMM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_states</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_obs_symbols</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_iter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tol</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.01</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">left_to_right</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.HMM" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>The HMM class models Hidden Markov processes with discrete emissions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_states</strong> (<em>int</em>) – Number of hidden states in the model. Must be ≥ 2.</p></li>
+<li><p><strong>n_obs_symbols</strong> (<em>int</em>) – Number of observation symbols.</p></li>
+<li><p><strong>n_iter</strong> (<em>int</em>) – Maximum number of iterations for training. Default is 100.</p></li>
+<li><p><strong>tol</strong> (<em>float</em>) – Tolerance for convergence during training. Default is 1e-2.</p></li>
+<li><p><strong>left_to_right</strong> (<em>bool</em>) – Whether the HMM uses a left-to-right structure. Default is True for use in prognostics.</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – Name of the model. Default is “hmm” if no name is provided.</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Methods:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HMM._init" title="himap.base.HMM._init"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_init</span></code></a>([X])</p></td>
+<td><p>Initializes transition and emission matrices based on model structure (left_to_right).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.HMM._init_mc" title="himap.base.HMM._init_mc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_init_mc</span></code></a>()</p></td>
+<td><p>Initializes the model parameters for the Monte Carlo Sampling example.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HMM.fit" title="himap.base.HMM.fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code></a>(X[, return_all_scores, save_iters])</p></td>
+<td><p>Trains the HMM using the Baum-Welch algorithm.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.HMM.fit_bic" title="himap.base.HMM.fit_bic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit_bic</span></code></a>(X, states[, return_models])</p></td>
+<td><p>Fits multiple HMMs using the Bayesian Information Criterion (BIC) to select the best model.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HMM.decode" title="himap.base.HMM.decode"><code class="xref py py-obj docutils literal notranslate"><span class="pre">decode</span></code></a>(history, calc_emi, calc_tr)</p></td>
+<td><p>Computes forward (fs) and backward (bs) probabilities for a given sequence.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.HMM.sample" title="himap.base.HMM.sample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample</span></code></a>()</p></td>
+<td><p>Generates a sequence of observations and corresponding state sequences performing a random walk on the model.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HMM.mc_dataset" title="himap.base.HMM.mc_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mc_dataset</span></code></a>(n_samples)</p></td>
+<td><p>Generates a dataset of a number of observations and corresponding state sequences utilizing the <code class="docutils literal notranslate"><span class="pre">sample</span></code> method.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.HMM.predict" title="himap.base.HMM.predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code></a>(history[, return_score])</p></td>
+<td><p>Predicts the most likely state sequence for a given observation sequence using the Viterbi algorithm.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HMM.estimate" title="himap.base.HMM.estimate"><code class="xref py py-obj docutils literal notranslate"><span class="pre">estimate</span></code></a>(history, estimatedStates[, ...])</p></td>
+<td><p>Estimates transition and emission matrices based on observed sequences and states.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.HMM.RUL" title="himap.base.HMM.RUL"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RUL</span></code></a>(estimatedStates, max_samples[, confidence])</p></td>
+<td><p>Estimates the remaining useful life of a system based on state sequence.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HMM.prognostics" title="himap.base.HMM.prognostics"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prognostics</span></code></a>(data[, max_samples, plot_rul, ...])</p></td>
+<td><p>Performs prognostics utilizing the <code class="docutils literal notranslate"><span class="pre">RUL</span></code> method and evaluates model performance.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.HMM.save_model" title="himap.base.HMM.save_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_model</span></code></a>()</p></td>
+<td><p>Saves the trained model to a file.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HMM.load_model" title="himap.base.HMM.load_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_model</span></code></a>(model_name)</p></td>
+<td><p>Loads a saved model.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.HMM._init">
+<span class="sig-name descname"><span class="pre">_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.HMM._init" title="Link to this definition"></a></dt>
+<dd><p>Initializes transition and emission matrices based on model structure (left_to_right).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>X</strong> (<em>dict</em>) – Dataset of trajectories for determining the maximum sequence length following the format of <code class="docutils literal notranslate"><span class="pre">utils.create_data_hsmm</span></code>. The default is None.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#himap.utils.create_data_hsmm" title="himap.utils.create_data_hsmm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">himap.utils.create_data_hsmm</span></code></a></dt><dd><p>Generates a dataset of trajectories for the model.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.HMM._init_mc">
+<span class="sig-name descname"><span class="pre">_init_mc</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.HMM._init_mc" title="Link to this definition"></a></dt>
+<dd><p>Initializes the model parameters for the Monte Carlo Sampling example.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.HMM.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_all_scores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_iters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.HMM.fit" title="Link to this definition"></a></dt>
+<dd><p>Trains the HMM using the Baum-Welch algorithm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>dict</em>) – Observations organized as { “traj_&lt;index&gt;”: [sequence] } following the format of <code class="docutils literal notranslate"><span class="pre">utils.create_data_hsmm</span></code>.</p></li>
+<li><p><strong>return_all_scores</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, returns log-likelihood scores for all iterations, default is False.</p></li>
+<li><p><strong>save_iters</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, saves the model at each iteration, default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>hmm</strong> (<em>object</em>) – Trained HMM instance.</p></li>
+<li><p><strong>score_per_iter</strong> (<em>list, optional</em>) – Log-likelihood scores for each iteration (if return_all_scores=True).</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#himap.utils.create_data_hsmm" title="himap.utils.create_data_hsmm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">himap.utils.create_data_hsmm</span></code></a></dt><dd><p>Generates a dataset of trajectories for the model.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.HMM.fit_bic">
+<span class="sig-name descname"><span class="pre">fit_bic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">states</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_models</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.HMM.fit_bic" title="Link to this definition"></a></dt>
+<dd><p>Fits multiple HMMs using the Bayesian Information Criterion (BIC) to select the best model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>dict</em>) – Observation dataset.</p></li>
+<li><p><strong>states</strong> (<em>list</em>) – List of candidate numbers of states.</p></li>
+<li><p><strong>return_models</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, returns all trained models and BIC scores (default is False).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>hmm</strong> (<em>object</em>) – Best HMM model based on BIC.</p></li>
+<li><p><strong>bic</strong> (<em>list</em>) – BIC scores for each candidate model.</p></li>
+<li><p><strong>models</strong> (<em>dict, optional</em>) – All trained models and BIC scores (if return_models=True).</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#himap.base.HMM.fit" title="himap.base.HMM.fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HMM.fit</span></code></a></dt><dd><p>Fits the HMM using the Baum-Welch algorithm.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.HMM.decode">
+<span class="sig-name descname"><span class="pre">decode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">history</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calc_emi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calc_tr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.HMM.decode" title="Link to this definition"></a></dt>
+<dd><p>Computes forward (fs) and backward (bs) probabilities for a given sequence.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>history</strong> (<em>list</em>) – Observation sequence.</p></li>
+<li><p><strong>calc_emi</strong> (<em>array</em>) – Current emission matrix.</p></li>
+<li><p><strong>calc_tr</strong> (<em>array</em>) – Current transition matrix.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>pStates</strong> (<em>numpy.ndarray</em>) – Posterior probabilities for states.</p></li>
+<li><p><strong>pSeq</strong> (<em>float</em>) – Log-probability of the sequence.</p></li>
+<li><p><strong>fs</strong> (<em>numpy.ndarray</em>) – Forward probabilities.</p></li>
+<li><p><strong>bs</strong> (<em>numpy.ndarray</em>) – Backward probabilities.</p></li>
+<li><p><strong>s</strong> (<em>numpy.ndarray</em>) – Scaling factors.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.HMM.sample">
+<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.HMM.sample" title="Link to this definition"></a></dt>
+<dd><p>Generates a sequence of observations and corresponding state sequences performing a random walk on the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><ul class="simple">
+<li><p><strong>history</strong> (<em>list</em>) – A list containing the generated sequence of observations, where each observation corresponds to a state in the sequence.</p></li>
+<li><p><strong>states</strong> (<em>list</em>) – A list containing the sequence of states visited during the process, where each state is represented by its index.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.HMM.mc_dataset">
+<span class="sig-name descname"><span class="pre">mc_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_samples</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.HMM.mc_dataset" title="Link to this definition"></a></dt>
+<dd><p>Generates a dataset of a number of observations and corresponding state sequences utilizing the <code class="docutils literal notranslate"><span class="pre">sample</span></code> method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>n_samples</strong> (<em>int</em>) – Number of sequences to generate.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>obs</strong> (<em>dict</em>) – Generated observation sequences.</p></li>
+<li><p><strong>states_all</strong> (<em>dict</em>) – Corresponding state sequences.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#himap.base.HMM.sample" title="himap.base.HMM.sample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HMM.sample</span></code></a></dt><dd><p>Generates a sequence of observations and corresponding state sequences.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.HMM.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">history</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_score</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.HMM.predict" title="Link to this definition"></a></dt>
+<dd><p>Predicts the most likely state sequence for a given observation sequence using the Viterbi algorithm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>history</strong> (<em>list</em>) – Observation sequence.</p></li>
+<li><p><strong>return_score</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, returns the log-probability of the best state sequence (default is False).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>currentState</strong> (<em>numpy.ndarray</em>) – Most likely state sequence.</p></li>
+<li><p><strong>logP</strong> (<em>float, optional</em>) – Log-probability of the predicted sequence (if return_score=True).</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.HMM.estimate">
+<span class="sig-name descname"><span class="pre">estimate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">history</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">estimatedStates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_matrices</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.HMM.estimate" title="Link to this definition"></a></dt>
+<dd><p>Estimates transition and emission matrices based on observed sequences and states.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>history</strong> (<em>list</em>) – Observation sequence.</p></li>
+<li><p><strong>estimatedStates</strong> (<em>list</em>) – Corresponding state sequence.</p></li>
+<li><p><strong>return_matrices</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, returns the matrices instead of updating the model (default is False).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>tr</strong> (<em>numpy.ndarray, optional</em>) – Updated transition matrix (if return_matrices=True).</p></li>
+<li><p><strong>emi</strong> (<em>numpy.ndarray, optional</em>) – Updated emission matrix (if return_matrices=True).</p></li>
+<li><p><strong>hmm</strong> (<em>object</em>) – Updated HMM instance.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.HMM.RUL">
+<span class="sig-name descname"><span class="pre">RUL</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">estimatedStates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_samples</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.95</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.HMM.RUL" title="Link to this definition"></a></dt>
+<dd><p>Estimates the remaining useful life of a system based on state sequence.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>estimatedStates</strong> (<em>list</em>) – Sequence of estimated states.</p></li>
+<li><p><strong>max_samples</strong> (<em>int</em>) – Maximum number of timesteps for RUL estimation.</p></li>
+<li><p><strong>confidence</strong> (<em>float</em>) – Confidence level for bounds.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>rul_mean</strong> (<em>list</em>) – Mean RUL estimates.</p></li>
+<li><p><strong>rul_upper_bound</strong> (<em>list</em>) – Upper confidence bounds.</p></li>
+<li><p><strong>rul_lower_bound</strong> (<em>list</em>) – Lower confidence bounds.</p></li>
+<li><p><strong>rul_matrix</strong> (<em>numpy.ndarray</em>) – RUL probability distributions.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.HMM.prognostics">
+<span class="sig-name descname"><span class="pre">prognostics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">plot_rul</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_metrics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.HMM.prognostics" title="Link to this definition"></a></dt>
+<dd><p>Performs prognostics utilizing the <code class="docutils literal notranslate"><span class="pre">RUL</span></code> method and evaluates model performance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<em>dict</em>) – Observation data for multiple trajectories following the format of <code class="docutils literal notranslate"><span class="pre">utils.create_data_hsmm</span></code>.</p></li>
+<li><p><strong>max_samples</strong> (<em>int</em><em>, </em><em>optional</em>) – Maximum timesteps for RUL. Default is 10× the max sequence length (default is None).</p></li>
+<li><p><strong>plot_rul</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, saves RUL plots (default is True).</p></li>
+<li><p><strong>get_metrics</strong> (<em>bool</em><em>, </em><em>optional</em>) – If True, evaluates RUL predictions with metrics (default is True).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None. Saves RUL estimates and metrics to files.</p>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="#himap.base.HMM.RUL" title="himap.base.HMM.RUL"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HMM.RUL</span></code></a></dt><dd><p>Estimates the remaining useful life of a system based on state sequence.</p>
+</dd>
+<dt><a class="reference internal" href="#himap.utils.create_data_hsmm" title="himap.utils.create_data_hsmm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">himap.utils.create_data_hsmm</span></code></a></dt><dd><p>Generates a dataset of trajectories for the model.</p>
+</dd>
+</dl>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.HMM.save_model">
+<span class="sig-name descname"><span class="pre">save_model</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.HMM.save_model" title="Link to this definition"></a></dt>
+<dd><p>Saves the trained model to a file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None. File saved in results/models.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.HMM.load_model">
+<span class="sig-name descname"><span class="pre">load_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.HMM.load_model" title="Link to this definition"></a></dt>
+<dd><p>Loads a saved model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>model_name</strong> (<em>str</em>) – Name of the model to load.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-himap.main">
+<span id="himap-main-module"></span><h2>himap.main module<a class="headerlink" href="#module-himap.main" title="Link to this heading"></a></h2>
+<p><strong>Functions:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.main.run_process" title="himap.main.run_process"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_process</span></code></a>(args)</p></td>
+<td><p>Run the process for the selected model</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.main.himap_main" title="himap.main.himap_main"><code class="xref py py-obj docutils literal notranslate"><span class="pre">himap_main</span></code></a>(hsmm, mc_sampling, bic_fit, save, ...)</p></td>
+<td><p>Main function for running the HMM models</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py function">
+<dt class="sig sig-object py" id="himap.main.run_process">
+<span class="sig-prename descclassname"><span class="pre">himap.main.</span></span><span class="sig-name descname"><span class="pre">run_process</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.main.run_process" title="Link to this definition"></a></dt>
+<dd><p>Run the process for the selected model</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>args</strong> (<em>argparse.Namespace</em>) – <p>Arguments for the process. Expected attributes are:</p>
+<ul class="simple">
+<li><p>hsmm (bool): Flag to indicate if HSMM model should be used.</p></li>
+<li><p>mc_sampling (bool): Flag to indicate if Monte Carlo sampling should be used.</p></li>
+<li><p>bic_fit (bool): Flag to indicate if BIC fitting should be performed.</p></li>
+<li><p>save (bool): Flag to indicate if the model should be saved.</p></li>
+<li><p>metrics (bool): Flag to indicate if metrics should be calculated.</p></li>
+<li><p>enable_visuals (bool): Flag to indicate if visualizations should be enabled.</p></li>
+<li><p>num_histories (int): Number of histories for Monte Carlo sampling.</p></li>
+<li><p>n_states (int): Number of states for the HMM/HSMM model.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="himap.main.himap_main">
+<span class="sig-prename descclassname"><span class="pre">himap.main.</span></span><span class="sig-name descname"><span class="pre">himap_main</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hsmm</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mc_sampling</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bic_fit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enable_visuals</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_histories</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_states</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.main.himap_main" title="Link to this definition"></a></dt>
+<dd><p>Main function for running the HMM models</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>hsmm</strong> (<em>bool</em>) – If True use Hidden Semi-Markov Model. If False use Hidden Markov Model.</p></li>
+<li><p><strong>mc_sampling</strong> (<em>bool</em>) – If True use Monte-Carlo Sampling as case example. If False use CMAPSS data.</p></li>
+<li><p><strong>bic_fit</strong> (<em>bool</em>) – If True enable Bayesian Information Criterion fitting for Markov Models.</p></li>
+<li><p><strong>save</strong> (<em>bool</em>) – If True enable saving of the fitted models.</p></li>
+<li><p><strong>metrics</strong> (<em>bool</em>) – If True enable calculation of performance metrics for RUL prediction.</p></li>
+<li><p><strong>enable_visuals</strong> (<em>bool</em>) – If True enable generating and saving figures.</p></li>
+<li><p><strong>num_histories</strong> (<em>int</em>) – The number of generated histories via Monte Carlo Sampling. It is only used if mc_sampling is True.</p></li>
+<li><p><strong>n_states</strong> (<em>int</em>) – The number of hidden states for Markov Model.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-himap.plot">
+<span id="himap-plot-module"></span><h2>himap.plot module<a class="headerlink" href="#module-himap.plot" title="Link to this heading"></a></h2>
+<p><strong>Functions:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.plot.plot_multiple_observ" title="himap.plot.plot_multiple_observ"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_multiple_observ</span></code></a>(obs, states, num2plot)</p></td>
+<td><p>Plot multiple degradation histories from MC sampling.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.plot.plot_ruls" title="himap.plot.plot_ruls"><code class="xref py py-obj docutils literal notranslate"><span class="pre">plot_ruls</span></code></a>(rul_mean, rul_upper, rul_lower, ...)</p></td>
+<td><p>Plot RUL predictiction with confidence intervals vs true RUL.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py function">
+<dt class="sig sig-object py" id="himap.plot.plot_multiple_observ">
+<span class="sig-prename descclassname"><span class="pre">himap.plot.</span></span><span class="sig-name descname"><span class="pre">plot_multiple_observ</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">states</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num2plot</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.plot.plot_multiple_observ" title="Link to this definition"></a></dt>
+<dd><p>Plot multiple degradation histories from MC sampling.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obs</strong> (<em>dict</em>) – Dictionary containing all observations.</p></li>
+<li><p><strong>states</strong> (<em>dict</em>) – Dictionary containing all statesm of the corresponding observations.</p></li>
+<li><p><strong>num2plot</strong> (<em>int</em>) – Number of histories to plot.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The figure is saved at ‘/path/to/current/directory/results/figures/mc_traj.png’.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="himap.plot.plot_ruls">
+<span class="sig-prename descclassname"><span class="pre">himap.plot.</span></span><span class="sig-name descname"><span class="pre">plot_ruls</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rul_mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rul_upper</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rul_lower</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fig_path</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.plot.plot_ruls" title="Link to this definition"></a></dt>
+<dd><p>Plot RUL predictiction with confidence intervals vs true RUL.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rul_mean</strong> (<em>list</em>) – Mean RUL predictions.</p></li>
+<li><p><strong>rul_upper</strong> (<em>list</em>) – Upper bound of the confidence interval.</p></li>
+<li><p><strong>rul_lower</strong> (<em>list</em>) – Lower bound of the confidence interval.</p></li>
+<li><p><strong>fig_path</strong> (<em>str</em>) – Path to save the figure.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>The figure is saved at ‘/path/to/current/directory/results/figures/’.</p>
+</dd></dl>
+
+</section>
+<section id="module-himap.utils">
+<span id="himap-utils-module"></span><h2>himap.utils module<a class="headerlink" href="#module-himap.utils" title="Link to this heading"></a></h2>
+<p><strong>Classes:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.utils.NumpyArrayEncoder" title="himap.utils.NumpyArrayEncoder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NumpyArrayEncoder</span></code></a>(*[, skipkeys, ...])</p></td>
+<td><p>Custom JSON encoder to handle numpy.ndarray and numpy.integer objects for serialization.</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Functions:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.utils.str2bool" title="himap.utils.str2bool"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str2bool</span></code></a>(v)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.utils.create_data_hsmm" title="himap.utils.create_data_hsmm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_data_hsmm</span></code></a>(files, obs_state_len, f_value)</p></td>
+<td><p>Creates a dictionary of trajectories for input into the HSMM model.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.utils.load_data_cmapss" title="himap.utils.load_data_cmapss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_data_cmapss</span></code></a>([obs_state_len, f_value])</p></td>
+<td><p>Loads the C-MAPSS dataset and prepares it for input into the HSMM model.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.utils.log_mask_zero" title="himap.utils.log_mask_zero"><code class="xref py py-obj docutils literal notranslate"><span class="pre">log_mask_zero</span></code></a>(a)</p></td>
+<td><p>Applies the log function to an array, masking zero values.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.utils.get_single_history_states" title="himap.utils.get_single_history_states"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_single_history_states</span></code></a>(states, index, ...)</p></td>
+<td><p>Returns the history states for a single trajectory.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.utils.get_viterbi" title="himap.utils.get_viterbi"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_viterbi</span></code></a>(HSMM, data)</p></td>
+<td><p>Applies the Viterbi algorithm to predict the most probable states for each trajectory in data using the HSMM.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.utils.fix_input_data" title="himap.utils.fix_input_data"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fix_input_data</span></code></a>(traj, f_value, obs_state_len)</p></td>
+<td><p>Prepares trajectory data for input into the HSMM model by appending f_value and adjusting indexing if needed.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.utils.get_rmse" title="himap.utils.get_rmse"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_rmse</span></code></a>(mean_rul_dict, true_rul_dict)</p></td>
+<td><p>Computes the Root Mean Square Error (RMSE) between predicted Remaining Useful Life (RUL) and true RUL.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.utils.get_coverage" title="himap.utils.get_coverage"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_coverage</span></code></a>(upper_bound_dict, ...)</p></td>
+<td><p>Calculates the coverage of true RUL values within the predicted upper and lower bounds.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.utils.calculate_area_weighted_by_time" title="himap.utils.calculate_area_weighted_by_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_area_weighted_by_time</span></code></a>(x_values, ...)</p></td>
+<td><p>Calculates the area under the curve weighted by time for the given x and y values.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.utils.get_wsu" title="himap.utils.get_wsu"><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_wsu</span></code></a>(upper_bound_dict, lower_bound_dict)</p></td>
+<td><p>Computes the Weighted Spread Uncertainty (WSU) between the upper and lower bounds.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.utils.evaluate_test_set" title="himap.utils.evaluate_test_set"><code class="xref py py-obj docutils literal notranslate"><span class="pre">evaluate_test_set</span></code></a>(mean_rul_dict, ...)</p></td>
+<td><p>Evaluates the test set by calculating RMSE, coverage, and WSU.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.utils.baumwelch_method" title="himap.utils.baumwelch_method"><code class="xref py py-obj docutils literal notranslate"><span class="pre">baumwelch_method</span></code></a>(n_states, n_obs_symbols, ...)</p></td>
+<td><p>Implements the Baum-Welch algorithm for parameter estimation in Hidden Markov Models (HMM).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.utils.fs_calculation" title="himap.utils.fs_calculation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fs_calculation</span></code></a>(n_states, end_traj, fs, s, ...)</p></td>
+<td><p>Computes the forward probabilities (fs) for a given sequence using the emission and transition matrices.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.utils.bs_calculation" title="himap.utils.bs_calculation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bs_calculation</span></code></a>(n_states, end_traj, bs, s, ...)</p></td>
+<td><p>Computes the backward probabilities (bs) for a given sequence using the emission and transition matrices.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.utils.calculate_expected_value" title="himap.utils.calculate_expected_value"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_expected_value</span></code></a>(pmf_values)</p></td>
+<td><p>Calculates the expected value of a probability mass function (PMF).</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.utils.calculate_cdf" title="himap.utils.calculate_cdf"><code class="xref py py-obj docutils literal notranslate"><span class="pre">calculate_cdf</span></code></a>(pmf, confidence_level)</p></td>
+<td><p>Calculates the cumulative distribution function (CDF) and percentile values for a given probability mass function (PMF).</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.utils.create_folders" title="himap.utils.create_folders"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_folders</span></code></a>()</p></td>
+<td><p>Create a directory structure for storing results.</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py class">
+<dt class="sig sig-object py" id="himap.utils.NumpyArrayEncoder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">himap.utils.</span></span><span class="sig-name descname"><span class="pre">NumpyArrayEncoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skipkeys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ensure_ascii</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">check_circular</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">allow_nan</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sort_keys</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">separators</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.utils.NumpyArrayEncoder" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">JSONEncoder</span></code></p>
+<p>Custom JSON encoder to handle numpy.ndarray and numpy.integer objects for serialization.</p>
+<p>Constructor for JSONEncoder, with sensible defaults.</p>
+<p>If skipkeys is false, then it is a TypeError to attempt
+encoding of keys that are not str, int, float or None.  If
+skipkeys is True, such items are simply skipped.</p>
+<p>If ensure_ascii is true, the output is guaranteed to be str
+objects with all incoming non-ASCII characters escaped.  If
+ensure_ascii is false, the output can contain non-ASCII characters.</p>
+<p>If check_circular is true, then lists, dicts, and custom encoded
+objects will be checked for circular references during encoding to
+prevent an infinite recursion (which would cause an RecursionError).
+Otherwise, no such check takes place.</p>
+<p>If allow_nan is true, then NaN, Infinity, and -Infinity will be
+encoded as such.  This behavior is not JSON specification compliant,
+but is consistent with most JavaScript based encoders and decoders.
+Otherwise, it will be a ValueError to encode such floats.</p>
+<p>If sort_keys is true, then the output of dictionaries will be
+sorted by key; this is useful for regression tests to ensure
+that JSON serializations can be compared on a day-to-day basis.</p>
+<p>If indent is a non-negative integer, then JSON array
+elements and object members will be pretty-printed with that
+indent level.  An indent level of 0 will only insert newlines.
+None is the most compact representation.</p>
+<p>If specified, separators should be an (item_separator, key_separator)
+tuple.  The default is (’, ‘, ‘: ‘) if <em>indent</em> is <code class="docutils literal notranslate"><span class="pre">None</span></code> and
+(‘,’, ‘: ‘) otherwise.  To get the most compact JSON representation,
+you should specify (‘,’, ‘:’) to eliminate whitespace.</p>
+<p>If specified, default is a function that gets called for objects
+that can’t otherwise be serialized.  It should return a JSON encodable
+version of the object or raise a <code class="docutils literal notranslate"><span class="pre">TypeError</span></code>.</p>
+<p><strong>Methods:</strong></p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.utils.NumpyArrayEncoder.default" title="himap.utils.NumpyArrayEncoder.default"><code class="xref py py-obj docutils literal notranslate"><span class="pre">default</span></code></a>(obj)</p></td>
+<td><p>Implement this method in a subclass such that it returns a serializable object for <code class="docutils literal notranslate"><span class="pre">o</span></code>, or calls the base implementation (to raise a <code class="docutils literal notranslate"><span class="pre">TypeError</span></code>).</p></td>
+</tr>
+</tbody>
+</table>
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.utils.NumpyArrayEncoder.default">
+<span class="sig-name descname"><span class="pre">default</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.utils.NumpyArrayEncoder.default" title="Link to this definition"></a></dt>
+<dd><p>Implement this method in a subclass such that it returns
+a serializable object for <code class="docutils literal notranslate"><span class="pre">o</span></code>, or calls the base implementation
+(to raise a <code class="docutils literal notranslate"><span class="pre">TypeError</span></code>).</p>
+<p>For example, to support arbitrary iterators, you could
+implement default like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">iterable</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">(</span><span class="n">o</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">TypeError</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">iterable</span><span class="p">)</span>
+    <span class="c1"># Let the base class default method raise the TypeError</span>
+    <span class="k">return</span> <span class="n">JSONEncoder</span><span class="o">.</span><span class="n">default</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="himap.utils.str2bool">
+<span class="sig-prename descclassname"><span class="pre">himap.utils.</span></span><span class="sig-name descname"><span class="pre">str2bool</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.utils.str2bool" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="himap.utils.create_data_hsmm">
+<span class="sig-prename descclassname"><span class="pre">himap.utils.</span></span><span class="sig-name descname"><span class="pre">create_data_hsmm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obs_state_len</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f_value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.utils.create_data_hsmm" title="Link to this definition"></a></dt>
+<dd><p>Creates a dictionary of trajectories for input into the HSMM model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>files</strong> (<em>list</em><em> of </em><em>str</em>) – List of file paths to CSV files containing trajectory data.</p></li>
+<li><p><strong>obs_state_len</strong> (<em>int</em>) – The length of the observed state.</p></li>
+<li><p><strong>f_value</strong> (<em>float</em>) – A value used for fixing the input data.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>traj</strong> – A dictionary where keys are trajectory identifiers and values are lists of cluster data.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="himap.utils.load_data_cmapss">
+<span class="sig-prename descclassname"><span class="pre">himap.utils.</span></span><span class="sig-name descname"><span class="pre">load_data_cmapss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obs_state_len</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">21</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.utils.load_data_cmapss" title="Link to this definition"></a></dt>
+<dd><p>Loads the C-MAPSS dataset and prepares it for input into the HSMM model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obs_state_len</strong> (<em>int</em><em>, </em><em>optional</em>) – Length to be used for the failure state, by default 5</p></li>
+<li><p><strong>f_value</strong> (<em>int</em><em>, </em><em>optional</em>) – Failure value corresponding to the final state, by default 21</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>seqs_train</strong> (<em>dict</em>) – A dictionary containing the training trajectories.</p></li>
+<li><p><strong>seqs_test</strong> (<em>dict</em>) – A dictionary containing the testing trajectories.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="himap.utils.log_mask_zero">
+<span class="sig-prename descclassname"><span class="pre">himap.utils.</span></span><span class="sig-name descname"><span class="pre">log_mask_zero</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.utils.log_mask_zero" title="Link to this definition"></a></dt>
+<dd><p>Applies the log function to an array, masking zero values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>a</strong> (<em>np.ndarray</em>) – An array of values.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The log-transformed array with zero values masked.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="himap.utils.get_single_history_states">
+<span class="sig-prename descclassname"><span class="pre">himap.utils.</span></span><span class="sig-name descname"><span class="pre">get_single_history_states</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">states</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">last_state</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.utils.get_single_history_states" title="Link to this definition"></a></dt>
+<dd><p>Returns the history states for a single trajectory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>states</strong> (<em>list</em>) – A list of list, each list contains the states for a trajectory.</p></li>
+<li><p><strong>index</strong> (<em>int</em>) – The index of the trajectory</p></li>
+<li><p><strong>last_state</strong> (<em>int</em>) – The last state of the trajectory</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>history_states</strong> – A list of the history states for the trajectory.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="himap.utils.get_viterbi">
+<span class="sig-prename descclassname"><span class="pre">himap.utils.</span></span><span class="sig-name descname"><span class="pre">get_viterbi</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">HSMM</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.utils.get_viterbi" title="Link to this definition"></a></dt>
+<dd><p>Applies the Viterbi algorithm to predict the most probable states for each trajectory in data using the HSMM.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>HSMM</strong> (<a class="reference internal" href="#himap.base.HSMM" title="himap.base.HSMM"><em>HSMM</em></a>) – The trained Hidden Semi-Markov Model used to predict states.</p></li>
+<li><p><strong>data</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>List</em><em>[</em><em>int</em><em>]</em><em>]</em>) – A dictionary of trajectories where each key is a trajectory name and each value is a list of observations.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>results</strong> – A list of lists containing the predicted states for each trajectory.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[List[int]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="himap.utils.fix_input_data">
+<span class="sig-prename descclassname"><span class="pre">himap.utils.</span></span><span class="sig-name descname"><span class="pre">fix_input_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">traj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f_value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obs_state_len</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_zero_indexed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.utils.fix_input_data" title="Link to this definition"></a></dt>
+<dd><p>Prepares trajectory data for input into the HSMM model by appending f_value and adjusting indexing if needed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>traj</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>List</em><em>[</em><em>int</em><em>]</em><em>]</em>) – A dictionary containing the trajectories as lists of observed states.</p></li>
+<li><p><strong>f_value</strong> (<em>int</em>) – The value to append to each trajectory.</p></li>
+<li><p><strong>obs_state_len</strong> (<em>int</em>) – The number of times to append f_value to each trajectory.</p></li>
+<li><p><strong>is_zero_indexed</strong> (<em>bool</em><em>, </em><em>optional</em>) – Flag indicating whether the data is zero-indexed. Default is True.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>traj</strong> – The modified trajectory dictionary with f_value appended and indexing adjusted if necessary.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict[str, List[int]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="himap.utils.get_rmse">
+<span class="sig-prename descclassname"><span class="pre">himap.utils.</span></span><span class="sig-name descname"><span class="pre">get_rmse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean_rul_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">true_rul_dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.utils.get_rmse" title="Link to this definition"></a></dt>
+<dd><p>Computes the Root Mean Square Error (RMSE) between predicted Remaining Useful Life (RUL) and true RUL.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mean_rul_dict</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>List</em><em>[</em><em>float</em><em>]</em><em>]</em>) – A dictionary where each key is a trajectory name and the value is the list of predicted RUL values.</p></li>
+<li><p><strong>true_rul_dict</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>int</em><em>]</em>) – A dictionary where each key is a trajectory name and the value is the true RUL for that trajectory.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>df_results</strong> – A DataFrame containing RMSE values for each trajectory, including the average RMSE.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="himap.utils.get_coverage">
+<span class="sig-prename descclassname"><span class="pre">himap.utils.</span></span><span class="sig-name descname"><span class="pre">get_coverage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">upper_bound_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lower_bound_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">true_rul_dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.utils.get_coverage" title="Link to this definition"></a></dt>
+<dd><p>Calculates the coverage of true RUL values within the predicted upper and lower bounds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>upper_bound_dict</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>List</em><em>[</em><em>float</em><em>]</em><em>]</em>) – A dictionary where each key is a trajectory name and the value is the list of upper bounds for predicted RUL.</p></li>
+<li><p><strong>lower_bound_dict</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>List</em><em>[</em><em>float</em><em>]</em><em>]</em>) – A dictionary where each key is a trajectory name and the value is the list of lower bounds for predicted RUL.</p></li>
+<li><p><strong>true_rul_dict</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>int</em><em>]</em>) – A dictionary where each key is a trajectory name and the value is the true RUL for that trajectory.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>df_results</strong> – A DataFrame containing coverage values for each trajectory, including the average coverage.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="himap.utils.calculate_area_weighted_by_time">
+<span class="sig-prename descclassname"><span class="pre">himap.utils.</span></span><span class="sig-name descname"><span class="pre">calculate_area_weighted_by_time</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_values</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.utils.calculate_area_weighted_by_time" title="Link to this definition"></a></dt>
+<dd><p>Calculates the area under the curve weighted by time for the given x and y values.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_values</strong> (<em>list</em><em>[</em><em>int</em><em>]</em>) – A list of x values (e.g., time).</p></li>
+<li><p><strong>y_values</strong> (<em>list</em><em>[</em><em>float</em><em>]</em>) – A list of y values (predicted values).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>area</strong> – The area under the curve weighted by time.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="himap.utils.get_wsu">
+<span class="sig-prename descclassname"><span class="pre">himap.utils.</span></span><span class="sig-name descname"><span class="pre">get_wsu</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">upper_bound_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lower_bound_dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.utils.get_wsu" title="Link to this definition"></a></dt>
+<dd><p>Computes the Weighted Spread Uncertainty (WSU) between the upper and lower bounds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>upper_bound_dict</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>List</em><em>[</em><em>float</em><em>]</em><em>]</em>) – A dictionary where each key is a trajectory name and the value is the list of upper bounds for predicted RUL.</p></li>
+<li><p><strong>lower_bound_dict</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>List</em><em>[</em><em>float</em><em>]</em><em>]</em>) – A dictionary where each key is a trajectory name and the value is the list of lower bounds for predicted RUL.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>df_results</strong> – A DataFrame containing WSU values for each trajectory, including the average WSU.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="himap.utils.evaluate_test_set">
+<span class="sig-prename descclassname"><span class="pre">himap.utils.</span></span><span class="sig-name descname"><span class="pre">evaluate_test_set</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean_rul_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">upper_bound_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lower_bound_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">true_rul_dict</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.utils.evaluate_test_set" title="Link to this definition"></a></dt>
+<dd><p>Evaluates the test set by calculating RMSE, coverage, and WSU.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mean_rul_dict</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>List</em><em>[</em><em>float</em><em>]</em><em>]</em>) – A dictionary where each key is a trajectory name and the value is the list of predicted RUL values.</p></li>
+<li><p><strong>upper_bound_dict</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>List</em><em>[</em><em>float</em><em>]</em><em>]</em>) – A dictionary where each key is a trajectory name and the value is the list of upper bounds for predicted RUL.</p></li>
+<li><p><strong>lower_bound_dict</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>List</em><em>[</em><em>float</em><em>]</em><em>]</em>) – A dictionary where each key is a trajectory name and the value is the list of lower bounds for predicted RUL.</p></li>
+<li><p><strong>true_rul_dict</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>int</em><em>]</em>) – A dictionary where each key is a trajectory name and the value is the true RUL for that trajectory.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>combined_df</strong> – A DataFrame combining RMSE, coverage, and WSU for each trajectory, including the average values.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pd.DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="himap.utils.baumwelch_method">
+<span class="sig-prename descclassname"><span class="pre">himap.utils.</span></span><span class="sig-name descname"><span class="pre">baumwelch_method</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_states</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_obs_symbols</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logPseq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">history</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">emi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calc_tr</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calc_emi</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.utils.baumwelch_method" title="Link to this definition"></a></dt>
+<dd><p>Implements the Baum-Welch algorithm for parameter estimation in Hidden Markov Models (HMM).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_states</strong> (<em>int</em>) – The number of hidden states in the model.</p></li>
+<li><p><strong>n_obs_symbols</strong> (<em>int</em>) – The number of observation symbols</p></li>
+<li><p><strong>logPseq</strong> (<em>float</em>) – The log-probability of the observed sequence.</p></li>
+<li><p><strong>fs</strong> (<em>np.ndarray</em>) – The forward probabilities matrix (shape: [n_states, sequence_length]).</p></li>
+<li><p><strong>bs</strong> (<em>np.ndarray</em>) – The backward probabilities matrix (shape: [n_states, sequence_length]).</p></li>
+<li><p><strong>scale</strong> (<em>np.ndarray</em>) – The scale factors for normalization (shape: [1, sequence_length]).</p></li>
+<li><p><strong>score</strong> (<em>float</em>) – The cumulative score (log probability) to be updated.</p></li>
+<li><p><strong>history</strong> (<em>List</em><em>[</em><em>int</em><em>]</em>) – The sequence of observed symbols (integer indices).</p></li>
+<li><p><strong>tr</strong> (<em>np.ndarray</em>) – The transition matrix (shape: [n_states, n_states]).</p></li>
+<li><p><strong>emi</strong> (<em>np.ndarray</em>) – The emission matrix (shape: [n_states, n_obs_symbols]).</p></li>
+<li><p><strong>calc_tr</strong> (<em>np.ndarray</em>) – A precomputed matrix of transition probabilities (shape: [n_states, n_states]).</p></li>
+<li><p><strong>calc_emi</strong> (<em>np.ndarray</em>) – A precomputed matrix of emission probabilities (shape: [n_states, n_obs_symbols]).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>tr</strong> (<em>np.ndarray</em>) – Updated transition matrix after the algorithm has performed parameter estimation.</p></li>
+<li><p><strong>emi</strong> (<em>np.ndarray</em>) – Updated emission matrix after the algorithm has performed parameter estimation.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="himap.utils.fs_calculation">
+<span class="sig-prename descclassname"><span class="pre">himap.utils.</span></span><span class="sig-name descname"><span class="pre">fs_calculation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_states</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_traj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">history</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calc_emi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calc_tr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.utils.fs_calculation" title="Link to this definition"></a></dt>
+<dd><p>Computes the forward probabilities (fs) for a given sequence using the emission and transition matrices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_states</strong> (<em>int</em>) – The number of hidden states in the model.</p></li>
+<li><p><strong>end_traj</strong> (<em>int</em>) – The length of the observation sequence.</p></li>
+<li><p><strong>fs</strong> (<em>np.ndarray</em>) – The forward probabilities matrix (shape: [n_states, end_traj]).</p></li>
+<li><p><strong>s</strong> (<em>np.ndarray</em>) – Scaling factors to prevent underflow (shape: [1, end_traj]).</p></li>
+<li><p><strong>history</strong> (<em>List</em><em>[</em><em>int</em><em>]</em>) – The sequence of observed symbols (integer indices).</p></li>
+<li><p><strong>calc_emi</strong> (<em>np.ndarray</em>) – A matrix of emission probabilities (shape: [n_states, n_obs_symbols]).</p></li>
+<li><p><strong>calc_tr</strong> (<em>np.ndarray</em>) – A matrix of transition probabilities (shape: [n_states, n_states]).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><ul class="simple">
+<li><p><strong>fs</strong> (<em>np.ndarray</em>) – The updated forward probabilities matrix.</p></li>
+<li><p><strong>s</strong> (<em>np.ndarray</em>) – The updated scaling factors.</p></li>
+</ul>
+</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="himap.utils.bs_calculation">
+<span class="sig-prename descclassname"><span class="pre">himap.utils.</span></span><span class="sig-name descname"><span class="pre">bs_calculation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_states</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">end_traj</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">s</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">history</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calc_emi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calc_tr</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.utils.bs_calculation" title="Link to this definition"></a></dt>
+<dd><p>Computes the backward probabilities (bs) for a given sequence using the emission and transition matrices.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_states</strong> (<em>int</em>) – The number of hidden states in the model.</p></li>
+<li><p><strong>end_traj</strong> (<em>int</em>) – The length of the observation sequence.</p></li>
+<li><p><strong>bs</strong> (<em>np.ndarray</em>) – The backward probabilities matrix (shape: [n_states, end_traj]).</p></li>
+<li><p><strong>s</strong> (<em>np.ndarray</em>) – Scaling factors for normalization (shape: [1, end_traj]).</p></li>
+<li><p><strong>history</strong> (<em>List</em><em>[</em><em>int</em><em>]</em>) – The sequence of observed symbols (integer indices).</p></li>
+<li><p><strong>calc_emi</strong> (<em>np.ndarray</em>) – A matrix of emission probabilities (shape: [n_states, n_obs_symbols]).</p></li>
+<li><p><strong>calc_tr</strong> (<em>np.ndarray</em>) – A matrix of transition probabilities (shape: [n_states, n_states]).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>bs</strong> – The updated backward probabilities matrix.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="himap.utils.calculate_expected_value">
+<span class="sig-prename descclassname"><span class="pre">himap.utils.</span></span><span class="sig-name descname"><span class="pre">calculate_expected_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pmf_values</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.utils.calculate_expected_value" title="Link to this definition"></a></dt>
+<dd><p>Calculates the expected value of a probability mass function (PMF).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>pmf_values</strong> (<em>List</em><em>[</em><em>float</em><em>]</em>) – A list of probabilities for each possible value.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>expected_value</strong> – The expected value calculated from the PMF.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="himap.utils.calculate_cdf">
+<span class="sig-prename descclassname"><span class="pre">himap.utils.</span></span><span class="sig-name descname"><span class="pre">calculate_cdf</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pmf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence_level</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#himap.utils.calculate_cdf" title="Link to this definition"></a></dt>
+<dd><p>Calculates the cumulative distribution function (CDF) and percentile values for a given probability mass function (PMF).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pmf</strong> (<em>List</em><em>[</em><em>float</em><em>]</em>) – A list of probabilities for each possible value.</p></li>
+<li><p><strong>confidence_level</strong> (<em>float</em>) – The confidence level for calculating the percentiles (e.g., 0.95 for 95%).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>lower_value</strong> – The index corresponding to the lower percentile.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="himap.utils.create_folders">
+<span class="sig-prename descclassname"><span class="pre">himap.utils.</span></span><span class="sig-name descname"><span class="pre">create_folders</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#himap.utils.create_folders" title="Link to this definition"></a></dt>
+<dd><p>Create a directory structure for storing results.</p>
+<p>This function creates a main “results” folder in the current working directory
+and subdirectories within it, including “dictionaries”, “figures”, and “models”.
+If the folders already exist, a message is printed indicating so.</p>
+<p class="rubric">Notes</p>
+<ul>
+<li><p>The function does not take any parameters.</p></li>
+<li><p>The function does not return any values.</p></li>
+<li><p>The created folder structure is as follows:</p>
+<p>results/</p>
+<p>├── dictionaries/</p>
+<p>├── figures/</p>
+<p>├── models/</p>
+</li>
+</ul>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">create_folders</span><span class="p">()</span>
+<span class="go">Created folder: /path/to/current/directory/results</span>
+<span class="go">Created folder: /path/to/current/directory/results/dictionaries</span>
+<span class="go">Created folder: /path/to/current/directory/results/figures</span>
+<span class="go">Created folder: /path/to/current/directory/results/models</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="fundamentals.html" class="btn btn-neutral float-left" title="Fundamentals of HMMs for Prognostics" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, ISP Group, Aerospace Engineering, TU Delft.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
