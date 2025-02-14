@@ -81,7 +81,7 @@ pip install -r requirements.txt
    
   Step 4a
 ```
-cd hmm/cython_build
+cd himap/cython_build
 ```
 
   Steb 4b
@@ -130,7 +130,7 @@ cd ..
 >**Note**
 >This is the beta version of the example, where the test_cmapss.py file is used. We need to add the parser.args method to pull inputs from the cmd and have flags for mc example or cmapss example and for hmm or hsmm.
 
-To describe how to train and use the HMM and HSMM models, we show an example below. To run the code from the Anaconda terminal with default values, go to the `hmm` folder inside the `hsmm_dev` directory and run the `main.py` file via the commands:
+To describe how to train and use the HMM and HSMM models, we show an example below. To run the code from the Anaconda terminal with default values, go to the `himap` folder inside the `hsmm_dev` directory and run the `main.py` file via the commands:
 
 
 ```
@@ -155,7 +155,7 @@ See the `main.py` file for different existing variables and options.
 
 ### Results
 
-The results are saved inside the directory `../hsmm_dev/hmm/results/`
+The results are saved inside the directory `../hsmm_dev/himap/results/`
 
 ## Contributors
 
