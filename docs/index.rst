@@ -23,6 +23,7 @@ Installation:
    quick_start
    fundamentals
    himap
+   Github Repository <https://github.com/GroupiSP/himap>
 
 Citing this repository:
 =======================
