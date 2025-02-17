@@ -36,3 +36,4 @@ python:
 defaults:
   # Update the branch name if it has been renamed
   branch: main
+  default_branch: main
