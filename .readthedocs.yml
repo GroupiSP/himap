@@ -30,10 +30,3 @@ sphinx:
 python:
   install:
     - requirements: docs/requirements.txt
-
-# Specify the default branch to use for builds
-# Update this to match the default branch of your repository
-defaults:
-  # Update the branch name if it has been renamed
-  branch: main
-  default_branch: main
