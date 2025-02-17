@@ -91,7 +91,8 @@ pip install -r requirements.txt
 python setup_cython.py build_ext --inplace
 ```
 
-For detailed usage instructions, guides, and API references, please visit our comprehensive documentation: [Read the docs](https://himap.readthedocs.io/en/latest/)
+>[!Note]
+>For detailed usage instructions, guides, and API references, please visit our comprehensive documentation: [Read the docs](https://himap.readthedocs.io/en/latest/)
 
 ## Structure
 
