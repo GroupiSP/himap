@@ -1,6 +1,6 @@
 # HiMAP:  Hidden Markov models for Advanced Prognostics
 
-Package for HMM and HSMM models including prognostics
+HiMAP is a Python package for implementing hidden Markov Models (HMMs) and hidden semi-Markov Models (HSMMs) tailored for prognostic applications. It provides a probabilistic framework for predicting Remaining Useful Life (RUL) and modeling complex degradation processes without requiring labeled datasets.
 
 ## Table of Contents
 
@@ -34,7 +34,19 @@ sudo apt-get install build-essential python3-dev
 >https://cython.readthedocs.io/en/latest/src/quickstart/install.html
 
 ## Installation
-The steps to configure and install the packages are the following:
+You can install HiMAP in two ways:
+
+### Option 1: Install via `pip`
+
+The easiest way to install HiMAP is through `pip`. Simply run the following command:
+
+```bash
+pip install himap
+```
+
+### Option 2: Install from Source Code
+
+If you prefer to install HiMAP directly from the source, follow these steps:
 
 1. Create an Anaconda environment and activate it.
 
