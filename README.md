@@ -44,6 +44,10 @@ The easiest way to install HiMAP is through `pip`. Simply run the following comm
 pip install himap
 ```
 
+>[!Note]
+>To install the package, you need `Python=3.9.16`
+
+
 ### Option 2: Install from Source Code
 
 If you prefer to install HiMAP directly from the source, follow these steps:
