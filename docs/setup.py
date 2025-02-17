@@ -2,7 +2,7 @@ from setuptools import setup, Extension
 from Cython.Build import cythonize
 
 setup(
-    name='fwd_bwd'
+    name='fwd_bwd',
     setup_requires=['setuptools>=18.0', 'cython'],
     ext_modules=cythonize([
         Extension(
