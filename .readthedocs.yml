@@ -10,7 +10,7 @@ build:
   tools:
     python: "3.9"
   commands:
-    - python setup.py build_ext --inplace
+    - python setup_cython.py build_ext --inplace
   
 
 # Build documentation in the "docs/" directory with Sphinx
