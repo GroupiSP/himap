@@ -1,0 +1,1 @@
+include himap/cython_build/*.pyx
