@@ -9,11 +9,9 @@ build:
   os: "ubuntu-20.04"
   tools:
     python: "3.9"
-  commands:
-    - pip install -r docs/requirements.txt
-    - python setup_cython.py build_ext --inplace
-    - cd docs
-    - make html
+  jobs:
+    pre_build:
+      - python setup_cython.py build_ext --inplace
   
 
 # Build documentation in the "docs/" directory with Sphinx
