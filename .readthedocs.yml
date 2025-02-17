@@ -31,4 +31,4 @@ python:
   install:
     - requirements: docs/requirements.txt
     - method: setuptools
-      path: setup_cython.py
+      path: docs/
