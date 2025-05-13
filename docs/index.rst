@@ -32,7 +32,7 @@ Citing this repository:
 
 Authors
 =======
-HiMAP was developed by the Intelligent Sustainable Prognostics (ISP) group at TU Delft, Aerospace Engineering Faculty.
+HiMAP was developed by the Intelligent System Prognostics (ISP) group at TU Delft, Aerospace Engineering Faculty.
 
 
 - **Thanos Kontogiannis**: `a.kontogiannis@tudelft.nl <a.kontogiannis@tudelft.nl>`_
