@@ -1,3 +1,6 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2025 Group iSP and contributors
+
 import numpy as np
 from scipy.special import logsumexp
 
