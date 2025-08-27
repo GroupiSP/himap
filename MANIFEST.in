@@ -1,1 +1,2 @@
 include himap/cython_build/*.pyx
+include LICENSE NOTICE README.md
