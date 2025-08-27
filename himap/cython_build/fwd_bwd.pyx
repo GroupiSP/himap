@@ -1,4 +1,6 @@
 #cython: language_level=3, boundscheck=False, wraparound=False
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2025 Group iSP and contributors
 
 import numpy as np
 

@@ -169,13 +169,8 @@ The results are saved inside the directory `../himap/results/`
 - [Mariana Salinas-Camus](https://github.com/mariana-sc)
 - [Nick Eleftheroglou](https://www.tudelft.nl/staff/n.eleftheroglou/)
 
-Shield: [![CC BY-NC-SA 4.0][cc-by-nc-sa-shield]][cc-by-nc-sa]
+## License
+As of v1.1.0 (2025-08-25), **HiMAP** is licensed under the **Apache License 2.0**.
+Prior releases remain under their original licenses.
 
-This work is licensed under a
-[Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License][cc-by-nc-sa].
-
-[![CC BY-NC-SA 4.0][cc-by-nc-sa-image]][cc-by-nc-sa]
-
-[cc-by-nc-sa]: http://creativecommons.org/licenses/by-nc-sa/4.0/
-[cc-by-nc-sa-image]: https://licensebuttons.net/l/by-nc-sa/4.0/88x31.png
-[cc-by-nc-sa-shield]: https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-lightgrey.svg
+See [`LICENSE`](./LICENSE) and [`NOTICE`](./NOTICE).

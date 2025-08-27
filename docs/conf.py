@@ -5,9 +5,12 @@
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2025 Group iSP and contributors
+
 
 project = 'HiMAP'
-copyright = '2025, ISP Group, Aerospace Engineering, TU Delft'
+copyright = '2025, ISP Group, Aerospace Engineering, TU Delft and contributors'
 author = 'T.Kontogiannis, M. Salinas-Camus, N. Eleftheroglou'
 
 # -- General configuration ---------------------------------------------------
