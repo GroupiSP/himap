@@ -1,0 +1,15 @@
+cff-version: 1.2.0
+message: "If you use HiMAP, please cite it as below."
+title: "HiMAP: Hidden Markov models for Advanced Prognostics"
+authors:
+  - family-names: Kontogiannis
+    given-names: Thanos
+  - family-names: Salinas-Camus
+    given-names: Mariana
+  - family-names: Eleftheroglou
+    given-names: Nick
+repository-code: "https://github.com/GroupiSP/himap"
+license: "Apache-2.0"
+version: "v1.1.0"
+date-released: "2025-08-25"
+type: software
