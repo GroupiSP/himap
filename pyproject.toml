@@ -4,7 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "himap"
-version = "1.1.0"
+version = "1.2.0"
+requires-python = ">=3.9, <3.13"
 dependencies = [
     "matplotlib>=3.7.1",
     "numpy>=1.23.5",
@@ -15,11 +16,10 @@ dependencies = [
     "pandas>=1.5.3",
     "Cython>=0.29.35",
 ]
-requires-python = ">=3.9.16"
 authors = [
     { name = "Thanos Kontogiannis", email = "a.kontogiannis@tudelft.nl" },
     { name = "Mariana Salinas-Camus", email = "m.salinascamus@tudelft.nl" },
-    { name = "Nick Eleftheroglou" }, { email = "n.eleftheroglou@tudelft.nl" },
+    { name = "Nick Eleftheroglou", email = "n.eleftheroglou@tudelft.nl" },
 ]
 maintainers = [
     { name = "Thanos Kontogiannis", email = "a.kontogiannis@tudelft.nl" },
@@ -31,12 +31,15 @@ keywords = ["Hidden Markov Models", "Prognostics"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Programming Language :: Python",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
 ]
 license = "Apache-2.0"
+license-files = ["LICENSE"]
 
 [project.urls]
 Documentation = "https://himap.readthedocs.io/en/latest/"
 Repository = "https://github.com/GroupiSP/himap/"
-
-
-
