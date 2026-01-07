@@ -2,7 +2,7 @@
 # Copyright (c) 2025 Group iSP and contributors
 
 import unittest
-from base import HSMM, HMM, GaussianHSMM
+from .base import HSMM, HMM, GaussianHSMM
 
 class TestHSMM(unittest.TestCase):
     def test_default_initialization(self):
