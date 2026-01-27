@@ -27,7 +27,17 @@ Installation:
 
 Citing this repository:
 =======================
-*dummy citation*
+If you use HiMAP in your research, please cite the following paper:
+
+.. code-block:: bibtex
+
+   @article{kontogiannis2026himap,
+     title={HiMAP: Hidden Markov models for Advanced Prognostics},
+     author={Kontogiannis, Thanos and Salinas-Camus, Mariana and Eleftheroglou, Nick},
+     journal={Journal of Open Source Software},
+     doi={},
+     year={2026},
+   }
 
 
 Authors
