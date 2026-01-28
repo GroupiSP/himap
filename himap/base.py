@@ -15,12 +15,19 @@ from sklearn.linear_model import LinearRegression
 from tqdm import tqdm
 from itertools import zip_longest
 from math import ceil
-from .ab import _forward, _backward, _u_only
+from himap.ab import _forward, _backward, _u_only
 
-from .cython_build import fwd_bwd as core
+# from himap.cython_build import fwd_bwd as core
 
-from .utils import *
-from .plot import *
+from himap.utils import *
+from himap.plot import *
+
+try:
+    from himap.cython_build import fwd_bwd as core
+    _CORE_IMPORT_ERROR = None
+except Exception as e:
+    core = None
+    _CORE_IMPORT_ERROR = e
 
 np.seterr(invalid='ignore', divide='ignore', )
 
@@ -142,6 +149,20 @@ class HSMM:
         (to be implemented in child class).
         """
         pass  # implemented in subclass
+
+    def _require_core(self):
+        """
+        Ensures that the HiMAP Cython extension is available.
+        Returns
+        -------
+        None
+
+        """
+        if core is None:
+            raise ImportError(
+                "HiMAP Cython extension is not available. "
+                "Build it with: python setup.py build_ext --inplace  (or pip install -e .)"
+            ) from _CORE_IMPORT_ERROR
 
     def _check(self):
         """
@@ -450,7 +471,7 @@ class HSMM:
         gamma : ndarray
             Smoothed probabilities.
         """
-
+        self._require_core()
         n_samples = beta.shape[0]
         gamma = np.empty((n_samples, self.n_states))
         core._smoothed(n_samples, self.n_states, self.n_durations,
@@ -476,6 +497,7 @@ class HSMM:
             Log-likelihood of the state sequence.
 
         """
+        self._require_core()
         n_samples = u.shape[0]
         state_sequence, state_logl = core._viterbi(n_samples, self.n_states, self.n_durations,
                                                    log_mask_zero(self.pi),

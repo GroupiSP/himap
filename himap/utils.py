@@ -7,6 +7,7 @@ import json
 import pandas as pd
 from numba import jit
 import argparse
+from importlib import resources
 import os
 
 
@@ -77,10 +78,16 @@ def load_data_cmapss(obs_state_len=5, f_value=21):
         A dictionary containing the testing trajectories.
     """
 
-    examples_path = os.path.join(os.getcwd(), "example_data")
-    train = pd.read_csv(os.path.join(examples_path,'train_FD001_disc_20_mod.csv'),
-                        sep=';')  # the discretized data starts from 0, to work with HMM it has to start from 1
-    test = pd.read_csv(os.path.join(examples_path,'test_FD001_disc_20_mod.csv'), sep=';')
+    # Resolve packaged CSVs (works from any working directory once included in the wheel)
+    train_res = resources.files("himap").joinpath("example_data", "train_FD001_disc_20_mod.csv")
+    test_res = resources.files("himap").joinpath("example_data", "test_FD001_disc_20_mod.csv")
+
+    with train_res.open("rb") as f:
+        train = pd.read_csv(f, sep=";")
+
+    with test_res.open("rb") as f:
+        test = pd.read_csv(f, sep=";")
+
     train_units = np.unique(train['unit_nr'].to_numpy())
     test_units = np.unique(test['unit_nr'].to_numpy())
     seqs_train = {}
