@@ -14,7 +14,7 @@
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="_static/doctools.js?v=9a2dae69"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -56,6 +56,12 @@
 <li class="toctree-l3"><a class="reference internal" href="#step-1-create-your-hsmm">Step 1: Create Your HSMM</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-2-optimize-the-number-of-states-and-train-your-model">Step 2: Optimize the Number of States and Train Your Model</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#step-3-perform-prognostics">Step 3: Perform Prognostics</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#how-to-load-your-own-dataset">How to load your own dataset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#step-1-prepare-your-data-files">Step 1: Prepare your data files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-2-understand-how-the-data-is-processed">Step 2: Understand how the data is processed</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-3-load-your-training-and-testing-data">Step 3: Load your training and testing data</a></li>
 </ul>
 </li>
 </ul>
@@ -116,13 +122,22 @@ the entire GitHub repository, following the respective instructions.</p>
 <li><p><a class="reference internal" href="#step-3-perform-prognostics" id="id9">Step 3: Perform Prognostics</a></p></li>
 </ul>
 </li>
+<li><p><a class="reference internal" href="#how-to-load-your-own-dataset" id="id10">How to load your own dataset</a></p>
+<ul>
+<li><p><a class="reference internal" href="#step-1-prepare-your-data-files" id="id11">Step 1: Prepare your data files</a></p></li>
+<li><p><a class="reference internal" href="#step-2-understand-how-the-data-is-processed" id="id12">Step 2: Understand how the data is processed</a></p></li>
+<li><p><a class="reference internal" href="#step-3-load-your-training-and-testing-data" id="id13">Step 3: Load your training and testing data</a></p></li>
+</ul>
+</li>
 </ul>
 </nav>
 <section id="using-the-classic-hidden-markov-model-hmm-for-prognostics">
 <h2><a class="toc-backref" href="#id1" role="doc-backlink">Using the classic Hidden Markov Model (HMM) for prognostics</a><a class="headerlink" href="#using-the-classic-hidden-markov-model-hmm-for-prognostics" title="Link to this heading"></a></h2>
 <section id="step-1-load-the-c-mapss-data-example">
 <h3><a class="toc-backref" href="#id2" role="doc-backlink">Step 1: Load the C-MAPSS data example</a><a class="headerlink" href="#step-1-load-the-c-mapss-data-example" title="Link to this heading"></a></h3>
-<p>The C-MAPSS (Commercial Modular Aero-Propulsion System Simulation) dataset is a widely used benchmark in Prognostics and Health Management (PHM), providing simulated degradation data for aircraft turbofan engines operating under various conditions. It contains multivariate time-series measurements from multiple sensors collected over the entire operational life of each engine, from healthy operation to system failure. The FD001 sub-dataset represents a single operating condition with a single fault mode, making it well suited for developing and evaluating data-driven approaches to degradation modeling and remaining useful life estimation. The C-MAPSS dataset also includes additional sub-datasets: FD002, with six operating conditions and one fault mode; FD003, with one operating condition and two fault modes; and FD004, with six operating conditions and two fault modes. For the purposes of the example case study, only data from sensor 11 of the FD001 sub-dataset is considered. This sensor data is discretized into 20 values to facilitate its use with Hidden Markov Models (HMMs). Each run-to-failure degradation history corresponds to the time-series data collected from a single engine, starting from healthy operation and ending at system failure. The training dataset consists of 80 such degradation histories, while the testing dataset contains 20 degradation histories</p>
+<p>The C-MAPSS (Commercial Modular Aero-Propulsion System Simulation) dataset is a widely used benchmark in Prognostics and Health Management (PHM), providing simulated degradation data for aircraft turbofan engines operating under various conditions. It contains multivariate time-series measurements from multiple sensors collected over the entire operational life of each engine, from healthy operation to system failure.</p>
+<p>The FD001 sub-dataset represents a single operating condition with a single fault mode, making it well suited for developing and evaluating data-driven approaches to degradation modeling and remaining useful life estimation. The C-MAPSS dataset also includes additional sub-datasets: FD002, with six operating conditions and one fault mode; FD003, with one operating condition and two fault modes; and FD004, with six operating conditions and two fault modes.</p>
+<p>For the purposes of the example case study, only data from sensor 11 of the FD001 sub-dataset is considered. This sensor data is discretized into 20 values to facilitate its use with Hidden Markov Models (HMMs). Each run-to-failure degradation history corresponds to the time-series data collected from a single engine, starting from healthy operation and ending at system failure. The training dataset consists of 80 such degradation histories, while the testing dataset contains 20 degradation histories</p>
 <p>The dataset includes two files:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">train_FD001_disc_20_mod.csv</span></code> for training</p></li>
@@ -211,6 +226,79 @@ the entire GitHub repository, following the respective instructions.</p>
 <p>By using HSMMs, you’ll likely see improved RUL predictions compared to HMMs! For the C-MAPSS, the RMSE improves, and the uncertainty confidence intervals reduce over time.</p>
 <a class="reference internal image-reference" href="_images/hsmm_RUL_plot_traj_19.png"><img alt="_images/hsmm_RUL_plot_traj_19.png" class="align-center" src="_images/hsmm_RUL_plot_traj_19.png" style="width: 600px;" />
 </a>
+</section>
+</section>
+<section id="how-to-load-your-own-dataset">
+<h2><a class="toc-backref" href="#id10" role="doc-backlink">How to load your own dataset</a><a class="headerlink" href="#how-to-load-your-own-dataset" title="Link to this heading"></a></h2>
+<p>If you want to use your own dataset with HiMAP for prognostics, you can do so using the auxiliary function <cite>create_data_hsmm()</cite> provided in <cite>utils.py</cite>. This function prepares your data in the correct format for training and testing HMM or HSMM models.</p>
+<section id="step-1-prepare-your-data-files">
+<h3><a class="toc-backref" href="#id11" role="doc-backlink">Step 1: Prepare your data files</a><a class="headerlink" href="#step-1-prepare-your-data-files" title="Link to this heading"></a></h3>
+<p>Each run-to-failure trajectory must be stored in a separate CSV file.
+Every CSV file should contain a column named clusters, which represents discrete condition monitoring data (or cluster labels) sampled at a consistent rate.</p>
+<p>For example, a single CSV file might look like:</p>
+<div class="highlight-csv notranslate"><div class="highlight"><pre><span></span>clusters
+1
+1
+2
+2
+3
+...
+21
+</pre></div>
+</div>
+</section>
+<section id="step-2-understand-how-the-data-is-processed">
+<h3><a class="toc-backref" href="#id12" role="doc-backlink">Step 2: Understand how the data is processed</a><a class="headerlink" href="#step-2-understand-how-the-data-is-processed" title="Link to this heading"></a></h3>
+<p>The <cite>create_data_hsmm()</cite> function takes a list of CSV file paths as input. For each file, it:</p>
+<ol class="arabic simple">
+<li><p>Reads the clusters column</p></li>
+<li><p>Stores each trajectory as a list of observed states in a dictionary</p></li>
+</ol>
+<p>To standardize the end-of-life behavior across trajectories:</p>
+<ul class="simple">
+<li><p>A predefined failure value (f_value) is appended to the end of each trajectory</p></li>
+<li><p>This failure value is repeated obs_state_len times to help the model learn the failure pattern more effectively</p></li>
+</ul>
+<p>In addition, the function handles indexing automatically:</p>
+<ul class="simple">
+<li><p>If your data is zero-indexed (states start at 0), cluster labels are shifted by +1 internally to ensure compatibility with HMM and HSMM implmentations.</p></li>
+<li><p>This behavior is enabled by default (is_zero_indexed = True)</p></li>
+<li><p>If your data is already one-indexed, this adjustment can be disabled by <cite>is_zero_indexed = False</cite></p></li>
+</ul>
+</section>
+<section id="step-3-load-your-training-and-testing-data">
+<h3><a class="toc-backref" href="#id13" role="doc-backlink">Step 3: Load your training and testing data</a><a class="headerlink" href="#step-3-load-your-training-and-testing-data" title="Link to this heading"></a></h3>
+<p>First, collect all CSV files for training and testing into separate folders. Then, create a list of file paths and pass them to <cite>create_data_hsmm()</cite>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_data_hsmm</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="c1"># Define parameters</span>
+<span class="n">f_value</span> <span class="o">=</span> <span class="mi">21</span>        <span class="c1"># Failure value appended at the end of each trajectory</span>
+<span class="n">obs_state_len</span> <span class="o">=</span> <span class="mi">5</span>   <span class="c1"># Number of times the failure value is repeated</span>
+
+<span class="n">train_folder</span> <span class="o">=</span> <span class="s1">&#39;path/to/your/train/folder&#39;</span>
+<span class="n">test_folder</span> <span class="o">=</span> <span class="s1">&#39;path/to/your/test/folder&#39;</span>
+
+<span class="c1"># Read all CSV files in the train and test folders</span>
+<span class="n">train_files</span> <span class="o">=</span> <span class="p">[</span>
+   <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">train_folder</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+   <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">train_folder</span><span class="p">)</span>
+   <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.csv&#39;</span><span class="p">)</span>
+<span class="p">]</span>
+
+<span class="n">test_files</span> <span class="o">=</span> <span class="p">[</span>
+   <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">test_folder</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+   <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">test_folder</span><span class="p">)</span>
+   <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.csv&#39;</span><span class="p">)</span>
+<span class="p">]</span>
+
+<span class="c1"># Create training and testing trajectories</span>
+<span class="n">seqs_train</span> <span class="o">=</span> <span class="n">create_data_hsmm</span><span class="p">(</span><span class="n">train_files</span><span class="p">,</span> <span class="n">f_value</span><span class="p">,</span> <span class="n">obs_state_len</span><span class="p">)</span>
+<span class="n">seqs_test</span> <span class="o">=</span> <span class="n">create_data_hsmm</span><span class="p">(</span><span class="n">test_files</span><span class="p">,</span> <span class="n">f_value</span><span class="p">,</span> <span class="n">obs_state_len</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The resulting <cite>seqs_train</cite> and <cite>seqs_test</cite> objects are dictionaries containing run-to-failure trajectories in a format directly compatible with HiMAP’s HMM and HSMM models.</p>
+<p>You can now use these datasets for model training and prognostic evaluation as demonstrated in the previous sections.</p>
 </section>
 </section>
 </section>
