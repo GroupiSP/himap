@@ -138,14 +138,10 @@ python setup_cython.py build_ext --inplace
 
 ### Run from the rebuild repo
 
-To describe how to train and use the HMM and HSMM models, we show an example below. To run the code from the Anaconda terminal with default values, go to the `himap` directory and run the `main.py` file via the commands:
+To describe how to train and use the HMM and HSMM models, we show an example below. To run the code from the terminal with default values, use the following command from the root directory of the repository:
 
 ```
-cd himap
-```
-
-```
-python main.py
+python -m himap.main
 ```
 
 This runs the HMM model for the C-MAPSS dataset by default and fits the best model utilizing the Bayesian Information Criterion.
@@ -153,13 +149,13 @@ This runs the HMM model for the C-MAPSS dataset by default and fits the best mod
 If you want to fit the HSMM model to the C-MAPSS data run the command:
 
 ```
-python main.py --hsmm True 
+python -m himap.main --hsmm True 
 ```
 
 If you want to run the example utilizing Monte Carlo Sampling generated data run the command:
 
 ```
-python main.py --mc_sampling True
+python -m himap.main --mc_sampling True
 ```
 
 See the `main.py` file for different existing variables and options.
@@ -175,7 +171,7 @@ and use the same arguments as previously for the different example options.
 
 ## Results
 
-The results are saved inside the directory `../himap/results/`
+The results are saved inside the directory `root/himap/results/`
 
 ## Contributors
 
