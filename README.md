@@ -45,25 +45,25 @@ pip install himap
 ```
 
 >[!Note]
->To install the package, you need `Python=3.9.16`
+>To install the package, you need `Python>=3.9`
 
 
 ### Option 2: Install from Source Code
 
 If you prefer to install HiMAP directly from the source, follow these steps:
 
-1. Create an Anaconda environment and activate it.
+1. Create a virtual environment and activate it. (This example will be demonstrated with Anaconda, but it is not required.)
 
   Step 1a
 
 ```
-conda create -n himap python=3.9.16
+conda create -n himap_env python=3.12
 ```
 
   Step 1b
 
 ```
-conda activate himap
+conda activate himap_env
 ```
 
 
@@ -102,12 +102,14 @@ python setup_cython.py build_ext --inplace
 
 
 ```
-../hsmm_dev/
+../root/
       └── LICENSE
       └── README.md
       └── requirements.txt
+      └── ...
+
     
-      ├── hmm/                                                          -- Required
+      ├── himap/                                                        -- Required
           └── ab.py                                                     -- Required
           └── base.py                                                   -- Required
           └── main.py                                                   -- Required
@@ -115,7 +117,8 @@ python setup_cython.py build_ext --inplace
           └── smoothed.pyd                                              -- Required
           └── utils.py                                                  -- Required
           
-          ├── cython_build/                                             -- Required      
+          ├── cython_build/                                             -- Required
+              └── __init__.py                                           -- Required      
               └── fwd_bwd.pyx                                           -- Required
               └── setup.py                                              -- Required
 
@@ -133,14 +136,12 @@ python setup_cython.py build_ext --inplace
 ## Example
 
 
-To describe how to train and use the HMM and HSMM models, we show an example below. To run the code from the Anaconda terminal with default values, go to the `himap` directory and run the `main.py` file via the commands:
+### Run from the rebuild repo
+
+To describe how to train and use the HMM and HSMM models, we show an example below. To run the code from the terminal with default values, use the following command from the root directory of the repository:
 
 ```
-cd himap
-```
-
-```
-python main.py
+python -m himap.main
 ```
 
 This runs the HMM model for the C-MAPSS dataset by default and fits the best model utilizing the Bayesian Information Criterion.
@@ -148,20 +149,29 @@ This runs the HMM model for the C-MAPSS dataset by default and fits the best mod
 If you want to fit the HSMM model to the C-MAPSS data run the command:
 
 ```
-python main.py --hsmm True 
+python -m himap.main --hsmm True 
 ```
 
 If you want to run the example utilizing Monte Carlo Sampling generated data run the command:
 
 ```
-python main.py --mc_sampling True
+python -m himap.main --mc_sampling True
 ```
 
 See the `main.py` file for different existing variables and options.
 
-### Results
+### Run from the installed package
 
-The results are saved inside the directory `../himap/results/`
+The example can be also run via the distribution. After installing the package in the virtual environment you can run
+
+```
+python -m himap.main
+```
+and use the same arguments as previously for the different example options.
+
+## Results
+
+The results are saved inside the directory `root/himap/results/`
 
 ## Contributors
 

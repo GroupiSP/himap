@@ -4,9 +4,10 @@ Quick Start Guide: Prognostics using C-MAPSS
 This guide provides a step-by-step process for loading the C-MAPSS dataset, creating a Hidden Markov Model (HMM) and a Hidden Semi-Markov Model (HSMM), and performing prognostics using your model.
 
 .. warning::
-    This example will NOT run with the PyPi install, since the package does not 
-    contain the example data. To get all of the required files, please build
-    the entire GitHub repository, following the respective instructions.
+    In order to follow this example please build the GitHub repository, following the respective instructions.
+    If you want to simply get the prognostic results for the C-MAPSS dataset, you can also directly run ``python -m himap.main`` in 
+    the root directory of the repository, following the instructions in the `README`_ of the repository.
+.. _README: https://github.com/GroupiSP/himap
         
 
 .. contents:: Table of Contents
@@ -19,12 +20,25 @@ Using the classic Hidden Markov Model (HMM) for prognostics
 Step 1: Load the C-MAPSS data example
 -------------------------------------
 
-The data used corresponds to sensor 11 data from the FD001 sub-dataset of C-MAPSS, discretized into 20 values for easier use with HMMs. The training dataset consists of 80 run-to-failure degradation histories, while the testing dataset contains 20 run-to-failure degradation histories.
+The C-MAPSS (Commercial Modular Aero-Propulsion System Simulation) dataset is a widely used benchmark in Prognostics and Health Management (PHM), providing simulated degradation data for aircraft turbofan engines operating under various conditions. It contains multivariate time-series measurements from multiple sensors collected over the entire operational life of each engine, from healthy operation to system failure. 
+
+The FD001 sub-dataset represents a single operating condition with a single fault mode, making it well suited for developing and evaluating data-driven approaches to degradation modeling and remaining useful life estimation. The C-MAPSS dataset also includes additional sub-datasets: FD002, with six operating conditions and one fault mode; FD003, with one operating condition and two fault modes; and FD004, with six operating conditions and two fault modes. 
+
+For the purposes of the example case study, only data from sensor 11 of the FD001 sub-dataset is considered. This sensor data is discretized into 20 values to facilitate its use with Hidden Markov Models (HMMs). Each run-to-failure degradation history corresponds to the time-series data collected from a single engine, starting from healthy operation and ending at system failure. The training dataset consists of 80 such degradation histories, while the testing dataset contains 20 degradation histories
 
 The dataset includes two files:
 
 - ``train_FD001_disc_20_mod.csv`` for training
 - ``test_FD001_disc_20_mod.csv`` for testing
+
+
+First, ensure you have the necessary imports:
+
+.. code-block:: python
+
+   import himap
+   from himap.utils import *
+   from himap.base import HMM, GaussianHSMM
 
 To load the data, use the following Python code:
 
@@ -81,7 +95,7 @@ Once the model is trained, you can use the defined prognostic module to predict 
 
    hmm_c.prognostics(seqs_test, plot_rul=True, get_metrics=True)
 
-This function will generate and save RUL plots in a ``figures`` folder and also save a CSV file containing the following performance metrics:
+This function will generate and save RUL plots in a ``figures`` folder, each figure corresponds to the RUL predictions of each test tracjectory. Also, the function saves a CSV file containing the following performance metrics:
 
 - **RMSE**: Measures prediction accuracy (lower is better)
 - **Coverage**: Indicates how well the true RUL values fall within the confidence intervals (ideal = 1)
@@ -89,7 +103,7 @@ This function will generate and save RUL plots in a ``figures`` folder and also 
 
 Additionally, RUL probability distributions (PDFs) for each time step are saved in the ``dictionary`` folder, along with confidence intervals.
 
-Below is an example of the RUL prediction results:
+Below there is an example of the RUL prediction results. The x-axis corresponds to the operational time and the y-axis to the RUL (which has the same units as the operational time). The true RUL is defined as the time remaining before failure, computed using the known failure time of the system and decreasing linearly as the system operates. The predicted RUL represents the model’s estimate of this remaining lifetime based on the observed sensor data. The confidence intervals indicate the uncertainty associated with the prediction, providing a range of plausible RUL values around the estimate, with wider intervals reflecting higher uncertainty.
 
 .. image:: _images/hmm_RUL_plot_traj_19.png
    :align: center
@@ -133,3 +147,91 @@ By using HSMMs, you’ll likely see improved RUL predictions compared to HMMs! F
 .. image:: _images/hsmm_RUL_plot_traj_19.png
    :align: center
    :width: 600
+
+
+How to load your own dataset
+===========================================================
+
+If you want to use your own dataset with HiMAP for prognostics, you can do so using the auxiliary function `create_data_hsmm()` provided in `utils.py`. This function prepares your data in the correct format for training and testing HMM or HSMM models.
+
+Step 1: Prepare your data files
+-------------------------------
+
+Each run-to-failure trajectory must be stored in a separate CSV file.
+Every CSV file should contain a column named clusters, which represents discrete condition monitoring data (or cluster labels) sampled at a consistent rate.
+
+For example, a single CSV file might look like:
+
+.. csv-table:: 
+   :header: "clusters"
+   :widths: 10
+
+   "1"
+   "1"
+   "2"
+   "2"
+   "3"
+   "..."
+   "21"
+
+
+Step 2: Understand how the data is processed
+---------------------------------------------
+
+The `create_data_hsmm()` function takes a list of CSV file paths as input. For each file, it:
+
+1. Reads the clusters column
+
+2. Stores each trajectory as a list of observed states in a dictionary
+
+To standardize the end-of-life behavior across trajectories:
+
+* A predefined failure value (f_value) is appended to the end of each trajectory
+
+* This failure value is repeated obs_state_len times to help the model learn the failure pattern more effectively
+
+In addition, the function handles indexing automatically:
+
+* If your data is zero-indexed (states start at 0), cluster labels are shifted by +1 internally to ensure compatibility with HMM and HSMM implmentations.
+
+* This behavior is enabled by default (is_zero_indexed = True)
+
+* If your data is already one-indexed, this adjustment can be disabled by `is_zero_indexed = False`
+
+Step 3: Load your training and testing data
+-------------------------------------------
+
+First, collect all CSV files for training and testing into separate folders. Then, create a list of file paths and pass them to `create_data_hsmm()`.
+
+.. code-block:: python
+
+   from himap.utils import create_data_hsmm
+   import os
+
+   # Define parameters
+   f_value = 21        # Failure value appended at the end of each trajectory
+   obs_state_len = 5   # Number of times the failure value is repeated
+
+   train_folder = 'path/to/your/train/folder'
+   test_folder = 'path/to/your/test/folder'
+
+   # Read all CSV files in the train and test folders
+   train_files = [
+      os.path.join(train_folder, f)
+      for f in os.listdir(train_folder)
+      if f.endswith('.csv')
+   ]
+
+   test_files = [
+      os.path.join(test_folder, f)
+      for f in os.listdir(test_folder)
+      if f.endswith('.csv')
+   ]
+
+   # Create training and testing trajectories
+   seqs_train = create_data_hsmm(train_files, f_value, obs_state_len)
+   seqs_test = create_data_hsmm(test_files, f_value, obs_state_len)
+
+The resulting `seqs_train` and `seqs_test` objects are dictionaries containing run-to-failure trajectories in a format directly compatible with HiMAP’s HMM and HSMM models.
+
+You can now use these datasets for model training and prognostic evaluation as demonstrated in the previous sections.

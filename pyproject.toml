@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "himap"
-version = "1.2.0"
+version = "1.3.0"
 requires-python = ">=3.9, <3.13"
 dependencies = [
     "matplotlib>=3.7.1",
@@ -39,6 +39,18 @@ classifiers = [
 ]
 license = "Apache-2.0"
 license-files = ["LICENSE"]
+
+[project.optional-dependencies]
+test = [
+  "pytest>=8.0",
+]
+
+[tool.setuptools.packages.find]
+include = ["himap", "himap.*"]
+
+[tool.setuptools.package-data]
+himap = ["example_data/*.csv"]
+
 
 [project.urls]
 Documentation = "https://himap.readthedocs.io/en/latest/"

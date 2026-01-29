@@ -2,7 +2,19 @@
 # Copyright (c) 2025 Group iSP and contributors
 
 import unittest
-from base import HSMM, HMM, GaussianHSMM
+from himap.base import HSMM, HMM, GaussianHSMM
+
+# # Skip cleanly if himap can't be imported (most common reason: Cython extension not built)
+# try:
+#     from himap.base import HSMM, HMM, GaussianHSMM
+# except Exception as e:
+#     raise unittest.SkipTest(
+#         "Skipping HiMAP tests because 'himap' could not be imported "
+#         "(likely Cython extension not built). "
+#         "Try running 'python setup_cython.py build_ext --inplace' to build the Cython extension. "
+#         f"Original error: {type(e).__name__}: {e}"
+#     )
+#
 
 class TestHSMM(unittest.TestCase):
     def test_default_initialization(self):
@@ -18,7 +30,11 @@ class TestHSMM(unittest.TestCase):
         self.assertEqual(model.name, "hsmm")
 
     def test_custom_initialization(self):
-        model = HSMM(n_states=3, n_durations=4, n_iter=10, tol=1e-3, left_to_right=True, obs_state_len=5, f_value=10.0, random_state=42, name="custom_hsmm")
+        model = HSMM(
+            n_states=3, n_durations=4, n_iter=10, tol=1e-3,
+            left_to_right=True, obs_state_len=5, f_value=10.0,
+            random_state=42, name="custom_hsmm"
+        )
         self.assertEqual(model.n_states, 3)
         self.assertEqual(model.n_durations, 4)
         self.assertEqual(model.n_iter, 10)
@@ -44,6 +60,7 @@ class TestHSMM(unittest.TestCase):
     def test_missing_f_value(self):
         with self.assertRaises(ValueError):
             HSMM(f_value=10.0)
+
 
 class TestHMM(unittest.TestCase):
     def test_default_initialization(self):
@@ -80,6 +97,7 @@ class TestHMM(unittest.TestCase):
         with self.assertRaises(AssertionError):
             HMM(tol=0)
 
+
 class TestGaussianHSMM(unittest.TestCase):
     def test_default_initialization(self):
         model = GaussianHSMM()
@@ -94,7 +112,11 @@ class TestGaussianHSMM(unittest.TestCase):
         self.assertEqual(model.name, "hsmm")
 
     def test_custom_initialization(self):
-        model = GaussianHSMM(n_states=3, n_durations=4, n_iter=10, tol=1e-3, left_to_right=True, obs_state_len=5, f_value=10.0, random_state=42, name="custom_GaussianHSMM")
+        model = GaussianHSMM(
+            n_states=3, n_durations=4, n_iter=10, tol=1e-3,
+            left_to_right=True, obs_state_len=5, f_value=10.0,
+            random_state=42, name="custom_GaussianHSMM"
+        )
         self.assertEqual(model.n_states, 3)
         self.assertEqual(model.n_durations, 4)
         self.assertEqual(model.n_iter, 10)
@@ -120,6 +142,3 @@ class TestGaussianHSMM(unittest.TestCase):
     def test_missing_f_value(self):
         with self.assertRaises(ValueError):
             GaussianHSMM(f_value=10.0)
-
-if __name__ == '__main__':
-    unittest.main()

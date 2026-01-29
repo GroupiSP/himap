@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>API Documentation &mdash; HiMAP  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
@@ -57,6 +57,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#himap.base.HSMM"><code class="docutils literal notranslate"><span class="pre">HSMM</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#himap.base.HSMM._init"><code class="docutils literal notranslate"><span class="pre">HSMM._init()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#himap.base.HSMM._init_mc"><code class="docutils literal notranslate"><span class="pre">HSMM._init_mc()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#himap.base.HSMM._require_core"><code class="docutils literal notranslate"><span class="pre">HSMM._require_core()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#himap.base.HSMM._check"><code class="docutils literal notranslate"><span class="pre">HSMM._check()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#himap.base.HSMM._dur_init"><code class="docutils literal notranslate"><span class="pre">HSMM._dur_init()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#himap.base.HSMM._dur_check"><code class="docutils literal notranslate"><span class="pre">HSMM._dur_check()</span></code></a></li>
@@ -152,6 +153,7 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/GroupiSP/himap">Github Repository</a></li>
 </ul>
 
         </div>
@@ -383,79 +385,82 @@ Utilized by the <code class="docutils literal notranslate"><span class="pre">HSM
 <tr class="row-even"><td><p><a class="reference internal" href="#himap.base.HSMM._init_mc" title="himap.base.HSMM._init_mc"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_init_mc</span></code></a>()</p></td>
 <td><p>Initialize the model parameters for MC sampling (to be implemented in child class).</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HSMM._check" title="himap.base.HSMM._check"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_check</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HSMM._require_core" title="himap.base.HSMM._require_core"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_require_core</span></code></a>()</p></td>
+<td><p>Ensures that the HiMAP Cython extension is available.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.HSMM._check" title="himap.base.HSMM._check"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_check</span></code></a>()</p></td>
 <td><p>Validates the initialized parameters:</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.HSMM._dur_init" title="himap.base.HSMM._dur_init"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_dur_init</span></code></a>(*args)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HSMM._dur_init" title="himap.base.HSMM._dur_init"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_dur_init</span></code></a>(*args)</p></td>
 <td><p>Ιnitializes duration parameters if there are no arguments yet (to be implemented in child class).</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HSMM._dur_check" title="himap.base.HSMM._dur_check"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_dur_check</span></code></a>(*args)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.HSMM._dur_check" title="himap.base.HSMM._dur_check"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_dur_check</span></code></a>(*args)</p></td>
 <td><p>Checks if properties of duration parameters are satisfied arguments (to be implemented in child class).</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.HSMM._dur_probmat" title="himap.base.HSMM._dur_probmat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_dur_probmat</span></code></a>(*args)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HSMM._dur_probmat" title="himap.base.HSMM._dur_probmat"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_dur_probmat</span></code></a>(*args)</p></td>
 <td><p>Compute the probability per state of each duration arguments (to be implemented in child class).</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HSMM._dur_mstep" title="himap.base.HSMM._dur_mstep"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_dur_mstep</span></code></a>(*args)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.HSMM._dur_mstep" title="himap.base.HSMM._dur_mstep"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_dur_mstep</span></code></a>(*args)</p></td>
 <td><p>Compute the duration parameters (to be implemented in child class).</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.HSMM._emission_logl" title="himap.base.HSMM._emission_logl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_emission_logl</span></code></a>(*args)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HSMM._emission_logl" title="himap.base.HSMM._emission_logl"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_emission_logl</span></code></a>(*args)</p></td>
 <td><p>Compute the log-likelihood of each observation under each state (to be implemented in child class).</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HSMM._emission_pre_mstep" title="himap.base.HSMM._emission_pre_mstep"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_emission_pre_mstep</span></code></a>(*args)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.HSMM._emission_pre_mstep" title="himap.base.HSMM._emission_pre_mstep"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_emission_pre_mstep</span></code></a>(*args)</p></td>
 <td><p>Prepare for emission parameters re-estimation (process gamma and save output to emission_var) (to be implemented in child class).</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.HSMM._emission_mstep" title="himap.base.HSMM._emission_mstep"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_emission_mstep</span></code></a>(*args)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HSMM._emission_mstep" title="himap.base.HSMM._emission_mstep"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_emission_mstep</span></code></a>(*args)</p></td>
 <td><p>Compute the emission parameters.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HSMM._state_sample" title="himap.base.HSMM._state_sample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_state_sample</span></code></a>(*args)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.HSMM._state_sample" title="himap.base.HSMM._state_sample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_state_sample</span></code></a>(*args)</p></td>
 <td><p>Genrate observation sequence for given state arguments (to be implemented in child class).</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.HSMM.sample" title="himap.base.HSMM.sample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample</span></code></a>([n_samples, random_state])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HSMM.sample" title="himap.base.HSMM.sample"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sample</span></code></a>([n_samples, random_state])</p></td>
 <td><p>Generates a sequence of observations and corresponding state sequence performing a random walk on the model (MC Sampling).</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HSMM.mc_dataset" title="himap.base.HSMM.mc_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mc_dataset</span></code></a>(num, timesteps)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.HSMM.mc_dataset" title="himap.base.HSMM.mc_dataset"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mc_dataset</span></code></a>(num, timesteps)</p></td>
 <td><p>Generates a dataset of a number of observations and corresponding state sequences utilizing the <code class="docutils literal notranslate"><span class="pre">sample</span></code> method.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.HSMM._core_u_only" title="himap.base.HSMM._core_u_only"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_core_u_only</span></code></a>(logframe)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HSMM._core_u_only" title="himap.base.HSMM._core_u_only"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_core_u_only</span></code></a>(logframe)</p></td>
 <td><p>Computes auxiliary matrix u for duration probabilities utilizing the <code class="docutils literal notranslate"><span class="pre">ab._u_only</span></code> method.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HSMM._core_forward" title="himap.base.HSMM._core_forward"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_core_forward</span></code></a>(u, logdur)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.HSMM._core_forward" title="himap.base.HSMM._core_forward"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_core_forward</span></code></a>(u, logdur)</p></td>
 <td><p>Performs the forward step of the HSMM algorithm using duration and transition probabilities, utilizing the <code class="docutils literal notranslate"><span class="pre">ab._forward</span></code> method.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.HSMM._core_backward" title="himap.base.HSMM._core_backward"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_core_backward</span></code></a>(u, logdur)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HSMM._core_backward" title="himap.base.HSMM._core_backward"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_core_backward</span></code></a>(u, logdur)</p></td>
 <td><p>Implements the backward algorithm for the HSMM.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HSMM._core_smoothed" title="himap.base.HSMM._core_smoothed"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_core_smoothed</span></code></a>(beta, betastar, eta, xi)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.HSMM._core_smoothed" title="himap.base.HSMM._core_smoothed"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_core_smoothed</span></code></a>(beta, betastar, eta, xi)</p></td>
 <td><p>Combines forward and backward variables to compute the smoothed probabilities.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.HSMM._core_viterbi" title="himap.base.HSMM._core_viterbi"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_core_viterbi</span></code></a>(u, logdur)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HSMM._core_viterbi" title="himap.base.HSMM._core_viterbi"><code class="xref py py-obj docutils literal notranslate"><span class="pre">_core_viterbi</span></code></a>(u, logdur)</p></td>
 <td><p>Implements the Viterbi algorithm for finding the most probable state sequence given the observations.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HSMM.score" title="himap.base.HSMM.score"><code class="xref py py-obj docutils literal notranslate"><span class="pre">score</span></code></a>(X)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.HSMM.score" title="himap.base.HSMM.score"><code class="xref py py-obj docutils literal notranslate"><span class="pre">score</span></code></a>(X)</p></td>
 <td><p>Computes the log-likelihood of the observation sequences under the current model.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.HSMM.predict" title="himap.base.HSMM.predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code></a>(X)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HSMM.predict" title="himap.base.HSMM.predict"><code class="xref py py-obj docutils literal notranslate"><span class="pre">predict</span></code></a>(X)</p></td>
 <td><p>Predicts the most likely hidden state sequence for a given observation sequence using the Viterbi algorithm.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HSMM.fit" title="himap.base.HSMM.fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code></a>(X[, save_iters])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.HSMM.fit" title="himap.base.HSMM.fit"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit</span></code></a>(X[, save_iters])</p></td>
 <td><p>Trains the model using the Expectation-Maximization (EM) algorithm.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.HSMM.bic" title="himap.base.HSMM.bic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bic</span></code></a>(train)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HSMM.bic" title="himap.base.HSMM.bic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bic</span></code></a>(train)</p></td>
 <td><p>Computes the Bayesian Information Criterion (BIC) score to evaluate model performance.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HSMM.fit_bic" title="himap.base.HSMM.fit_bic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit_bic</span></code></a>(X, states[, return_models])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.HSMM.fit_bic" title="himap.base.HSMM.fit_bic"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fit_bic</span></code></a>(X, states[, return_models])</p></td>
 <td><p>Fits multiple models with different numbers of states, evaluates them using <code class="docutils literal notranslate"><span class="pre">bic</span></code> method, and selects the best one.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.HSMM.RUL" title="himap.base.HSMM.RUL"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RUL</span></code></a>(viterbi_states, max_samples[, equation])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HSMM.RUL" title="himap.base.HSMM.RUL"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RUL</span></code></a>(viterbi_states, max_samples[, equation])</p></td>
 <td><p>Estimates the Remaining Useful Life (RUL) for a given state history using convolution of duration probabilities.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HSMM.prognostics" title="himap.base.HSMM.prognostics"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prognostics</span></code></a>(data[, max_samples, plot_rul, ...])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.HSMM.prognostics" title="himap.base.HSMM.prognostics"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prognostics</span></code></a>(data[, max_samples, plot_rul, ...])</p></td>
 <td><p>Performs prognostics for given degradation histories, estimating RUL utilizing the <code class="docutils literal notranslate"><span class="pre">RUL</span></code> method and saving the results.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.HSMM.save_model" title="himap.base.HSMM.save_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_model</span></code></a>()</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HSMM.save_model" title="himap.base.HSMM.save_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">save_model</span></code></a>()</p></td>
 <td><p>Saves the current model state to a file.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#himap.base.HSMM.load_model" title="himap.base.HSMM.load_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_model</span></code></a>(model_name)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#himap.base.HSMM.load_model" title="himap.base.HSMM.load_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_model</span></code></a>(model_name)</p></td>
 <td><p>Loads a previously saved model state from a file.</p></td>
 </tr>
 </tbody>
@@ -491,6 +496,13 @@ made with the <code class="docutils literal notranslate"><span class="pre">utils
 <span class="sig-name descname"><span class="pre">_init_mc</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.HSMM._init_mc" title="Link to this definition"></a></dt>
 <dd><p>Initialize the model parameters for MC sampling
 (to be implemented in child class).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="himap.base.HSMM._require_core">
+<span class="sig-name descname"><span class="pre">_require_core</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#himap.base.HSMM._require_core" title="Link to this definition"></a></dt>
+<dd><p>Ensures that the HiMAP Cython extension is available.
+:rtype: None</p>
 </dd></dl>
 
 <dl class="py method">
@@ -2129,7 +2141,7 @@ If the folders already exist, a message is printed indicating so.</p>
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, ISP Group, Aerospace Engineering, TU Delft.</p>
+    <p>&#169; Copyright 2025, ISP Group, Aerospace Engineering, TU Delft and contributors.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
