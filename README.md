@@ -4,10 +4,21 @@ HiMAP is a Python package for implementing hidden Markov Models (HMMs) and hidde
 
 ## Table of Contents
 
+- [Citing](#citing)
 - [Configuration and Installation](#installation)
 - [Data Structure](#structure)
 - [Example](#example)
 - [Contributors](#contributors)
+
+## Citing
+[![DOI](https://zenodo.org/badge/932810938.svg)](https://doi.org/10.5281/zenodo.18418215)
+
+If you use **HiMAP**, please cite the software using the DOI for the release you used (recommended for reproducibility). Zenodo also provides a concept DOI that represents all versions.
+
+- Version DOI (recommended): https://doi.org/10.5281/zenodo.18418216 
+- Concept DOI (all versions): https://doi.org/10.5281/zenodo.18418215 
+
+You can also use the citation information provided by GitHub via the **“Cite this repository”** button (generated from `CITATION.cff`).
 
 ## Requirements
 > [!WARNING]
