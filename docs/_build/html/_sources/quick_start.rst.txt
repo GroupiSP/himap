@@ -4,9 +4,10 @@ Quick Start Guide: Prognostics using C-MAPSS
 This guide provides a step-by-step process for loading the C-MAPSS dataset, creating a Hidden Markov Model (HMM) and a Hidden Semi-Markov Model (HSMM), and performing prognostics using your model.
 
 .. warning::
-    This example will NOT run with the PyPi install, since the package does not 
-    contain the example data. To get all of the required files, please build
-    the entire GitHub repository, following the respective instructions.
+    In order to follow this example please build the GitHub repository, following the respective instructions.
+    If you want to simply get the prognostic results for the C-MAPSS dataset, you can also directly run ``python -m himap.main`` in 
+    the root directory of the repository, following the instructions in the `README`_ of the repository.
+.. _README: https://github.com/GroupiSP/himap
         
 
 .. contents:: Table of Contents
@@ -36,7 +37,7 @@ First, ensure you have the necessary imports:
 .. code-block:: python
 
    import himap
-   from utils import *
+   from himap.utils import *
    from himap.base import HMM, GaussianHSMM
 
 To load the data, use the following Python code:
@@ -161,16 +162,17 @@ Every CSV file should contain a column named clusters, which represents discrete
 
 For example, a single CSV file might look like:
 
-.. code-block:: csv
+.. csv-table:: 
+   :header: "clusters"
+   :widths: 10
 
-   clusters
-   1
-   1
-   2
-   2
-   3
-   ...
-   21
+   "1"
+   "1"
+   "2"
+   "2"
+   "3"
+   "..."
+   "21"
 
 
 Step 2: Understand how the data is processed
@@ -203,7 +205,7 @@ First, collect all CSV files for training and testing into separate folders. The
 
 .. code-block:: python
 
-   from utils import create_data_hsmm
+   from himap.utils import create_data_hsmm
    import os
 
    # Define parameters

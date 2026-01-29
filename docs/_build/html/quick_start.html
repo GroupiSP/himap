@@ -8,13 +8,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Quick Start Guide: Prognostics using C-MAPSS &mdash; HiMAP  documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
       <script src="_static/documentation_options.js?v=5929fcd5"></script>
-      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/doctools.js?v=9a2dae69"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -100,9 +100,9 @@
 <p>This guide provides a step-by-step process for loading the C-MAPSS dataset, creating a Hidden Markov Model (HMM) and a Hidden Semi-Markov Model (HSMM), and performing prognostics using your model.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>This example will NOT run with the PyPi install, since the package does not
-contain the example data. To get all of the required files, please build
-the entire GitHub repository, following the respective instructions.</p>
+<p>In order to follow this example please build the GitHub repository, following the respective instructions.
+If you want to simply get the prognostic results for the C-MAPSS dataset, you can also directly run <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">himap.main</span></code> in
+the root directory of the repository, following the instructions in the <a class="reference external" href="https://github.com/GroupiSP/himap">README</a> of the repository.</p>
 </div>
 <nav class="contents local" id="table-of-contents">
 <p class="topic-title">Table of Contents</p>
@@ -145,7 +145,7 @@ the entire GitHub repository, following the respective instructions.</p>
 </ul>
 <p>First, ensure you have the necessary imports:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">himap</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">utils</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">himap.utils</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">himap.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">HMM</span><span class="p">,</span> <span class="n">GaussianHSMM</span>
 </pre></div>
 </div>
@@ -236,16 +236,31 @@ the entire GitHub repository, following the respective instructions.</p>
 <p>Each run-to-failure trajectory must be stored in a separate CSV file.
 Every CSV file should contain a column named clusters, which represents discrete condition monitoring data (or cluster labels) sampled at a consistent rate.</p>
 <p>For example, a single CSV file might look like:</p>
-<div class="highlight-csv notranslate"><div class="highlight"><pre><span></span>clusters
-1
-1
-2
-2
-3
-...
-21
-</pre></div>
-</div>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 100.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>clusters</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+</tr>
+<tr class="row-even"><td><p>3</p></td>
+</tr>
+<tr class="row-odd"><td><p>…</p></td>
+</tr>
+<tr class="row-even"><td><p>21</p></td>
+</tr>
+</tbody>
+</table>
 </section>
 <section id="step-2-understand-how-the-data-is-processed">
 <h3><a class="toc-backref" href="#id12" role="doc-backlink">Step 2: Understand how the data is processed</a><a class="headerlink" href="#step-2-understand-how-the-data-is-processed" title="Link to this heading"></a></h3>
@@ -269,7 +284,7 @@ Every CSV file should contain a column named clusters, which represents discrete
 <section id="step-3-load-your-training-and-testing-data">
 <h3><a class="toc-backref" href="#id13" role="doc-backlink">Step 3: Load your training and testing data</a><a class="headerlink" href="#step-3-load-your-training-and-testing-data" title="Link to this heading"></a></h3>
 <p>First, collect all CSV files for training and testing into separate folders. Then, create a list of file paths and pass them to <cite>create_data_hsmm()</cite>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_data_hsmm</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">himap.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">create_data_hsmm</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
 <span class="c1"># Define parameters</span>
