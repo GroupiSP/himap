@@ -87,7 +87,60 @@
 </section>
 <section id="installation">
 <h1>Installation:<a class="headerlink" href="#installation" title="Link to this heading"></a></h1>
+<section id="option-1-install-via-pip">
+<h2>Option 1: Install via pip<a class="headerlink" href="#option-1-install-via-pip" title="Link to this heading"></a></h2>
+<p>The easiest way to install HiMAP is through <cite>pip</cite>. Note that to install the package you need <cite>Python 3.9+</cite>. Simply run the following command:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>himap
+</pre></div>
+</div>
+</section>
+<section id="option-2-install-from-source">
+<h2>Option 2: Install from source<a class="headerlink" href="#option-2-install-from-source" title="Link to this heading"></a></h2>
+<p>If you prefer to install HiMAP directly from the source, follow these steps:
+1. Create a virtual environment and activate it. (This example will be demonstrated with Anaconda, but it is not required.)</p>
+<ul class="simple">
+<li><p>Step 1a:</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>himap_env<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.9<span class="w"> </span>-y
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Step 1b:</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>activate<span class="w"> </span>himap_env
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>This repository can be directly pulled through GitHub by the following commands:</p></li>
+</ol>
+<ul class="simple">
+<li><p>Step 2a:</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>git
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Step 2b:</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/GroupiSP/himap.git
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Step 2c:</p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>himap
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>The dependencies can be installed using the requirements.txt file</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+</pre></div>
+</div>
+<ol class="arabic simple" start="4">
+<li><p>To compile the Cython code, run the following command</p></li>
+</ol>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>setup_cython.py<span class="w"> </span>build_ext<span class="w"> </span>--inplace
 </pre></div>
 </div>
 <div class="toctree-wrapper compound">
@@ -100,15 +153,25 @@
 </ul>
 </div>
 </section>
+</section>
 <section id="citing-this-repository">
 <h1>Citing this repository:<a class="headerlink" href="#citing-this-repository" title="Link to this heading"></a></h1>
-<p>If you use HiMAP in your research, please cite the following paper:</p>
-<div class="highlight-bibtex notranslate"><div class="highlight"><pre><span></span><span class="nc">@article</span><span class="p">{</span><span class="nl">kontogiannis2026himap</span><span class="p">,</span>
-<span class="w">  </span><span class="na">title</span><span class="p">=</span><span class="s">{HiMAP: Hidden Markov models for Advanced Prognostics}</span><span class="p">,</span>
-<span class="w">  </span><span class="na">author</span><span class="p">=</span><span class="s">{Kontogiannis, Thanos and Salinas-Camus, Mariana and Eleftheroglou, Nick}</span><span class="p">,</span>
-<span class="w">  </span><span class="na">journal</span><span class="p">=</span><span class="s">{Journal of Open Source Software}</span><span class="p">,</span>
-<span class="w">  </span><span class="na">doi</span><span class="p">=</span><span class="s">{}</span><span class="p">,</span>
-<span class="w">  </span><span class="na">year</span><span class="p">=</span><span class="s">{2026}</span><span class="p">,</span>
+<p>If you use HiMAP in your research, please use the following citation:</p>
+<div class="highlight-bibtex notranslate"><div class="highlight"><pre><span></span><span class="nc">@software</span><span class="p">{</span><span class="nl">kontogiannis_2026_18418216</span><span class="p">,</span>
+<span class="w">   </span><span class="na">author</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{Kontogiannis, Thanos and Salinas-Camus, Mariana and Eleftheroglou, Nick}</span><span class="p">,</span>
+<span class="w">   </span><span class="na">title</span><span class="w">  </span><span class="p">=</span><span class="w"> </span><span class="s">{HiMAP: Hidden Markov models for Advanced Prognostics}</span><span class="p">,</span>
+<span class="w">   </span><span class="na">month</span><span class="w">  </span><span class="p">=</span><span class="w"> </span><span class="nv">jan</span><span class="p">,</span>
+<span class="w">   </span><span class="na">year</span><span class="w">   </span><span class="p">=</span><span class="w"> </span><span class="m">2026</span><span class="p">,</span>
+<span class="w">   </span><span class="na">publisher</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{Zenodo}</span><span class="p">,</span>
+<span class="w">   </span><span class="na">version</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{v1.3.0}</span><span class="p">,</span>
+<span class="w">   </span><span class="na">doi</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{10.5281/zenodo.18418216}</span><span class="p">,</span>
+<span class="w">   </span><span class="na">url</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{https://doi.org/10.5281/zenodo.18418216}</span><span class="p">,</span>
+<span class="w">   </span><span class="na">swhid</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{swh:1:dir:447c3c9e6743e4b56015f2107dbcd6d0eebe1bda</span>
+<span class="s">                ;origin=https://doi.org/10.5281/zenodo.18418215;vi</span>
+<span class="s">                sit=swh:1:snp:66b6fd9f335c7a71c1d805bc6cf19261589a</span>
+<span class="s">                0770;anchor=swh:1:rel:3c6b8da54a15799b589065dbedc6</span>
+<span class="s">                5540af805806;path=GroupiSP-himap-103efdc</span>
+<span class="s">               }</span><span class="p">,</span>
 <span class="p">}</span>
 </pre></div>
 </div>
