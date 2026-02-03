@@ -105,7 +105,7 @@ Additionally, RUL probability distributions (PDFs) for each time step are saved 
 
 Below there is an example of the RUL prediction results. The x-axis corresponds to the operational time and the y-axis to the RUL (which has the same units as the operational time). The true RUL is defined as the time remaining before failure, computed using the known failure time of the system and decreasing linearly as the system operates. The predicted RUL represents the model’s estimate of this remaining lifetime based on the observed sensor data. The confidence intervals indicate the uncertainty associated with the prediction, providing a range of plausible RUL values around the estimate, with wider intervals reflecting higher uncertainty.
 
-.. image:: _images/hmm_RUL_plot_traj_19.png
+.. image:: _images/rul_hmm_traj_6.png
    :align: center
    :width: 600
 
@@ -144,7 +144,7 @@ With the trained HSMM, perform prognostics:
 
 By using HSMMs, you’ll likely see improved RUL predictions compared to HMMs! For the C-MAPSS, the RMSE improves, and the uncertainty confidence intervals reduce over time. 
 
-.. image:: _images/hsmm_RUL_plot_traj_19.png
+.. image:: _images/rul_hsmm_traj_6.png
    :align: center
    :width: 600
 
@@ -233,5 +233,6 @@ First, collect all CSV files for training and testing into separate folders. The
    seqs_test = create_data_hsmm(test_files, f_value, obs_state_len)
 
 The resulting `seqs_train` and `seqs_test` objects are dictionaries containing run-to-failure trajectories in a format directly compatible with HiMAP’s HMM and HSMM models.
+
 
 You can now use these datasets for model training and prognostic evaluation as demonstrated in the previous sections.
