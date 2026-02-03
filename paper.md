@@ -40,7 +40,7 @@ HiMAP is a repository that implements HMMs and HSMMs specifically designed for p
 
 In HiMAP, each model is implemented as a dedicated Python class, designed for seamless integration into diverse workflows. These classes provide essential methods such as `decode`, for inferring the most likely sequence of hidden states; `fit`, for parameter learning; `bic_fit`, for jointly selecting the optimal number of hidden states and estimating model parameters; and `sample`, for generating synthetic sequences. Beyond these core functionalities, the repository introduces advanced features for calculating RUL using a novel prognostic measure [@phme_conference]. This measure can be easily implemented by the user through the prognostics method and only requires the test dataset as input. By leveraging Viterbi-decoded state sequences [@rabiner], it produces a probability density function (pdf) of the RUL, enabling reliable and uncertainty-aware predictions. These RUL predictions are illustrated in the images below, which correspond to the same example trajectory but highlight the differences in results obtained with each model. Although the HMM can be trained more quickly, its predictions are less optimal than those of the HSMM, which, as shown in the figures, yields narrower confidence intervals at the expense of a higher computational cost.
 
-![alt-text-1](docs/_images/hmm_RUL_plot_traj_19.png "RUL prediction with HMM"){ width=45% } ![alt-text-2](docs/_images/hsmm_RUL_plot_traj_19.png "RUL prediction with HSMM"){ width=45% }
+![alt-text-1](docs/_images/rul_hmm_traj_6.png "RUL prediction with HMM"){ width=45% } ![alt-text-2](docs/_images/rul_hsmm_traj_6.png "RUL prediction with HSMM"){ width=45% }
 
 # References
 
