@@ -586,10 +586,10 @@ def create_folders(results_parent_path=None):
     Examples
     --------
     >>> create_folders()
-    Created folder: /results_parent_path/results
-    Created folder: /results_parent_path/results/dictionaries
-    Created folder: /results_parent_path/results/figures
-    Created folder: /results_parent_path/results/models
+    Created folder: /results_parent_path/himap_results
+    Created folder: /results_parent_path/himap_results/dictionaries
+    Created folder: /results_parent_path/himap_results/figures
+    Created folder: /results_parent_path/himap_results/models
     """
 
     def create_folder(path):
