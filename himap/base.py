@@ -1130,6 +1130,7 @@ class HSMM:
         Saves the current model state to self.results_path/models/self.name.pkl or to `path` if provided.
 
         Parameters
+        ----------
         path : str (optional)
             The path to save the model (overrides the default path).
 
@@ -2197,6 +2198,7 @@ class HMM:
         Saves the current model state to self.results_path/models/self.name.pkl or to `path` if provided.
 
         Parameters
+        ----------
         path : str (optional)
             The path to save the model (overrides the default path).
 
