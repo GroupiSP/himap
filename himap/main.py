@@ -4,7 +4,6 @@
 import sys
 import os
 
-
 import warnings
 
 warnings.filterwarnings(action="ignore")
@@ -64,12 +63,12 @@ def run_process(args):
             if bic_fit:
                 hmm_estim, bic = hmm_estim.fit_bic(obs, states=list(np.arange(2, n_states + 4)))
             else:
-                hmm_estim.fit(obs)
+                hmm_estim.fit(obs, save_iters=False)
             if save:
                 hmm_estim.save_model()
             hmm_estim.prognostics(obs, plot_rul=enable_visuals, get_metrics=metrics)
         else:
-            hsmm_init = GaussianHSMM(n_states=n_states, n_durations=260, f_value=60, obs_state_len=10)
+            hsmm_init = GaussianHSMM(n_states=n_states, n_durations=100, f_value=60, obs_state_len=10)
             obs, states = hsmm_init.mc_dataset(num_histories, timesteps=1000)
             hsmm_estim = GaussianHSMM(n_states=n_states,
                                       n_durations=hsmm_init.n_durations,
@@ -79,7 +78,7 @@ def run_process(args):
             if bic_fit:
                 hsmm_estim, bic = hsmm_estim.fit_bic(obs, states=list(np.arange(2, n_states + 4)))
             else:
-                hsmm_estim.fit(obs)
+                hsmm_estim.fit(obs, save_iters=False)
             if save:
                 hsmm_estim.save_model()
             hsmm_estim.prognostics(obs, plot_rul=enable_visuals, get_metrics=metrics)
@@ -103,11 +102,10 @@ def run_process(args):
             if bic_fit:
                 hsmm_c, bic = hsmm_c.fit_bic(seqs_train, states=list(np.arange(2, n_states + 2)))
             else:
-                hsmm_c.fit(seqs_train)
+                hsmm_c.fit(seqs_train, save_iters=False)
             if save:
                 hsmm_c.save_model()
             hsmm_c.prognostics(seqs_test, plot_rul=enable_visuals, get_metrics=metrics)
-
 
 
 def himap_main(hsmm, mc_sampling, bic_fit, save, metrics, enable_visuals, num_histories, n_states):
@@ -144,7 +142,6 @@ def himap_main(hsmm, mc_sampling, bic_fit, save, metrics, enable_visuals, num_hi
 
     parser = argparse.ArgumentParser()
 
-    
     parser.add_argument(
         "--hsmm",
         default=hsmm,

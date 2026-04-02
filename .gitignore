@@ -1,10 +1,14 @@
-/docs/
 /dist/
 /build/
+/.vscode/
 *.egg-info/
 /results
 /himap/cython_build/build/
+/himap/cython_build/__pycache__/
 /himap/cython_build/fwd_bwd.cp39-win_amd64.pyd
 /himap/cython_build/fwd_bwd.c
 /himap/docs_v2/
+/himap/docs/_build/
 /himap/results/
+/himap/.vscode/
+/himap/__pycache__/

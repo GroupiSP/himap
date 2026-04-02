@@ -4,6 +4,7 @@
 import sys
 import os
 import warnings
+
 warnings.simplefilter(action='ignore', category=FutureWarning)
 warnings.simplefilter(action='ignore', category=DeprecationWarning)
 warnings.simplefilter(action='ignore', category=RuntimeWarning)
@@ -24,6 +25,7 @@ from himap.plot import *
 
 try:
     from himap.cython_build import fwd_bwd as core
+
     _CORE_IMPORT_ERROR = None
 except Exception as e:
     core = None
@@ -38,7 +40,7 @@ class HSMM:
     """
 
     def __init__(self, n_states=2, n_durations=5, n_iter=20, tol=1e-2, left_to_right=False, obs_state_len=None,
-                 f_value=None, random_state=None, name=""):
+                 f_value=None, random_state=None, name="", results_parent_path=None):
 
         """
         Parameters
@@ -61,6 +63,9 @@ class HSMM:
             Seed for reproducibility.
         name : str, optional
             Name of the model. Defaults to "hsmm" if not provided.
+        results_parent_path : str, optional
+            The path to create the himap_results directory tree where the results (models, figures, dictionaries,
+            performance metrics) are saved
         """
 
         if not n_states >= 2:
@@ -81,7 +86,12 @@ class HSMM:
             self.last_observed = False
 
         # create the folders
-        create_folders()
+        create_folders(results_parent_path)
+
+        if results_parent_path is None:
+            self.results_path = os.path.join(os.getcwd(), "himap_results")
+        else:
+            self.results_path = os.path.join(results_parent_path, "himap_results")
 
         self.max_len = None
         self.n_states = n_states
@@ -698,10 +708,10 @@ class HSMM:
 
             # save the previous version of the model prior to updating
             if save_iters:
-                path = os.path.join(os.getcwd(), 'results', 'models', f'{self.name}_iter_{str(itera + 1)}.txt')
-                with open(path, 'wb') as f:
-                    pickle.dump(self, f)
-                    print(f"\nModel saved at {path}")
+                model_name = self.name
+                self.name = f'{self.name}_iter_{str(itera + 1)}'
+                self.save_model()
+                self.name = model_name
 
             # emission parameters re-estimation
             weight = mean_numerator - denominator
@@ -827,7 +837,7 @@ class HSMM:
         bic = []
         keys = list(X.keys())
         models = {
-            f"model_{i}": None for i in range(len(states))
+            f"model_{i}": {} for i in range(len(states))
         }
         for i, n_states in enumerate(states):
             hsmm = GaussianHSMM(n_states=n_states,
@@ -975,7 +985,7 @@ class HSMM:
 
         return RUL, mean_RUL, UB_RUL, LB_RUL
 
-    def prognostics(self, data, max_samples=None, plot_rul=True, get_metrics=True, equation=1):
+    def prognostics(self, data, max_samples=None, plot_rul=True, get_metrics=True, equation=1, return_results=False):
         """
         Performs prognostics for given degradation histories, estimating RUL utilizing the ``RUL`` method and saving the results.
 
@@ -991,10 +1001,24 @@ class HSMM:
             Whether to compute and save evaluation metrics. Default is True.
         equation : int, optional
             Equation type for RUL estimation. Default is 1.
+        return_results : bool, optional
+            Whether to return the results: mean_rul_per_step, pdf_ruls_all, upper_rul_per_step, lower_rul_per_step (default is False).
 
         Returns
         -------
-        None
+        None if return_results is False
+
+        mean_rul_per_step : dict (Optional)
+            A dictionary containing the mean_RUL ndarray per trajectory.
+
+        pdf_ruls_all : dict (Optional)
+            A dictionary containing the RUL ndarray per trajectory.
+
+        upper_rul_per_step : dict (Optional)
+            A dictionary containing the upper_rul_per_step ndarray per trajectory.
+
+        lower_rul_per_step : dict (Optional)
+            A dictionary containing the lower_rul_per_step ndarray per trajectory.
 
         Notes
         -----
@@ -1029,7 +1053,6 @@ class HSMM:
                 lens.append(len(data[traj]))
 
             self.max_len = max(lens)
-        path = os.path.join(os.getcwd(), 'results')
         data_list = []
         max_timesteps = self.max_len
         max_samples = ceil(max_timesteps * 10) if max_samples is None else max_samples
@@ -1067,7 +1090,7 @@ class HSMM:
                 upper_rul_per_step[f"traj_{i}"] = UB_RUL.copy()
                 lower_rul_per_step[f"traj_{i}"] = LB_RUL.copy()
             if plot_rul:
-                fig_path = os.path.join(path, 'figures', f'{self.name}_RUL_plot_traj_{i + 1}.png')
+                fig_path = os.path.join(self.results_path, 'figures', f'{self.name}_RUL_plot_traj_{i + 1}.png')
                 plot_ruls(mean_RUL, UB_RUL, LB_RUL, fig_path)
             if get_metrics:
                 true_rul_dict = {}
@@ -1075,10 +1098,10 @@ class HSMM:
                     true_rul_dict[key] = len(mean_rul_per_step[key])
                 df_results = evaluate_test_set(mean_rul_per_step, upper_rul_per_step, lower_rul_per_step, true_rul_dict)
 
-        path_mean_rul = os.path.join(path, 'dictionaries', f"mean_rul_per_step_{self.name}.json")
-        path_pdf_rul = os.path.join(path, 'dictionaries', f"pdf_ruls_{self.name}.json")
-        path_upper_rul = os.path.join(path, 'dictionaries', f"upper_ruls_{self.name}.json")
-        path_lower_rul = os.path.join(path, 'dictionaries', f"lower_ruls_{self.name}.json")
+        path_mean_rul = os.path.join(self.results_path, 'dictionaries', f"mean_rul_per_step_{self.name}.json")
+        path_pdf_rul = os.path.join(self.results_path, 'dictionaries', f"pdf_ruls_{self.name}.json")
+        path_upper_rul = os.path.join(self.results_path, 'dictionaries', f"upper_ruls_{self.name}.json")
+        path_lower_rul = os.path.join(self.results_path, 'dictionaries', f"lower_ruls_{self.name}.json")
 
         with open(path_mean_rul, "w") as fp:
             json.dump(mean_rul_per_step, fp, cls=NumpyArrayEncoder)
@@ -1092,43 +1115,53 @@ class HSMM:
         with open(path_lower_rul, "w") as fp:
             json.dump(lower_rul_per_step, fp, cls=NumpyArrayEncoder)
 
-        print(f"\nPrognostics complete. Results saved to: {path}")
+        print(f"\nPrognostics complete. Results saved to: {os.path.join(self.results_path, 'dictionaries')}")
         if plot_rul:
-            print(f"\nRUL plots saved to: {os.path.join(path, 'dictionaries', 'figures')}")
-
+            print(f"\nRUL plots saved to: {os.path.join(self.results_path, 'figures')}")
         if get_metrics:
-            df_results.to_csv(f'{path}/df_results.csv', index=False)
-            print(f'\n Metrics saved to: {path}')
+            df_results.to_csv(os.path.join(self.results_path, 'df_results.csv'), index=False)
+            print(f'\n Metrics saved to: {self.results_path}')
             print(f'\n {df_results}')
+        if return_results:
+            return mean_rul_per_step, pdf_ruls_all, upper_rul_per_step, lower_rul_per_step
 
-    def save_model(self):
+    def save_model(self, path=None):
         """
-        Saves the current model state to a file.
+        Saves the current model state to self.results_path/models/self.name.pkl or to `path` if provided.
+
+        Parameters
+        path : str (optional)
+            The path to save the model (overrides the default path).
 
         Returns
         -------
         None
         """
 
-        path = os.path.join(os.getcwd(), 'results', 'models', f'{self.name}.txt')
+        path = os.path.join(self.results_path, 'models', f'{self.name}.pkl') if path is None else path
         with open(path, 'wb') as f:
             pickle.dump(self.__dict__, f)
             print(f"Model saved to {path}.")
 
-    def load_model(self, model_name):
+    def load_model(self, model_name=None, path=None):
         """
-        Loads a previously saved model state from a file.
+        Loads a previously saved model state from self.results.path/models/model_name.pkl or to `path` if provided.
 
         Parameters
         ----------
-        model_name : str
-            Name of the model file to load (without extension).
+        model_name : str (optional)
+            Name of the model file to load (without extension). Not needed if path is provided.
+        path : str (optional)
+            The path to load the model from (overrides the default path).
 
         Returns
         -------
         None
         """
-        path = os.path.join(os.getcwd(), 'results', 'models', f'{model_name}.txt')
+        if model_name is None and path is None:
+            raise ValueError("Either model_name or path must be provided.")
+
+        path = os.path.join(self.results_path, 'models', f'{model_name}.pkl') if path is None else path
         with open(path, 'rb') as f:
             obj = pickle.load(f)
             self.__dict__.update(obj)
@@ -1142,7 +1175,7 @@ class GaussianHSMM(HSMM):
     """
 
     def __init__(self, n_states=2, n_durations=5, n_iter=100, tol=0.5, left_to_right=True, obs_state_len=None,
-                 f_value=None, random_state=None, name="",
+                 f_value=None, random_state=None, name="", results_parent_path=None,
                  kmeans_init='k-means++', kmeans_n_init='auto'):
         """
         Parameters
@@ -1169,9 +1202,12 @@ class GaussianHSMM(HSMM):
             Initialization method for K-means clustering ('k-means++' or 'random'). Default is 'k-means++'.
         kmeans_n_init : int or str
             Number of initializations for K-means clustering. Default is 'auto'.
+        results_parent_path : str, optional
+            The path to create the himap_results directory tree where the results (models, figures, dictionaries,
+            performance metrics) are saved
         """
         super().__init__(n_states, n_durations, n_iter, tol, left_to_right, obs_state_len,
-                         f_value, random_state, name)
+                         f_value, random_state, name, results_parent_path)
         self.kmeans_init = kmeans_init
         self.kmeans_n_init = kmeans_n_init
 
@@ -1457,7 +1493,8 @@ class HMM:
     The HMM class models Hidden Markov processes with discrete emissions.
     """
 
-    def __init__(self, n_states=2, n_obs_symbols=30, n_iter=100, tol=1e-2, left_to_right=True, name=""):
+    def __init__(self, n_states=2, n_obs_symbols=30, n_iter=100, tol=1e-2, left_to_right=True, name="",
+                 results_parent_path=None):
         """
         Parameters
         ----------
@@ -1473,9 +1510,12 @@ class HMM:
             Whether the HMM uses a left-to-right structure. Default is True for use in prognostics.
         name :  str
             Name of the model. Default is "hmm" if no name is provided.
+        results_parent_path : str, optional
+            The path to create the himap_results directory tree where the results (models, figures, dictionaries,
+            performance metrics) are saved
         """
 
-        create_folders()
+        create_folders(results_parent_path)
 
         assert n_states >= 2, "number of states (n_states) must be at least 2"
         # Assertion for n_obs_symbols
@@ -1489,6 +1529,10 @@ class HMM:
         if len(name) == 0:
             name = f"hmm"
             print(f"Model name not provided. Default name: {name}")
+        if results_parent_path is None:
+            self.results_path = os.path.join(os.getcwd(), "himap_results")
+        else:
+            self.results_path = os.path.join(results_parent_path, "himap_results")
 
         self.max_len = None
         self.n_states = n_states
@@ -1657,10 +1701,10 @@ class HMM:
                 break
 
             if save_iters:
-                path = os.path.join(os.getcwd(), 'results', 'models', f'{self.name}_iter_{str(itera + 1)}.txt')
-                with open(path, 'wb') as f:
-                    pickle.dump(self, f)
-                    print(f"\nModel saved at {path}")
+                model_name = self.name
+                self.name = f'{self.name}_iter_{str(itera + 1)}'
+                self.save_model()
+                self.name = model_name
 
         if not converged:
             print("\nThere is no possible solution. Try different parameters.")
@@ -1714,7 +1758,7 @@ class HMM:
 
         bic = []
         models = {
-            f"model_{i}": None for i in range(len(states))
+            f"model_{i}": {} for i in range(len(states))
         }
 
         n = 0
@@ -1735,14 +1779,15 @@ class HMM:
             num_params_emi = np.count_nonzero(hmm_model.emi) - 1
             num_params_tr = np.count_nonzero(hmm_model.tr) - 1
             bic.append(loglik - ((num_params_tr + num_params_emi) / 2) * np.log(n))
-            models[f"model_{i}"] = hmm_model
+            models[f"model_{i}"] = hmm_model.__dict__
 
         best_model = models[f"model_{np.argmax(np.asarray(bic))}"]
-        print(f"\nBest model: {best_model.name} with {best_model.n_states} states.")
+        print(f"Best model was the model with {best_model['n_states']} states.")
+        self.__dict__.update(best_model)
         if return_models:
-            return best_model, bic, models
+            return self, bic, models
 
-        return best_model, bic
+        return self, bic
 
     def decode(self, history, calc_emi, calc_tr):
         """
@@ -2050,7 +2095,7 @@ class HMM:
                 rul_lower_bound.append(lower_bound)
         return rul_mean, rul_upper_bound, rul_lower_bound, rul_matrix
 
-    def prognostics(self, data, max_samples=None, plot_rul=True, get_metrics=True):
+    def prognostics(self, data, max_samples=None, plot_rul=True, get_metrics=True, return_results=False):
         """
         Performs prognostics utilizing the ``RUL`` method and evaluates model performance.
 
@@ -2064,10 +2109,25 @@ class HMM:
             If True, saves RUL plots (default is True).
         get_metrics : bool, optional
             If True, evaluates RUL predictions with metrics (default is True).
+        return_results : bool, optional
+            Whether to return the results: mean_rul_per_step, pdf_ruls_all, upper_rul_per_step, lower_rul_per_step (default is False).
 
         Returns
         -------
-        None. Saves RUL estimates and metrics to files.
+        None if return_results is False
+
+        rul_mean_all : dict (Optional)
+            A dictionary containing the rul_mean ndarray per trajectory.
+
+        pdf_ruls_all : dict (Optional)
+            A dictionary containing the rul_matrix ndarray per trajectory.
+
+        rul_upper_bound_all: dict (Optional)
+            A dictionary containing the  rul_upper_bound ndarray per trajectory.
+
+        rul_lower_bound_all : dict (Optional)
+            A dictionary containing the  rul_lower_bound ndarray per trajectory.
+
 
         See Also
         --------
@@ -2084,7 +2144,6 @@ class HMM:
         # Set max_samples to a default if None
         max_samples = ceil(self.max_len * 10) if max_samples is None else max_samples
         assert max_samples > 0, "max_samples must be a positive integer."
-        path = os.path.join(os.getcwd(), 'results')
         rul_mean_all, rul_upper_bound_all, rul_lower_bound_all = {}, {}, {}
         pdf_ruls_all = {f"traj_{i}": {} for i in range(
             len(data))}  # different initialization due to the structure of the dictionary cointaining the timesteps
@@ -2098,7 +2157,7 @@ class HMM:
                 pdf_ruls_all[k][f'timestep_{j}'] = rul_pdf[j, :]
 
             if plot_rul:
-                fig_path = os.path.join(path, 'figures', f'{self.name}_RUL_plot_traj_{index + 1}.png')
+                fig_path = os.path.join(self.results_path, 'figures', f'{self.name}_RUL_plot_traj_{index + 1}.png')
                 plot_ruls(rul_mean, rul_upper, rul_lower, fig_path)
         if get_metrics:
             true_rul_dict = {}
@@ -2106,10 +2165,10 @@ class HMM:
                 true_rul_dict[key] = len(rul_mean_all[key])
             df_results = evaluate_test_set(rul_mean_all, rul_upper_bound_all, rul_lower_bound_all, true_rul_dict)
 
-        path_mean_rul = os.path.join(path, 'dictionaries', f"mean_rul_per_step_{self.name}.json")
-        path_pdf_rul = os.path.join(path, 'dictionaries', f"pdf_ruls_{self.name}.json")
-        path_upper_rul = os.path.join(path, 'dictionaries', f"upper_ruls_{self.name}.json")
-        path_lower_rul = os.path.join(path, 'dictionaries', f"lower_ruls_{self.name}.json")
+        path_mean_rul = os.path.join(self.results_path, 'dictionaries', f"mean_rul_per_step_{self.name}.json")
+        path_pdf_rul = os.path.join(self.results_path, 'dictionaries', f"pdf_ruls_{self.name}.json")
+        path_upper_rul = os.path.join(self.results_path, 'dictionaries', f"upper_ruls_{self.name}.json")
+        path_lower_rul = os.path.join(self.results_path, 'dictionaries', f"lower_ruls_{self.name}.json")
 
         with open(path_mean_rul, "w") as fp:
             json.dump(rul_mean_all, fp, cls=NumpyArrayEncoder)
@@ -2123,42 +2182,53 @@ class HMM:
         with open(path_lower_rul, "w") as fp:
             json.dump(rul_lower_bound_all, fp, cls=NumpyArrayEncoder)
 
-        print(f"\nPrognostics complete. Results saved to: {os.path.join(path, 'dictionaries')}")
+        print(f"\nPrognostics complete. Results saved to: {os.path.join(self.results_path, 'dictionaries')}")
         if plot_rul:
-            print(f"\nRUL plots saved to: {os.path.join(path, 'dictionaries', 'figures')}")
-
+            print(f"\nRUL plots saved to: {os.path.join(self.results_path, 'figures')}")
         if get_metrics:
-            df_results.to_csv(f'{path}/df_results.csv', index=False)
-            print(f'\n Metrics saved to: {path}')
+            df_results.to_csv(os.path.join(self.results_path, 'df_results.csv'), index=False)
+            print(f'\n Metrics saved to: {self.results_path}')
             print(f'\n {df_results}')
+        if return_results:
+            return rul_mean_all, pdf_ruls_all, rul_upper_bound_all, rul_lower_bound_all
 
-    def save_model(self):
+    def save_model(self, path=None):
         """
-        Saves the trained model to a file.
+        Saves the current model state to self.results_path/models/self.name.pkl or to `path` if provided.
+
+        Parameters
+        path : str (optional)
+            The path to save the model (overrides the default path).
 
         Returns
         -------
-        :None. File saved in results/models.
+        None
         """
-        path = os.path.join(os.getcwd(), 'results', 'models', f'{self.name}.txt')
+
+        path = os.path.join(self.results_path, 'models', f'{self.name}.pkl') if path is None else path
         with open(path, 'wb') as f:
             pickle.dump(self.__dict__, f)
             print(f"Model saved to {path}.")
 
-    def load_model(self, model_name):
+    def load_model(self, model_name=None, path=None):
         """
-        Loads a saved model.
+        Loads a previously saved model state from self.results.path/models/model_name.pkl or to `path` if provided.
 
         Parameters
         ----------
-        model_name : str
-            Name of the model to load.
+        model_name : str (optional)
+            Name of the model file to load (without extension). Not needed if path is provided.
+        path : str (optional)
+            The path to load the model from (overrides the default path).
 
         Returns
         -------
-        None.
+        None
         """
-        path = os.path.join(os.getcwd(), 'results', 'models', f'{model_name}.txt')
+        if model_name is None and path is None:
+            raise ValueError("Either model_name or path must be provided.")
+
+        path = os.path.join(self.results_path, 'models', f'{model_name}.pkl') if path is None else path
         with open(path, 'rb') as f:
             obj = pickle.load(f)
             self.__dict__.update(obj)
