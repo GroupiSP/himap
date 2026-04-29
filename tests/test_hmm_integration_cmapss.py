@@ -25,7 +25,7 @@ def test_hmm_cmapss_fit_and_metrics_are_sane(workdir, no_tqdm, himap_modules, cm
     hmm.prognostics(test_small, max_samples=5000, plot_rul=False, get_metrics=True)
 
     # Validate metrics output
-    df_path = workdir / "results" / "df_results.csv"
+    df_path = workdir / "himap_results" / "df_results.csv"
     assert df_path.exists(), f"Expected metrics CSV at {df_path}"
 
     df = pd.read_csv(df_path)
