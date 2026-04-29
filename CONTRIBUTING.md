@@ -69,6 +69,10 @@ We currently do not enforce tests via CI, so please run them locally.
 From the repository root:
 
 ~~~bash
+python -m pip install -e .
+~~~
+
+~~~bash
 python -m pytest
 ~~~
 

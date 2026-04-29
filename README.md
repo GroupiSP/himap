@@ -180,6 +180,10 @@ python -m himap.main
 ```
 and use the same arguments as previously for the different example options.
 
+>[!Note]
+>The CLI is used only for demonstration purposes. For more control and customization, you can directly import 
+> the relevant functions and classes from the `himap` package in your own scripts or Jupyter notebooks.
+
 ## Results
 
 The results are saved inside the directory `root/himap/results/`

@@ -557,21 +557,25 @@ def calculate_cdf(pmf, confidence_level):
     return lower_value, upper_value
 
 
-def create_folders():
+def create_folders(results_parent_path=None):
     """
     Create a directory structure for storing results.
 
-    This function creates a main "results" folder in the current working directory 
-    and subdirectories within it, including "dictionaries", "figures", and "models". 
-    If the folders already exist, a message is printed indicating so.
+    This function creates a main `himap_results` folder in the specified results parent directory path
+    and the subdirectories within it, including "dictionaries", "figures", and "models".
+    If the `results_parent_path` is not specified, the `himap_results` folder is created in the current working directory.
+
+    Parameters
+    ----------
+    results_parent_path : str (Optional)
+        Defines the parent directory of the results folder where the `himap_results` directory tree is created.
 
     Notes
     -----
-    - The function does not take any parameters.
     - The function does not return any values.
     - The created folder structure is as follows:
       
-      results/
+      himap_results/
 
       ├── dictionaries/
 
@@ -582,10 +586,10 @@ def create_folders():
     Examples
     --------
     >>> create_folders()
-    Created folder: /path/to/current/directory/results
-    Created folder: /path/to/current/directory/results/dictionaries
-    Created folder: /path/to/current/directory/results/figures
-    Created folder: /path/to/current/directory/results/models
+    Created folder: /results_parent_path/himap_results
+    Created folder: /results_parent_path/himap_results/dictionaries
+    Created folder: /results_parent_path/himap_results/figures
+    Created folder: /results_parent_path/himap_results/models
     """
 
     def create_folder(path):
@@ -596,11 +600,14 @@ def create_folders():
             print(f"Folder already exists: {path}")
 
     # Create folders
-    folder_path = os.path.join(os.getcwd(), "results")
+    if results_parent_path is None:
+        folder_path = os.path.join(os.getcwd(), "himap_results")
+    else:
+        folder_path = os.path.join(results_parent_path, "himap_results")
     create_folder(folder_path)
 
     subfolder_names = ["dictionaries", "figures", "models"]
 
     for subfolder_name in subfolder_names:
-        subfolder_path = os.path.join(os.getcwd(), "results", subfolder_name)
+        subfolder_path = os.path.join(folder_path, subfolder_name)
         create_folder(subfolder_path)

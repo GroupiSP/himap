@@ -10,9 +10,9 @@ def test_create_folders_creates_expected_tree(workdir, himap_modules):
 
     utils.create_folders()
 
-    assert (workdir / "results").is_dir()
+    assert (workdir / "himap_results").is_dir()
     for sub in ["dictionaries", "figures", "models"]:
-        assert (workdir / "results" / sub).is_dir(), f"Missing folder: results/{sub}"
+        assert (workdir / "himap_results" / sub).is_dir(), f"Missing folder: results/{sub}"
 
 
 @pytest.mark.parametrize(
