@@ -19,7 +19,7 @@ authors:
     corresponding: true
     affiliation: 1
 affiliations:
-  - name: "Intelligent Sustainable Prognostics Group, Aerospace Structures and Materials Department, Faculty of Aerospace Engineering, Delft University of Technology, Kluyverweg 1, 2629HS Delft, the Netherlands"
+  - name: "Intelligent System Prognostics for Operations and Maintenance Group, Aerospace Structures and Materials Department, Faculty of Aerospace Engineering, Delft University of Technology, Kluyverweg 1, 2629HS Delft, the Netherlands"
     index: 1
 date: 06 December 2024
 bibliography: paper.bib
@@ -32,7 +32,7 @@ Prognostics, the science of predicting systems' future health, performance, and 
 
 Modern systems in critical industries, such as aerospace and energy, are often used under different operational conditions, with limited or no labeled data available for training. These systems frequently lack comprehensive physical models to accurately describe degradation processes, making it challenging to predict future failures [@guo2019review]. Therefore, advanced prognostics, which are defined here as providing reliable RUL predictions under such conditions, are essential for optimizing maintenance schedules, reducing downtime, and improving system reliability. For example, in aerospace, advanced prognostics assist in predicting component failures in aircraft, thereby reducing in-flight risks and preventing costly delays [@prognostics2023aircraft]. In the energy sector, these methods enable the continuous monitoring of wind turbines [@LEITE20181917] and battery health [@hu2020battery], optimizing efficiency and extending operational lifespans.
 
-While state-of-the-art Deep Learning (DL) models, such as Long Short-Term Memory (LSTM) networks and Convolutional Neural Networks (CNNs), have shown results with high accuracy, they require large labeled datasets, are sensitive to environmental uncertainties, and struggle to generalize when operational conditions deviate from training scenarios [@vollert2021challenges], [@da2020remaining], [@li2020data].
+While state-of-the-art Deep Learning (DL) models, such as Long Short-Term Memory (LSTM) networks and Convolutional Neural Networks (CNNs), have shown results with high accuracy, they require large labeled datasets, are sensitive to environmental uncertainties, and struggle to generalize when operational conditions deviate from training scenarios [@vollert2021challenges; @da2020remaining; @li2020data].
 
 Stochastic models like HMMs [@rabiner] and HSMMs [@yu] offer a robust alternative for advanced prognostics. By treating RUL as a random variable, these models inherently address the uncertainties in degradation processes and adapt to changes in operational conditions. Their probabilistic foundation makes them particularly suited for real-world applications where labeled failure data is sparse or unavailable. Moreover, their ability to model the stochastic nature of degradation processes ensures reliable predictions, even under varying and unpredictable conditions.
 
